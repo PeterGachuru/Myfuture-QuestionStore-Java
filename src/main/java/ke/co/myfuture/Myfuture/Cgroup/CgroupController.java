@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Cgroup;
 
-import ke.co.myfuture.Myfuture.Response.ApiResponse;
+import ke.co.myfuture.Myfuture.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ public class CgroupController {
     @PostMapping("add/")
     public ResponseEntity<?> newCgroup(@RequestBody Cgroup cgroup) {
         Cgroup savedCgroup = repository.save(cgroup);
-        ApiResponse response = new ApiResponse();
+        UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Saved successfully");
         response.setEntity(savedCgroup);
@@ -28,7 +28,7 @@ public class CgroupController {
     public ResponseEntity<?> updateCgroup(@RequestBody Cgroup cgroup) {
         Cgroup updatedCgroup = repository.save(cgroup);
 
-        ApiResponse response = new ApiResponse();
+        UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Updated Successfully");
         response.setEntity(updatedCgroup);
@@ -38,7 +38,7 @@ public class CgroupController {
 
     @GetMapping("get/by/id/{cgroupId}")
     public ResponseEntity<?> fetchCgroup(@PathVariable("cgroupId") Long cgroupId) {
-        ApiResponse response = new ApiResponse();
+        UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Cgroup retrieved Successfully");
         response.setEntity(repository.findById(cgroupId));

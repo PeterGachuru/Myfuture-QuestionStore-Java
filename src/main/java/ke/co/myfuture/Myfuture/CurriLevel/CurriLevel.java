@@ -1,11 +1,14 @@
 package ke.co.myfuture.Myfuture.CurriLevel;
 
+import ke.co.myfuture.Myfuture.Subject.Subject;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -26,4 +29,7 @@ public class CurriLevel {
     Date createdAt;
     @UpdateTimestamp
     Date updatedAt;
+
+    @Transient
+    List<Subject> subjects = new ArrayList<>();
 }

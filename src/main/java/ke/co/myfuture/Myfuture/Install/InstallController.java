@@ -1,7 +1,7 @@
 package ke.co.myfuture.Myfuture.Install;
 
 
-import ke.co.myfuture.Myfuture.Response.ApiResponse;
+import ke.co.myfuture.Myfuture.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ public class InstallController {
     @PostMapping("add/")
     public ResponseEntity<?> newInstall(@RequestBody Install contest) {
         Install savedInstall = repository.save(contest);
-        ApiResponse response = new ApiResponse();
+        UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Saved successfully");
         response.setEntity(savedInstall);
@@ -28,7 +28,7 @@ public class InstallController {
     public ResponseEntity<?> updateInstall(@RequestBody Install contest) {
         Install updatedInstall = repository.save(contest);
 
-        ApiResponse response = new ApiResponse();
+        UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Updated Successfully");
         response.setEntity(updatedInstall);
@@ -38,7 +38,7 @@ public class InstallController {
 
     @GetMapping("get/by/id/{contestId}")
     public ResponseEntity<?> fetchInstall(@PathVariable("contestId") Long contestId) {
-        ApiResponse response = new ApiResponse();
+        UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Install retrieved Successfully");
         response.setEntity(repository.findById(contestId));

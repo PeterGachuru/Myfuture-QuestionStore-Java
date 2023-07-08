@@ -10,7 +10,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class ApiResponse<T> {
+public class UniversalResponse<T> {
     private String Status;
     private String message; //Saved succesfully
     private T entity; //{}

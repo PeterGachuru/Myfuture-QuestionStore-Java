@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Useraccount;
 
-import ke.co.myfuture.Myfuture.Response.ApiResponse;
+import ke.co.myfuture.Myfuture.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ public class UserAccountController {
     @PostMapping("add/")
     public ResponseEntity<?> newUserAccount(@RequestBody UserAccount user) {
         UserAccount savedUserAccount = repository.save(user);
-        ApiResponse response = new ApiResponse();
+        UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Saved successfully");
         response.setEntity(savedUserAccount);
@@ -27,7 +27,7 @@ public class UserAccountController {
     public ResponseEntity<?> updateUserAccount(@RequestBody UserAccount user) {
         UserAccount updatedUserAccount = repository.save(user);
 
-        ApiResponse response = new ApiResponse();
+        UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Updated Successfully");
         response.setEntity(updatedUserAccount);
@@ -37,7 +37,7 @@ public class UserAccountController {
 
     @GetMapping("get/by/id/{userId}")
     public ResponseEntity<?> fetchUserAccount(@PathVariable("userId") Long userId) {
-        ApiResponse response = new ApiResponse();
+        UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("UserAccount retrieved Successfully");
         response.setEntity(repository.findById(userId));

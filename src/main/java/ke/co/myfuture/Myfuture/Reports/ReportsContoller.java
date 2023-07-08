@@ -1,12 +1,11 @@
 package ke.co.myfuture.Myfuture.Reports;
 
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.FileInputStream;
@@ -16,6 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("reports")
+@CrossOrigin("*")
+@Slf4j
 public class ReportsContoller {
     @Value("${report.logo}")
     String logo;
@@ -76,7 +78,7 @@ public class ReportsContoller {
                 "(select id from curri_topic where subject = "+subject+" and curri_level in " +
                 "(select cl.id from  curri_level cl join curri_level scl " +
                 "where cl.numbering > scl.numbering-3 and cl.numbering <= scl.numbering " +
-                "and scl.curriculum = cl.curriculum and scl.id = "+classlevel+" )) order by rand() limit 100) as k) cq " +
+                "and scl.curriculum = cl.curriculum and scl.id = "+classlevel+" )) order by rand() limit 50) as k) cq " +
                 "join curri_topic ct on cq.subtopic = ct.id  join curri_normal_choice cnc on  cnc.question = cq.id  " +
                 "order by cq.id) As k  order by qn_num;");
         return parameters;
