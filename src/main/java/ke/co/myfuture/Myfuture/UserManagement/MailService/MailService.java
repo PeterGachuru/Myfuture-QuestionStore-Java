@@ -167,7 +167,7 @@ public class MailService {
                     new File(company_logo_path));
             helper.addInline("rightSideImage",
                     new File(banner_path));
-            javaMailSender.send(mimeMessage);
+//            javaMailSender.send(mimeMessage);
 
             System.out.println("Mail sent successfully to: " + to);
             log.info("Sent successfully,sent to: {}", to);
