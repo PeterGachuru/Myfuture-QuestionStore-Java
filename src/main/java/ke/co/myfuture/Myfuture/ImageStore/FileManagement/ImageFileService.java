@@ -11,6 +11,7 @@ import java.util.Base64;
 
 //@Service
 @Slf4j
+@Service
 public class ImageFileService {
     @Autowired
     public ImageFileRepository repository;

@@ -18,7 +18,7 @@ public class MailController {
     @PostMapping(path = "/send/email")
     public ResponseEntity<?> sendEmail(@RequestBody MailDto mailDto) {
         try {
-            mailService.sendEmail(mailDto.getTo(),  mailDto.getMessage(),  mailDto.getSubject());
+            mailService.sendEmail(mailDto.getTo(),  mailDto.getMessage(),  mailDto.getSubject(), null);
             return ResponseEntity.ok("mail sent");
         }catch (Exception e) {
             log.info("Catched Error {} " + e);

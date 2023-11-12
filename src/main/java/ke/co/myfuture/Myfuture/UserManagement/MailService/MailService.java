@@ -8,8 +8,12 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -41,13 +45,30 @@ public class MailService {
     @Autowired
     JavaMailSender javaMailSender;
 
-    public Boolean sendEmail(String to, String message, String subject) {
+    public static boolean isValidEmailAddress(String email) {
+        boolean result = true;
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            result = false;
+        }
+        return result;
+    }
+
+    public Boolean sendEmail(String to, String message, String subject, List<String> bccs) {
         try{
             System.out.println("----------------------------------------------------------------");
             System.out.println("Email is enabled!");
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-            helper.setTo(to);
+            System.out.println(Arrays.deepToString(bccs.toArray()));
+            if (to != null && !to.isEmpty())
+                helper.setTo(to);
+            for (String email: bccs){
+                if (isValidEmailAddress(email))
+                    helper.addBcc(email);
+            }
             helper.setFrom(fromEmail);
             helper.setSubject(subject);
             helper.setText(
@@ -130,7 +151,7 @@ public class MailService {
                             "                    </p>\n" +
                             "                   <p style=\"margin:0;\">\n" + emailOrganizationName + "\n" +
                             "                    </p>\n" +
-                            "                   <p style=\"margin:0;\">\n" + "<b>Tel/Phone: </b> " + emailOrganizationPhone + "\n" +
+                            "                   <p style=\"margin:0;\">\n <b>Tel/Phone: </b>  " + "<a href=\"tel:"+emailOrganizationPhone+"\">"+emailOrganizationPhone+"</a> " +
                             "                    </p>\n" +
                             "                   <p style=\"margin:0;\">\n" + "<b>Email: </b> " + emailOrganizationMail + "\n" +
                             "                    </p>\n" +
@@ -148,7 +169,7 @@ public class MailService {
                             "           \n" +
                             "            <tr>\n" +
                             "              <td style=\"padding:30px;text-align:center;font-size:12px;background-color:#001c27;color:#cccccc;\">\n" +
-                            "              <p style=\"margin:0;font-size:14px;line-height:20px;\">&reg; copyright 2021<br></p>\n" +
+                            "              <p style=\"margin:0;font-size:14px;line-height:20px;\">&reg; copyright 2023<br></p>\n" +
                             "              </td>\n" +
                             "            </tr>\n" +
                             "          </table>\n" +
@@ -167,7 +188,7 @@ public class MailService {
                     new File(company_logo_path));
             helper.addInline("rightSideImage",
                     new File(banner_path));
-//            javaMailSender.send(mimeMessage);
+            javaMailSender.send(mimeMessage);
 
             System.out.println("Mail sent successfully to: " + to);
             log.info("Sent successfully,sent to: {}", to);

@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Entity
 @Data
-public class ManageTopic {
+public class Managetopic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

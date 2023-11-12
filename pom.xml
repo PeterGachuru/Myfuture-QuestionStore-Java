@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>ke.co.myfuture.questions</groupId>
-	<artifactId>MyfutureQuestionStore</artifactId>
+	<artifactId>myfutureoneapp</artifactId>
 	<version>1</version>
 	<name>Myfuture</name>
 	<description>Myfuture Question Store</description>

@@ -15,9 +15,9 @@ import java.io.IOException;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
-//@RestController
+@RestController
 @Slf4j
-@RequestMapping("/api/v1/images/")
+@RequestMapping("images/v1/")
 public class ImageFileController {
     @Autowired
     ImageFileService service;
@@ -29,12 +29,7 @@ public class ImageFileController {
 
     @RequestMapping(path = "upload", method = POST,  consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> newFile( @RequestParam("uploadfile") MultipartFile fileUploaded) {
-        ImageFile imageFile = new ImageFile();
-        try {
-            imageFile.imageContent = fileUploaded.getBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ImageFile imageFile = service.save(fileUploaded);
 
         ImageFile savedImageFile = repository.save(imageFile);
         UniversalResponse response = new UniversalResponse();
@@ -88,7 +83,7 @@ public class ImageFileController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAll(){
+    public ResponseEntity<?> getAll() {
         try {
             UniversalResponse response = new UniversalResponse();
             response.setStatus("Success");
