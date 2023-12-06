@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.Tuabudu.Song;
+package ke.co.myfuture.Myfuture.Tuabudu.Playlist;
 
 import ke.co.myfuture.Myfuture.QuestionStore.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,41 +7,43 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("song")
-public class SongController {
+@RequestMapping("playlist")
+
+public class PlaylistController {
     @Autowired
-    SongRepository repository;
+    PlaylistRepository repository;
     @Autowired
-    SongService songService;
+    PlaylistService playlistService;
+
     @PostMapping("add/")
-    public ResponseEntity<?> newSongAccount(@RequestBody Song user) {
-        Song savedSong = repository.save(user);
-        System.out.println(savedSong);
+    public ResponseEntity<?> newPlaylistAccount(@RequestBody Playlist user) {
+        Playlist savedPlaylist = repository.save(user);
+        System.out.println(savedPlaylist);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Saved successfully");
-        response.setEntity(savedSong);
+        response.setEntity(savedPlaylist);
         response.setStatusCode(201);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("update/")
-    public ResponseEntity<?> updateSong(@RequestBody Song user) {
-        Song updatedSong = repository.save(user);
+    public ResponseEntity<?> updatePlaylist(@RequestBody Playlist user) {
+        Playlist updatedPlaylist = repository.save(user);
 
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Updated Successfully");
-        response.setEntity(updatedSong);
+        response.setEntity(updatedPlaylist);
         response.setStatusCode(201);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("get/by/id")
-    public ResponseEntity<?> fetchSong(@RequestParam("id") Long id) {
+    public ResponseEntity<?> fetchPlaylist(@RequestParam("id") Long id) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
-        response.setMessage("Song retrieved Successfully");
+        response.setMessage("Playlist retrieved Successfully");
         response.setEntity(repository.findById(id));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -50,7 +52,7 @@ public class SongController {
     public ResponseEntity<?> fetchAll() {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
-        response.setMessage("Song retrieved Successfully");
+        response.setMessage("Playlist retrieved Successfully");
         response.setEntity(repository.findAll());
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
