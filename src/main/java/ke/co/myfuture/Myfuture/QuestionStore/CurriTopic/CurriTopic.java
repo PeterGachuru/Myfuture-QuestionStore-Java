@@ -3,11 +3,13 @@ package ke.co.myfuture.Myfuture.QuestionStore.CurriTopic;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -20,6 +22,9 @@ public class CurriTopic {
     @ManyToOne
     @JoinColumn(name = "parent")
     CurriTopic parent;
+//    @OneToMany(mappedBy = "parent")
+//    @ToString.Exclude
+//    List<CurriTopic> children;
     @Column(nullable = false)
     String name;
     @ManyToOne
@@ -28,6 +33,9 @@ public class CurriTopic {
     @ManyToOne
     @JoinColumn(name = "subject")
     Subject subject;
+
+    @Lob
+    String content;
 
     Boolean deleted = false;
     Boolean required = true;

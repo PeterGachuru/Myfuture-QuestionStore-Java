@@ -34,4 +34,14 @@ public class CurriculumController {
         universalResponse.setStatusCode(HttpStatus.FOUND.value());
         return ResponseEntity.ok().body(universalResponse);
     }
+    @GetMapping("all/minimal")
+    public ResponseEntity<UniversalResponse<List<Curriculum>>> getCurriculumnsMinimal() {
+        List<Curriculum> curriculumList = curriculumRepository.getAllCurriculums();
+
+        UniversalResponse universalResponse = new UniversalResponse();
+        universalResponse.setEntity(curriculumList);
+        universalResponse.setMessage("Retrieved");
+        universalResponse.setStatusCode(HttpStatus.FOUND.value());
+        return ResponseEntity.ok().body(universalResponse);
+    }
 }
