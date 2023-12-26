@@ -1,0 +1,45 @@
+package ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Requests;
+
+import lombok.*;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@Getter
+@Setter
+public class SignupRequest {
+    private Long sn;
+    @NotBlank
+    @Size(min = 3, max = 20)
+    private String username;
+    @NotBlank
+    @Size(max = 50)
+    @Email
+    private String email;
+    private String roleFk;
+//    @Password
+    private String password;
+    @NotBlank
+    @Size(min = 3, max = 20)
+    private String firstName;
+    @NotBlank
+    @Size(min = 3, max = 20)
+    private String lastName;
+    @NotBlank
+    @Size(min = 10, max = 12)
+    private String phoneNo;
+    @NotBlank
+    @Size(min=3, max = 6)
+    private String solCode;
+    @NotBlank
+    @Size(min=3, max = 6)
+    private String entityId;
+    private String isTeller = "No";
+    private String workclassFk;
+    private String memberCode;
+}

@@ -2,8 +2,9 @@ package ke.co.myfuture.Myfuture.UserManagement.Useraccount;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
@@ -13,4 +14,6 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
     public Set<String> getEmails();
 
 
+    @Query(value = "SELECT * FROM user_account WHERE email = :username OR phone = :username", nativeQuery = true)
+    Optional<UserAccount> findByUsername(@Param("username") String username);
 }

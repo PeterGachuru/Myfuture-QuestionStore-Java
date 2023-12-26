@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -19,6 +20,10 @@ public class UserAccount {
     @Column(nullable = false)
     String phone;
     String county;
+    String firstName;
+    String lastName;
+    String surname;
+    String status = "active";
     String email;
     @Column(nullable = false)
     String password;
@@ -30,6 +35,9 @@ public class UserAccount {
 
     @CreationTimestamp
     public Date createdAt;
+    public Date lastLogin;
     @UpdateTimestamp
     public Date updatedAt = new Date();
+
+//    List<String> roles = List.of("ROLE1", "ROLE2");
 }

@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @CrossOrigin
 @RequestMapping("topic")
@@ -25,15 +27,26 @@ public class CurriTopicController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("update/")
+    @PutMapping("update")
     public ResponseEntity<?> updateCurriTopic(@RequestBody CurriTopic topic) {
-        CurriTopic updatedCurriTopic = repository.save(topic);
+        Optional<CurriTopic> dbCurriTopic = repository.findById(topic.id);
+        if (dbCurriTopic.isPresent()) {
+            CurriTopic curriTopic = dbCurriTopic.get();
+            curriTopic.setContent(topic.getContent());
+            curriTopic.setName(topic.getName());
+            CurriTopic savedSubtopic = repository.save(curriTopic);
+            UniversalResponse response = new UniversalResponse();
+            response.setStatus("Success");
+            response.setMessage("Updated Successfully");
+            response.setEntity(savedSubtopic);
+            response.setStatusCode(201);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
 
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
-        response.setMessage("Updated Successfully");
-        response.setEntity(updatedCurriTopic);
-        response.setStatusCode(201);
+        response.setMessage("Could not update");
+        response.setStatusCode(HttpStatus.NOT_ACCEPTABLE.value());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
