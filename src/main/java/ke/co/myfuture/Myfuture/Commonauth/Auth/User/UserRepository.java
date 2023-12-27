@@ -14,7 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByStatus(@NonNull String s);
 
-    @Query(nativeQuery = true, value = "select status, count(status) as `count` from user_config group by status")
+    @Query(nativeQuery = true, value = "select status, count(status) as `count` from user group by status")
     List<Analytics> getAnalytics();
     interface Analytics {
         String getStatus();

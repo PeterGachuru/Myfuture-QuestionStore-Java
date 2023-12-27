@@ -53,9 +53,9 @@ public class UserHandler {
         }
     }
 
-    @PutMapping("/update-user/{id}")
-    public ResponseEntity<AuthEntityResponse> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest body) {
-        AuthEntityResponse response = this.userService.updateUser(id, body.getFirstName(), body.getLastName());
+    @PutMapping("/update-user")
+    public ResponseEntity<AuthEntityResponse> updateUser(@RequestBody UpdateUserRequest body) {
+        AuthEntityResponse response = this.userService.updateUser(body);
 
         return ResponseEntity.ok().body(response);
     }
@@ -106,7 +106,7 @@ public class UserHandler {
         if (users != null) {
             return ResponseEntity.ok().body(users);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().body(new UsersResponse());
         }
     }
 
@@ -128,7 +128,7 @@ public class UserHandler {
         if (users != null) {
             return ResponseEntity.ok().body(users);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().body(new UsersResponse());
         }
     }
 
@@ -139,7 +139,7 @@ public class UserHandler {
         if (users != null) {
             return ResponseEntity.ok().body(users);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().body(new UsersResponse());
         }
     }
 
@@ -176,7 +176,7 @@ public class UserHandler {
         if (users != null) {
             return ResponseEntity.ok().body(users);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().body(new UsersResponse());
         }
     }
 

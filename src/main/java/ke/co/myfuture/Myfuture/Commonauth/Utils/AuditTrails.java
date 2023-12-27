@@ -1,0 +1,39 @@
+package ke.co.myfuture.Myfuture.Commonauth.Utils;
+
+import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import java.util.Date;
+
+@Embeddable
+public class AuditTrails {
+
+//    @UpdateTimestamp
+    Date updatedAt;
+
+//    @CreationTimestamp
+    Date createdAt;
+
+    Boolean deletedFlag = false;
+
+    @Column(nullable = false)
+    String createdBy;
+
+    @PrePersist
+    public void prePersist() {
+        Date now = new Date();
+        this.createdAt = now;
+        this.updatedAt = now;
+        this.createdBy = UserRequestContext.getCurrentUser();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = new Date();
+    }
+}

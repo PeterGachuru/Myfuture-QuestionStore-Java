@@ -1,6 +1,7 @@
 package ke.co.myfuture.Myfuture.Commonauth.Auth.User;
 
 //import co.ke.emtechhousee.emtr.Auditing.AuditTrail.AuditTrailProvider;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UpdateUserRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.AuthEntityResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.LoginResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.UserResponse;
@@ -178,6 +179,7 @@ public class UserService {
 
     public AuthEntityResponse createUser(@NonNull String email, @NonNull String firstName, @NonNull String lastName,
                                          @NonNull Long role) {
+        System.out.println("Creating user");
         AtomicReference<AuthEntityResponse> res = new AtomicReference<>();
 
         userRepository.findByEmail(email).ifPresentOrElse(myUser -> {
@@ -290,13 +292,13 @@ public class UserService {
     }
 
 
-    public AuthEntityResponse updateUser(@NonNull Long id, @NonNull String firstName, @NonNull String lastName) {
+    public AuthEntityResponse updateUser(UpdateUserRequest body) {
         AtomicReference<AuthEntityResponse> res = new AtomicReference<>();
 
-        userRepository.findById(id).ifPresentOrElse(myUser -> {
+        userRepository.findById(body.getId()).ifPresentOrElse(myUser -> {
             AtomicReference<User> user = new AtomicReference<>(myUser);
-            user.get().setFirstName(firstName.trim());
-            user.get().setLastName(lastName.trim());
+            user.get().setFirstName(body.getFirstName().trim());
+            user.get().setLastName(body.getLastName().trim());
 
             user.set(this.userRepository.save(user.get()));
 

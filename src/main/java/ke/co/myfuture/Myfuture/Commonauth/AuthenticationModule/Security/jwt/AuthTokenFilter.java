@@ -78,12 +78,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
                 UserData userData = userService.getUserDetails(email).getUser();
                 UserDetails userDetails = dataToUserDetails(userData);
+                System.out.println("userDetails"+userDetails);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
 
 //                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("Authenticated");
             }else {
                 System.out.println("Could not authenticate jwt");
             }

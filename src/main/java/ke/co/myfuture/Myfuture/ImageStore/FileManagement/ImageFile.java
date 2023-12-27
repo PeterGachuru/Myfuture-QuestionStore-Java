@@ -11,7 +11,7 @@ import java.util.Date;
 @Entity
 public class ImageFile {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     public Long id;
 

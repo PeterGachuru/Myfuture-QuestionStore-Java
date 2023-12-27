@@ -22,7 +22,10 @@ import org.jetbrains.annotations.Nullable;
 @Getter
 @RequiredArgsConstructor
 public enum AccessRight {
-    MODIFY_TOPIC("Modify Topic","WRITE_CONTENT", "TOPICS");
+    DUKA_CONFIGURE("Configure Products","CONFIGURE", "ADMIN"),
+    MODIFY_TOPIC("Modify Topic","WRITE_CONTENT", "TOPICS"),
+    VIEW_ACCESSPRIV("View Access Rights","ACCESS", "VIEW"),
+    CREATE_USER("Modify Access Rights","ACCESS", "EDIT");
 
 
     private final String name;

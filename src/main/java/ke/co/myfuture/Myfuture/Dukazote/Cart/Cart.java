@@ -1,14 +1,15 @@
 package ke.co.myfuture.Myfuture.Dukazote.Cart;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
+import ke.co.myfuture.Myfuture.Dukazote.CartItem.CartItem;
+import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.util.Date;
+import javax.persistence.*;
+import java.util.List;
 
+
+@Entity
+@Data
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,10 +17,18 @@ public class Cart {
     public Long id;
 
     @Column(nullable = false)
-    Integer numbering;
+    private Double totalInvoice;
 
-    @CreationTimestamp
-    Date createdAt;
-    @UpdateTimestamp
-    Date updatedAt;
+    @Column(nullable = false)
+    private Double totalPaid;
+
+    @Column(nullable = false)
+    private Boolean paid;
+
+    @OneToMany()
+    @JoinColumn(name = "cart_id")
+    List<CartItem> cartItems;
+
+    @Embedded
+    AuditTrails auditTrails = new AuditTrails();
 }

@@ -1,8 +1,6 @@
 package ke.co.myfuture.Myfuture.Commonauth.Auth.Config.Http;
 
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Config.Http.HttpMvcMatchers.AllCardsHttpFilters;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Config.Http.HttpMvcMatchers.AuthenticationHttpFilters;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Config.Http.HttpMvcMatchers.MyfutureNavigationHttpFilters;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Config.Http.HttpMvcMatchers.*;
 import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.AuthTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,6 +60,8 @@ public class HttpConfigurer  {
                 .csrf(AbstractHttpConfigurer::disable)
                 .apply(new MyfutureNavigationHttpFilters()).and()
                 .apply(new AuthenticationHttpFilters()).and()
+                .apply(new AccessHttpFilters()).and()
+                .apply(new DukazoteHttpFilters()).and()
                 .apply(new AllCardsHttpFilters()).and()
 
                 .authorizeHttpRequests((auth) -> auth

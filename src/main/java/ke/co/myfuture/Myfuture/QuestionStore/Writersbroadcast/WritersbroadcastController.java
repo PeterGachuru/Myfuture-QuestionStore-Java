@@ -53,6 +53,4 @@ public class WritersbroadcastController {
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-
 }

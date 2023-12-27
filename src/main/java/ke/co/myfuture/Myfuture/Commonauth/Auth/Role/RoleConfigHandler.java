@@ -17,7 +17,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path = "/api/v1/roles")
+@RequestMapping(path = "/powers")
 public class RoleConfigHandler {
     @Autowired
     private RoleConfigService roleConfigService;

@@ -10,10 +10,13 @@ public class MyfutureNavigationHttpFilters extends AbstractHttpConfigurer<AllCar
         http
                 .authorizeHttpRequests(auth -> auth
                         .mvcMatchers("/curriculums/all/minimal").permitAll()
+                        .mvcMatchers("/curriculums/all").permitAll()
                         .mvcMatchers("/classlevel/getbyid").permitAll()
                         .mvcMatchers("/topic/get/by/subjectandclass").permitAll()
                         .mvcMatchers("/topic/get/by/parent").permitAll()
                         .mvcMatchers("/topic/get/by/id").permitAll()
+                        .mvcMatchers("/reports/load").permitAll()
+                        .mvcMatchers("/users/all-accounts").permitAll()
                         .mvcMatchers("/topic/update").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
                 );
     }
