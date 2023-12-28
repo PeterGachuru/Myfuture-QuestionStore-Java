@@ -20,12 +20,21 @@ public class Cart {
     private Double totalInvoice;
 
     @Column(nullable = false)
+    Integer productCount;
+
+    @Column(nullable = false)
+    Integer individualCount;
+
+    @Column(nullable = false)
+    private Double overallDiscount;
+
+    @Column(nullable = false)
     private Double totalPaid;
 
     @Column(nullable = false)
     private Boolean paid;
 
-    @OneToMany()
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "cart_id")
     List<CartItem> cartItems;
 

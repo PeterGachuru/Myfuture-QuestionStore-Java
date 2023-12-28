@@ -9,12 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("cartItem")
+@CrossOrigin
+@RequestMapping("cartitem")
 public class CartItemController {
     @Autowired
     CartItemRepository repository;
 
-    @PostMapping("add/")
+    @PostMapping("add")
     public ResponseEntity<?> newCartItem(@RequestBody CartItem cartItem) {
         CartItem savedCartItem = repository.save(cartItem);
         System.out.println(savedCartItem);
@@ -44,6 +45,16 @@ public class CartItemController {
         response.setStatus("Success");
         response.setMessage("CartItem retrieved Successfully");
         response.setEntity(repository.findById(id));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("all")
+    public ResponseEntity<?> fetchProductCategory() {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("ProductCategory retrieved Successfully");
+        response.setEntity(repository.findAllByAuditTrails_DeletedFlag(false));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

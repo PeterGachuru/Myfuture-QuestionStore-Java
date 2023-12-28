@@ -45,6 +45,18 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             log.info("-------------------------------Authentication Entry");
+            Enumeration<String> headerNames = request.getHeaderNames();
+//            if ("POST".equalsIgnoreCase(request.getMethod()))
+//            {
+//                String test = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+//                System.out.println("Body: "+test);
+////            }
+//            if (headerNames != null) {
+//                while (headerNames.hasMoreElements()) {
+//                    String name = headerNames.nextElement();
+//                    System.out.println(name+": " + request.getHeader(name));
+//                }
+//            }
             String accessToken = request.getHeader("Authorization");
 
 //            log.info("{} {}", request.getRequestURI(), request.getMethod());

@@ -14,9 +14,22 @@ public class InventoryItem {
     @Column(name = "id", nullable = false)
     public Long id;
 
+    @Column(nullable = false, length = 12)
+    public String productCode;
 
+    @Column(nullable = false)
+    public String productName;
 
-    @OneToOne
+    @Column( nullable = false)
+    Integer count;
+
+    @Column( nullable = false)
+    Double costPerItem;
+
+    @Column( nullable = false)
+    Double totalCost;
+
+    @Transient
     Product product;
 
     @Embedded

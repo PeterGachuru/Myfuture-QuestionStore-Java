@@ -1,15 +1,18 @@
 package ke.co.myfuture.Myfuture.Dukazote.Product;
 
 import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Entity
 @Data
+//@ToString
+//@AllArgsConstructor
+//@NoArgsConstructor
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,14 +21,20 @@ public class Product {
 
     @Column(nullable = false, unique = true, length = 12)
     public String code;
+    @Column(nullable = false, length = 8)
+    public String subcategoryCode;
 
     @Column(nullable = false, length = 20)
     String name;
     String size;
     String make;
-    Double cost;
+    String priceCurrency;
     Double sellingPrice;
+    Integer countRemaining;
 
     @Embedded
-    AuditTrails auditTrails = new AuditTrails();
+    public AuditTrails auditTrails = new AuditTrails();
+
+    @Transient
+    AuditTrails.Retriever audits;
 }

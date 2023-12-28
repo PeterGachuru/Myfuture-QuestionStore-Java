@@ -17,8 +17,26 @@ public class CartItem {
     @Column(name = "id", nullable = false)
     public Long id;
 
-    @OneToOne
+    @Column( nullable = false)
+    Integer count;
+
+    @Column( nullable = false)
+    Double costPerItem;
+
+    @Column( nullable = false)
+    Double totalDiscount;
+
+    @Column( nullable = false)
+    Double totalCost;
+
+    @Transient
     Product product;
+
+    @Column(nullable = false, length = 12)
+    public String productCode;
+
+    @Column(nullable = false)
+    public String productName;
 
     @Embedded
     AuditTrails auditTrails = new AuditTrails();

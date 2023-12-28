@@ -36,4 +36,13 @@ public class AuditTrails {
     public void preUpdate() {
         this.updatedAt = new Date();
     }
+
+    static public interface Retriever{
+        String getUpdatedAt();
+        String getCreatedAt();
+
+        String getCreatedBy();
+
+        Boolean getDeletedFlag();
+    }
 }

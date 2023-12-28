@@ -8,13 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
+@CrossOrigin
 @RequestMapping("product")
 public class ProductController {
     @Autowired
     ProductRepository repository;
 
-    @PostMapping("add/")
+    @PostMapping("add")
     public ResponseEntity<?> newProduct(@RequestBody Product product) {
         Product savedProduct = repository.save(product);
         System.out.println(savedProduct);
@@ -26,7 +29,7 @@ public class ProductController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("update/")
+    @PutMapping("update")
     public ResponseEntity<?> updateProduct(@RequestBody Product product) {
         Product updatedProduct = repository.save(product);
 
@@ -43,7 +46,20 @@ public class ProductController {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Product retrieved Successfully");
-        response.setEntity(repository.findById(id));
+        Optional<Product> product = repository.findById(id);
+        if (product.isPresent())
+            product.get().setAudits(repository.getAudits(id));
+        response.setEntity(product.get());
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("all")
+    public ResponseEntity<?> fetchProductCategory() {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("ProductCategory retrieved Successfully");
+        response.setEntity(repository.findAllByAuditTrails_DeletedFlag(false));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

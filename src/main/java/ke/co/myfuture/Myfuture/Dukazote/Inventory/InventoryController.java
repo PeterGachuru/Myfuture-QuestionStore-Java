@@ -7,12 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin
 @RequestMapping("inventory")
 public class InventoryController {
     @Autowired
     InventoryRepository repository;
 
-    @PostMapping("add/")
+    @PostMapping("add")
     public ResponseEntity<?> newInventory(@RequestBody Inventory inventory) {
         Inventory savedInventory = repository.save(inventory);
         System.out.println(savedInventory);
@@ -42,6 +43,16 @@ public class InventoryController {
         response.setStatus("Success");
         response.setMessage("Inventory retrieved Successfully");
         response.setEntity(repository.findById(id));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("all")
+    public ResponseEntity<?> fetchProductCategory() {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("ProductCategory retrieved Successfully");
+        response.setEntity(repository.findAllByAuditTrails_DeletedFlag(false));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -16,6 +16,9 @@ public class ProductSubCategory {
     @Column(name = "id", nullable = false)
     public Long id;
 
+    @Column(nullable = false, length = 3)
+    public String parentCode;
+
     @Column(nullable = false, unique = true, length = 8)
     public String code;
 
