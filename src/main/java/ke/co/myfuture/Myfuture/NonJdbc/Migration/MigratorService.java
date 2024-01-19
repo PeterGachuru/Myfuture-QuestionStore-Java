@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.NonJdbc;
+package ke.co.myfuture.Myfuture.NonJdbc.Migration;
 
 
 import com.google.gson.Gson;
@@ -7,7 +7,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
-import ke.co.myfuture.Myfuture.NonJdbc.MigrateStructure.*;
+import ke.co.myfuture.Myfuture.NonJdbc.Migration.MigrateStructure.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;

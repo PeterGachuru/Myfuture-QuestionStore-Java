@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.NonJdbc.MigrateStructure;
+package ke.co.myfuture.Myfuture.NonJdbc.Migration.MigrateStructure;
 
 import java.text.SimpleDateFormat;
 import java.util.*;

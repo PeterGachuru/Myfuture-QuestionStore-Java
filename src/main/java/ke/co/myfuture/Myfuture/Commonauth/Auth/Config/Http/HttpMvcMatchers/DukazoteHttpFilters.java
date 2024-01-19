@@ -4,7 +4,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.AccessRight;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
-public class DukazoteHttpFilters extends AbstractHttpConfigurer<AllCardsHttpFilters, HttpSecurity> {
+public class DukazoteHttpFilters extends AbstractHttpConfigurer<DukazoteHttpFilters, HttpSecurity> {
     @Override
     public void init(HttpSecurity http) throws Exception {
         http
@@ -29,6 +29,7 @@ public class DukazoteHttpFilters extends AbstractHttpConfigurer<AllCardsHttpFilt
                         .mvcMatchers("/cart/update").hasAnyAuthority(AccessRight.DUKA_CONFIGURE.toString())
                         .mvcMatchers("/cart/get/by/id").permitAll()
                         .mvcMatchers("/cart/all").permitAll()
+                        .mvcMatchers("/dukazote/reports/load").permitAll()
                 );
     }
 }

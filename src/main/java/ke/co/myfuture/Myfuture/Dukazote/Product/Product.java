@@ -24,7 +24,7 @@ public class Product {
     @Column(nullable = false, length = 8)
     public String subcategoryCode;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 50)
     String name;
     String size;
     String make;

@@ -59,10 +59,8 @@ public class HttpConfigurer  {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .apply(new MyfutureNavigationHttpFilters()).and()
-                .apply(new AuthenticationHttpFilters()).and()
-                .apply(new AccessHttpFilters()).and()
                 .apply(new DukazoteHttpFilters()).and()
-                .apply(new AllCardsHttpFilters()).and()
+                .apply(new AuthenticationHttpFilters()).and()
 
                 .authorizeHttpRequests((auth) -> auth
                                 // PERMIT ALL OPTIONS REQUEST

@@ -34,7 +34,7 @@ public class Cart {
     @Column(nullable = false)
     private Boolean paid;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "cart_id")
     List<CartItem> cartItems;
 

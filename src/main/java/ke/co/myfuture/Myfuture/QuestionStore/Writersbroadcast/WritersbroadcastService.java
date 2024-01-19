@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.Writersbroadcast;
 
-import ke.co.myfuture.Myfuture.NonJdbc.MigratorService;
+import ke.co.myfuture.Myfuture.NonJdbc.Migration.MigratorService;
 import ke.co.myfuture.Myfuture.QuestionStore.Users.WriterUsersRepository;
 import ke.co.myfuture.Myfuture.UserManagement.MailService.MailService;
 import ke.co.myfuture.Myfuture.UserManagement.Useraccount.UserAccountRepository;

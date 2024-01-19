@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.NonJdbc;
+package ke.co.myfuture.Myfuture.NonJdbc.Migration;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;

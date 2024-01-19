@@ -4,7 +4,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.AccessRight;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
-public class MyfutureNavigationHttpFilters extends AbstractHttpConfigurer<AllCardsHttpFilters, HttpSecurity> {
+public class MyfutureNavigationHttpFilters extends AbstractHttpConfigurer<MyfutureNavigationHttpFilters, HttpSecurity> {
     @Override
     public void init(HttpSecurity http) throws Exception {
         http

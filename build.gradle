@@ -15,7 +15,7 @@ configurations {
 }
 
 bootJar {
-	archiveFileName = 'myfuture.jar'
+	archiveFileName = 'myfutureoneapp-1.jar'
 }
 
 repositories {

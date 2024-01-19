@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.NonJdbc;
+package ke.co.myfuture.Myfuture.NonJdbc.Migration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

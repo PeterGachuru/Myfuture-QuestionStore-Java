@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.3.final using JasperReports Library version 6.20.3-415f9428cffdb6805c6f85bbb29ebaf18813a2ab  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report4" columnCount="2" pageWidth="595" pageHeight="842" columnWidth="277" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="95130235-5971-401b-8837-ba89e92d008d">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
+	<parameter name="logo" class="java.lang.String"/>
+	<parameter name="app_name" class="java.lang.String"/>
+	<parameter name="query" class="java.lang.String">
+		<defaultValueExpression><![CDATA["select *, char(row_num+64) AS num from (select ROW_NUMBER() OVER(PARTITION BY cq.string) AS row_num, cq.string, ct.name, cnc.value, cq.qn_num  from (select *, ROW_NUMBER() OVER(PARTITION BY '') AS qn_num from  (select * from curri_question  where subtopic in (select id from curri_topic where subject = 11) order by rand() limit 100) as k) cq join curri_topic ct on cq.subtopic = ct.id  join curri_normal_choice cnc on  cnc.question = cq.id  order by cq.id) As k  order by qn_num;"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[$P!{query}]]>
+	</queryString>
+	<field name="string" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="num" class="java.lang.String"/>
+	<field name="qn_num" class="java.lang.String"/>
+	<field name="value" class="java.lang.String"/>
+	<variable name="groupCount" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$V{string_COUNT} == 1 ? ($V{groupCount} + 1) : $V{groupCount}]]></variableExpression>
+	</variable>
+	<group name="string" keepTogether="true">
+		<groupExpression><![CDATA[$F{string}]]></groupExpression>
+		<groupHeader>
+			<band height="20">
+				<textField>
+					<reportElement stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="-10" width="240" height="30" backcolor="#FFFFFF" uuid="23e6aba2-c19c-49c7-bed2-597ff49b1028"/>
+					<box leftPadding="10" rightPadding="10">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Left">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{qn_num}+". "+$F{string}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20"/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="100" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="-20" width="120" height="120" uuid="a0d44777-c985-48e2-be32-9822c3d76b2f"/>
+				<box padding="5"/>
+				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement mode="Transparent" x="110" y="-17" width="465" height="47" forecolor="#19400D" uuid="1cdd46f8-992b-486e-acd2-25e33d8f1f25">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+					<font size="24" isBold="true"/>
+					<paragraph lineSpacingSize="1.0"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{app_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="191" y="14" width="269" height="30" uuid="b4fe3ca3-a9b4-4d5f-8cf1-269f049f1415">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Question Paper]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="30" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField>
+				<reportElement x="0" y="0" width="240" height="19" uuid="16f5faea-ad0b-42ea-9530-076ae8493392"/>
+				<box leftPadding="10" rightPadding="10">
+					<pen lineWidth="1.0" lineColor="#AAAAAA"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#AAAAAA"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#AAAAAA"/>
+				</box>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num} +". "+$F{value}]]></textFieldExpression>
+			</textField>
+			<elementGroup/>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="20" splitType="Stretch">
+			<elementGroup>
+				<staticText>
+					<reportElement mode="Opaque" x="0" y="0" width="555" height="20" forecolor="#FFFFFF" backcolor="#080808" uuid="5eb902de-1d9b-49c7-a1c3-aa2e96e6d7f6"/>
+					<box leftPadding="10" rightPadding="10">
+						<pen lineWidth="1.0"/>
+						<topPen lineWidth="0.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[myfuture.co.ke]]></text>
+				</staticText>
+			</elementGroup>
+		</band>
+	</summary>
+</jasperReport>
