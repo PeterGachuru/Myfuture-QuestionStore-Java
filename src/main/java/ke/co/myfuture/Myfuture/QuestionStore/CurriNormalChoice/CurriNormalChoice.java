@@ -18,4 +18,6 @@ public class CurriNormalChoice {
     Boolean accepted;
     String type;
 
+    Boolean hasImage;
+    String imageCode;
 }

@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
+import java.util.Optional;
 
 //@Service
 @Slf4j
@@ -46,9 +47,11 @@ public class ImageFileService {
     }
 
     public ImageFile save(MultipartFile fileUploaded) {
+        String fileName = fileUploaded.getOriginalFilename();
         ImageFile imageFile = new ImageFile();
         try {
             imageFile.imageContent = fileUploaded.getBytes();
+            imageFile.setCode(generateCode(fileName));
             imageFile.fileExtension = getFileExtension(fileUploaded);
             imageFile.fileName = fileUploaded.getOriginalFilename();
             imageFile.contentType = fileUploaded.getContentType();
@@ -58,5 +61,16 @@ public class ImageFileService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String generateCode(String fileName) {
+        String code = fileName.trim().toLowerCase().replaceAll("[^A-Za-z0-9]", "-");
+        while (code.contains("--"))
+            code = code.replaceAll("--", "-");
+        Optional<ImageFile> imageFile = repository.findByCode(code);
+        if (imageFile.isPresent()) {
+            return code+"-"+(repository.count()+1);
+        }
+        return code;
     }
 }

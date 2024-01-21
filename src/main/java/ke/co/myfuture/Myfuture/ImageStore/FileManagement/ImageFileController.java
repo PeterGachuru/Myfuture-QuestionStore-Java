@@ -15,7 +15,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @Slf4j
-@RequestMapping("images/v1/")
+@RequestMapping("images/")
 public class ImageFileController {
     @Autowired
     ImageFileService service;
@@ -66,10 +66,10 @@ public class ImageFileController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("getimage/{id}")
-    public ResponseEntity<byte[]> fetchFileDirect(@PathVariable long id) {
-        ImageFile imageFile = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Error: File with id " + id+" not found"));
+    @GetMapping("display/{id}")
+    public ResponseEntity<byte[]> fetchFileDirect(@PathVariable String code) {
+        ImageFile imageFile = repository.findByCode(code)
+                .orElseThrow(() -> new RuntimeException("Error: File with code " + code+" not found"));
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType(imageFile.contentType));
         headers.setContentDispositionFormData("inline", imageFile.fileName);

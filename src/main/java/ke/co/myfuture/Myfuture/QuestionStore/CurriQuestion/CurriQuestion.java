@@ -41,6 +41,10 @@ public class CurriQuestion {
     Date updatedAt;
     @Column(nullable = false)
     Integer imageLevel;
+
+    Boolean hasImage;
+    String imageCode;
+
     @OneToMany(mappedBy =  "question")
     List<CurriNormalChoice> choices;
 }

@@ -14,7 +14,8 @@ public class ImageFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     public Long id;
-
+    @Column(unique = true, nullable = false)
+    public String code;
     @Lob
     @Column(nullable = false, length=1000000)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
