@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriTopic;
 
+import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
 import lombok.Data;
@@ -38,8 +39,6 @@ public class CurriTopic {
     Boolean deleted = false;
     Boolean required = true;
 
-    @CreationTimestamp
-    Date createdAt;
-    @UpdateTimestamp
-    Date updatedAt;
+    @Embedded
+    AuditTrails auditTrails = new AuditTrails();
 }

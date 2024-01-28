@@ -27,7 +27,7 @@ public class CurriNormalChoiceController {
     ImageFileService imageFileService;
 
     @RequestMapping(path = "attach-image/{id}", method = POST,  consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> newFile( @RequestParam("uploadfile") MultipartFile fileUploaded, @PathVariable Long id) {
+    public ResponseEntity<?> newFile( @RequestParam("image") MultipartFile fileUploaded, @PathVariable Long id) {
         ImageFile imageFile = imageFileService.save(fileUploaded);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
