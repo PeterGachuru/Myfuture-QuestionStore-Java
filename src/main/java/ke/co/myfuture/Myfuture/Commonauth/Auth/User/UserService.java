@@ -88,6 +88,7 @@ public class UserService {
 
         userRepository.findByEmail(email.trim()).ifPresentOrElse(user -> {
             System.out.println("Found user "+email);
+            System.out.println(user.getStatus());
             if (Objects.equals(user.getStatus(), "Active")) {
                 System.out.println("User is active");
                 if (!otpService.validateLoginRetries(email)) {
@@ -166,6 +167,7 @@ public class UserService {
                     response.set(LoginResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Error").build());
                 }
             } else {
+                System.out.println("Account is inactive");
                 response.set(LoginResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Account is " +
                         "inactive. Please contact your system admin.").build());
             }

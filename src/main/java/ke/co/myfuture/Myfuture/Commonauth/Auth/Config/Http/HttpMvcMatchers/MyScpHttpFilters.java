@@ -9,8 +9,8 @@ public class MyScpHttpFilters  extends AbstractHttpConfigurer<MyScpHttpFilters, 
     public void init(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .mvcMatchers("//api/files/upload").permitAll()
-                        .mvcMatchers("//api/files/download").permitAll()
+                        .mvcMatchers("/api/files/upload").permitAll()
+                        .mvcMatchers("/api/files/download").permitAll()
                 );
     }
 }

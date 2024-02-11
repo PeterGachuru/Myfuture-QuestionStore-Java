@@ -1,8 +1,6 @@
 package ke.co.myfuture.Myfuture.Dukazote.ProductSubCategory;
 
-import ke.co.myfuture.Myfuture.Dukazote.ProductSubCategory.ProductSubCategory;
-import ke.co.myfuture.Myfuture.Dukazote.ProductSubCategory.ProductSubCategoryRepository;
-import ke.co.myfuture.Myfuture.QuestionStore.Response.UniversalResponse;
+import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

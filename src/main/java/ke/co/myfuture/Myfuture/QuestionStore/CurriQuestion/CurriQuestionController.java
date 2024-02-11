@@ -2,8 +2,8 @@ package ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion;
 
 import ke.co.myfuture.Myfuture.ImageStore.FileManagement.ImageFile;
 import ke.co.myfuture.Myfuture.ImageStore.FileManagement.ImageFileService;
-import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestion;
-import ke.co.myfuture.Myfuture.QuestionStore.Response.UniversalResponse;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoice;
+import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Optional;
+import java.util.*;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -46,7 +46,23 @@ public class CurriQuestionController {
             curriQuestion.setString(question.getString());
             curriQuestion.setHasImage(question.getHasImage());
             curriQuestion.setImageCode(question.getImageCode());
-            curriQuestion.setImageLevel(question.getImageLevel());
+//            curriQuestion.setImageLevel(question.getImageLevel());
+
+            Map<Long, CurriNormalChoice> mapForIncomingChoices = new HashMap<>();
+            for (CurriNormalChoice curriNormalChoice : question.choices) {
+                mapForIncomingChoices.put(curriNormalChoice.getId(), curriNormalChoice);
+            }
+
+            List<CurriNormalChoice> newCurriNormalChoices = new ArrayList<>();
+            for (CurriNormalChoice curriNormalChoice: dbCurriQuestion.get().getChoices()) {
+                CurriNormalChoice incomingChoice = mapForIncomingChoices.get(curriNormalChoice.getId());
+                if (incomingChoice != null) {
+                    curriNormalChoice.setImageCode(incomingChoice.getImageCode());
+                    curriNormalChoice.setValue(incomingChoice.getValue());
+                    curriNormalChoice.setType(incomingChoice.getType());
+                    newCurriNormalChoices.add(curriNormalChoice);
+                }
+            }
             curriQuestion.setChoices(question.getChoices());
             CurriQuestion savedSubquestion = repository.save(curriQuestion);
             UniversalResponse response = new UniversalResponse();

@@ -60,6 +60,8 @@ public class HttpConfigurer  {
                 .csrf(AbstractHttpConfigurer::disable)
                 .apply(new MyfutureNavigationHttpFilters()).and()
                 .apply(new DukazoteHttpFilters()).and()
+                .apply(new MyScpHttpFilters()).and()
+                .apply(new ImageStoreHttpFilters()).and()
                 .apply(new AuthenticationHttpFilters()).and()
 
                 .authorizeHttpRequests((auth) -> auth

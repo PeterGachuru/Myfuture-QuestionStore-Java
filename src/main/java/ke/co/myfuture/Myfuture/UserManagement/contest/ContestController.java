@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.contest;
 
-import ke.co.myfuture.Myfuture.QuestionStore.Response.UniversalResponse;
+import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

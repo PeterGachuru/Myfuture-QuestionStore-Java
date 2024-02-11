@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.ImageStore.FileManagement;
 
-import ke.co.myfuture.Myfuture.QuestionStore.Response.UniversalResponse;
+import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -53,8 +53,8 @@ public class ImageFileController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("get/{id}")
-    public ResponseEntity<?> fetchFile(@PathVariable long id) {
+    @GetMapping("get")
+    public ResponseEntity<?> fetchFile(@RequestParam("id") long id) {
         ImageFile imageFile = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Error: File with id " + id+" not found"));
 
@@ -66,8 +66,8 @@ public class ImageFileController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("display/{id}")
-    public ResponseEntity<byte[]> fetchFileDirect(@PathVariable String code) {
+    @GetMapping("display")
+    public ResponseEntity<byte[]> fetchFileDirect(@RequestParam("code") String code) {
         ImageFile imageFile = repository.findByCode(code)
                 .orElseThrow(() -> new RuntimeException("Error: File with code " + code+" not found"));
         HttpHeaders headers = new HttpHeaders();
@@ -95,3 +95,4 @@ public class ImageFileController {
         }
     }
 }
+

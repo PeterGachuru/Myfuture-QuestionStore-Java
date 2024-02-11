@@ -40,9 +40,10 @@ public class CurriQuestion {
     @UpdateTimestamp
     Date updatedAt;
     @Column(nullable = false)
-    Integer imageLevel;
+    Integer imageLevel = 1;
 
     Boolean hasImage;
+    Boolean choicesWithImages;
     String imageCode;
 
     @OneToMany(mappedBy =  "question")

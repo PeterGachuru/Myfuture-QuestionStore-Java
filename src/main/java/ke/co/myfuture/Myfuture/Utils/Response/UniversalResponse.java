@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.QuestionStore.Response;
+package ke.co.myfuture.Myfuture.Utils.Response;
 
 
 import lombok.AllArgsConstructor;
