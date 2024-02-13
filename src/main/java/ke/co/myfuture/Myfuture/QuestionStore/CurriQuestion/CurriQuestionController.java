@@ -2,7 +2,10 @@ package ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion;
 
 import ke.co.myfuture.Myfuture.ImageStore.FileManagement.ImageFile;
 import ke.co.myfuture.Myfuture.ImageStore.FileManagement.ImageFileService;
+import ke.co.myfuture.Myfuture.QuestionStore.Cgroup.Cgroup;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoice;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ke.co.myfuture.Myfuture.QuestionStore.Cgroup.CgroupService;
 
 import java.util.*;
 
@@ -26,16 +30,38 @@ public class CurriQuestionController {
     @Autowired
     ImageFileService imageFileService;
 
-    @PostMapping("add/")
-    public ResponseEntity<?> newCurriQuestion(@RequestBody CurriQuestion question) {
-        CurriQuestion savedCurriQuestion = repository.save(question);
-        System.out.println(savedCurriQuestion);
-        UniversalResponse response = new UniversalResponse();
-        response.setStatus("Success");
-        response.setMessage("Saved successfully");
-        response.setEntity(savedCurriQuestion);
-        response.setStatusCode(201);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    @Autowired
+    CurriTopicRepository curriTopicRepository;
+
+    @Autowired
+    CgroupService cgroupService;
+
+    @PostMapping("add/{subtopic}")
+    public ResponseEntity<?> newCurriQuestion(@PathVariable("") Long subtopic, @RequestBody CurriQuestion question) {
+        Optional<CurriTopic> curriSubtopic = curriTopicRepository.findById(subtopic);
+        if (curriSubtopic.isPresent()) {
+            question.setSubtopic(curriSubtopic.get());
+
+            Cgroup cgroup = new Cgroup();
+            cgroup.setType("Many");
+            cgroup.setDescription("Question group");
+            cgroup.setName("Question group");
+
+            cgroup = cgroupService.newCgroup(cgroup);
+
+            question.setCgroup(cgroup.id);
+            question.updateChoices();
+
+            CurriQuestion savedCurriQuestion = repository.save(question);
+            System.out.println(savedCurriQuestion);
+            UniversalResponse response = new UniversalResponse();
+            response.setStatus("Success");
+            response.setMessage("Saved successfully");
+            response.setEntity(savedCurriQuestion);
+            response.setStatusCode(201);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        return null;
     }
 
     @PutMapping("update")

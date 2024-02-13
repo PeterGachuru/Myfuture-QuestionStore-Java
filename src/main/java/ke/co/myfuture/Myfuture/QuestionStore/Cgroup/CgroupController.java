@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 public class CgroupController {
     @Autowired
     CgroupRepository repository;
-
-
     @PostMapping("add/")
     public ResponseEntity<?> newCgroup(@RequestBody Cgroup cgroup) {
         Cgroup savedCgroup = repository.save(cgroup);

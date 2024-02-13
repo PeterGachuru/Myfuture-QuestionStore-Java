@@ -26,9 +26,9 @@ public class CurriQuestion {
     @JoinColumn(name = "subtopic")
     CurriTopic subtopic;
     @Column(nullable = false)
-    Boolean sharable;
+    Boolean sharable = false;
     @Column(nullable = false)
-    Boolean reviewed;
+    Boolean reviewed = false;
 
     @CreationTimestamp
     Date datewritten;
@@ -46,6 +46,13 @@ public class CurriQuestion {
     Boolean choicesWithImages;
     String imageCode;
 
-    @OneToMany(mappedBy =  "question")
+//    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Transient
     List<CurriNormalChoice> choices;
+
+    public void updateChoices() {
+        for (CurriNormalChoice curriNormalChoice: choices){
+            curriNormalChoice.setQuestion(this);
+        }
+    }
 }

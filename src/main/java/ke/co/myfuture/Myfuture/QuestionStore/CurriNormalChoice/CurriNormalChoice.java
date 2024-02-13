@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice;
 
+import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestion;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -12,8 +13,9 @@ public class CurriNormalChoice {
     @Column(name = "id", nullable = false)
     public Long id;
 
-    @Column(nullable = false)
-    Long question;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "question")
+    CurriQuestion question;
     String value;
     Boolean accepted;
     String type;
