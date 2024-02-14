@@ -13,9 +13,7 @@ public class CurriNormalChoice {
     @Column(name = "id", nullable = false)
     public Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "question")
-    CurriQuestion question;
+    Long question;
     String value;
     Boolean accepted;
     String type;

@@ -4,6 +4,7 @@ import ke.co.myfuture.Myfuture.ImageStore.FileManagement.ImageFile;
 import ke.co.myfuture.Myfuture.ImageStore.FileManagement.ImageFileService;
 import ke.co.myfuture.Myfuture.QuestionStore.Cgroup.Cgroup;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoice;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoiceRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
@@ -36,6 +37,9 @@ public class CurriQuestionController {
     @Autowired
     CgroupService cgroupService;
 
+    @Autowired
+    CurriNormalChoiceRepository curriNormalChoiceRepository;
+
     @PostMapping("add/{subtopic}")
     public ResponseEntity<?> newCurriQuestion(@PathVariable("") Long subtopic, @RequestBody CurriQuestion question) {
         Optional<CurriTopic> curriSubtopic = curriTopicRepository.findById(subtopic);
@@ -50,9 +54,19 @@ public class CurriQuestionController {
             cgroup = cgroupService.newCgroup(cgroup);
 
             question.setCgroup(cgroup.id);
-            question.updateChoices();
+
+            List<CurriNormalChoice> choices = question.getChoices();
+//            question.updateChoices();
 
             CurriQuestion savedCurriQuestion = repository.save(question);
+//
+            for (CurriNormalChoice choice: choices) {
+                System.out.println(choice);
+                choice.setQuestion(savedCurriQuestion.getId());
+            }
+            curriNormalChoiceRepository.saveAll(choices);
+            savedCurriQuestion = repository.findById(savedCurriQuestion.getId()).get();
+
             System.out.println(savedCurriQuestion);
             UniversalResponse response = new UniversalResponse();
             response.setStatus("Success");

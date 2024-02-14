@@ -46,13 +46,14 @@ public class CurriQuestion {
     Boolean choicesWithImages;
     String imageCode;
 
-//    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Transient
+    @OneToMany(mappedBy =  "question")
+//    @Transient
     List<CurriNormalChoice> choices;
 
-    public void updateChoices() {
-        for (CurriNormalChoice curriNormalChoice: choices){
-            curriNormalChoice.setQuestion(this);
-        }
-    }
+//    public void updateChoices()
+//    {
+//        for (CurriNormalChoice curriNormalChoice: choices) {
+//            curriNormalChoice.setQuestion(this);
+//        }
+//    }
 }
