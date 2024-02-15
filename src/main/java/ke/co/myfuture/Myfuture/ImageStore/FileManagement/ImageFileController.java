@@ -26,8 +26,13 @@ public class ImageFileController {
     ImageFileRepository repository;
 
     @RequestMapping(path = "upload", method = POST,  consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> newFile( @RequestParam("uploadfile") MultipartFile fileUploaded) {
-        ImageFile imageFile = service.save(fileUploaded);
+    public ResponseEntity<?> newFile(@RequestParam("uploadfile") MultipartFile fileUploaded,
+                                     @RequestParam("description") String description,
+                                     @RequestParam("tags") String tags) {
+
+        System.out.println("description: "+description);
+        System.out.println("tags: "+tags);
+        ImageFile imageFile = service.save(fileUploaded, description, tags);
 
         ImageFile savedImageFile = repository.save(imageFile);
         UniversalResponse response = new UniversalResponse();
@@ -40,7 +45,7 @@ public class ImageFileController {
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> updateFile(@PathVariable("id") long id, @RequestBody ImageFile imageFile){
-        if (id != imageFile.id)
+        if (id != imageFile.getId())
             throw new RuntimeException("Error: File ID is not matching");
         ImageFile updatedImageFile = repository.findById(id).map(imageFileInDB -> repository.save(imageFile))
                 .orElseThrow(() -> new RuntimeException("Error: File with id " + id+" not found"));
@@ -71,10 +76,10 @@ public class ImageFileController {
         ImageFile imageFile = repository.findByCode(code)
                 .orElseThrow(() -> new RuntimeException("Error: File with code " + code+" not found"));
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(imageFile.contentType));
-        headers.setContentDispositionFormData("inline", imageFile.fileName);
+        headers.setContentType(MediaType.parseMediaType(imageFile.getContentType()));
+        headers.setContentDispositionFormData("inline", imageFile.getFileName());
         headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-        ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(imageFile.imageContent,
+        ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(imageFile.getImageContent(),
                 headers, HttpStatus.OK);
 
         return response;

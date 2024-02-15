@@ -33,6 +33,9 @@ public class CurriTopic {
     @JoinColumn(name = "subject")
     Subject subject;
 
+//    @OneToOne(cascade = CascadeType.PERSIST)
+//    SubtopicContent subtopicContent;
+
     @Lob
     String content;
 

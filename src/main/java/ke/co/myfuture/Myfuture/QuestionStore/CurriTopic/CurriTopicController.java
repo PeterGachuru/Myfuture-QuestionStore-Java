@@ -17,6 +17,7 @@ public class CurriTopicController {
 
     @PostMapping("add/")
     public ResponseEntity<?> newCurriTopic(@RequestBody CurriTopic topic) {
+//        topic.setSubtopicContent(new SubtopicContent());
         CurriTopic savedCurriTopic = repository.save(topic);
         System.out.println(savedCurriTopic);
         UniversalResponse response = new UniversalResponse();
@@ -33,6 +34,7 @@ public class CurriTopicController {
         if (dbCurriTopic.isPresent()) {
             CurriTopic curriTopic = dbCurriTopic.get();
             curriTopic.setContent(topic.getContent());
+//            curriTopic.setSubtopicContent(topic.getSubtopicContent());
             curriTopic.setName(topic.getName());
             CurriTopic savedSubtopic = repository.save(curriTopic);
             UniversalResponse response = new UniversalResponse();

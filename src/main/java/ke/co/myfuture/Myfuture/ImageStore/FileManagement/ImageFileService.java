@@ -47,15 +47,21 @@ public class ImageFileService {
     }
 
     public ImageFile save(MultipartFile fileUploaded) {
+        return save(fileUploaded, "", "");
+    }
+
+    public ImageFile save(MultipartFile fileUploaded, String description, String tags) {
         String fileName = fileUploaded.getOriginalFilename();
         ImageFile imageFile = new ImageFile();
         try {
-            imageFile.imageContent = fileUploaded.getBytes();
+            imageFile.setImageContent(fileUploaded.getBytes());
             imageFile.setCode(generateCode(fileName));
-            imageFile.fileExtension = getFileExtension(fileUploaded);
-            imageFile.fileName = fileUploaded.getOriginalFilename();
-            imageFile.contentType = fileUploaded.getContentType();
-            imageFile.fileSize = fileUploaded.getSize();
+            imageFile.setImageDescription(description);
+            imageFile.setTags(tags);
+            imageFile.setFileExtension(getFileExtension(fileUploaded));
+            imageFile.setFileName(fileUploaded.getOriginalFilename());
+            imageFile.setContentType(fileUploaded.getContentType());
+            imageFile.setFileSize(fileUploaded.getSize());
 
             return repository.save(imageFile);
         } catch (IOException e) {

@@ -13,21 +13,25 @@ public class ImageFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    public Long id;
+    private Long id;
     @Column(unique = true, nullable = false)
-    public String code;
+    private String code;
     @Lob
     @Column(nullable = false, length=1000000)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    public byte[] imageContent;
+    private byte[] imageContent;
     @Column(nullable = false)
-    public String fileName;
+    private String fileName;
     @Column(nullable = false)
-    public String fileExtension;
+    private String fileExtension;
     @Column(nullable = false)
-    public String contentType;
+    private String contentType;
     @Column(nullable = false)
-    public long fileSize;
+    private long fileSize;
+
+    private String imageDescription;
+
+    private String tags;
 
     @CreationTimestamp
     public Date createdAt =  new Date();
