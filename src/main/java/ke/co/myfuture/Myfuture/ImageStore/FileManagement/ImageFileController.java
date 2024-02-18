@@ -99,5 +99,19 @@ public class ImageFileController {
             return null;
         }
     }
+    @GetMapping("/search")
+    public ResponseEntity<?> getAll(String search) {
+        try {
+            UniversalResponse response = new UniversalResponse();
+            response.setStatus("Success");
+            response.setMessage("Document libraries retrieved Successfully");
+            response.setEntity(repository.search(search));
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            log.info("Error {} " + e);
+            return null;
+        }
+    }
 }
 

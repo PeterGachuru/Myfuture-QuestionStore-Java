@@ -29,7 +29,10 @@ public class ImageFile {
     @Column(nullable = false)
     private long fileSize;
 
-    private String imageDescription;
+    private Integer width;
+    private Integer length;
+
+    private String description;
 
     private String tags;
 
