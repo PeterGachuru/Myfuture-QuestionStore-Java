@@ -18,8 +18,8 @@ public class Postattempt {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     public Long id;
-    @OneToOne
-    @JoinColumn(name = "post", nullable = false)
+    @ManyToOne
+    @JoinColumn(nullable = false, name = "post")
     Post post;
     @OneToOne
     @JoinColumn(name = "student_id", nullable = false)

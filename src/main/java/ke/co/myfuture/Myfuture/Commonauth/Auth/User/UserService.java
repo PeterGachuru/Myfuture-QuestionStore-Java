@@ -93,7 +93,7 @@ public class UserService {
                 System.out.println("User is active");
                 if (!otpService.validateLoginRetries(email)) {
                     System.out.println("User is locked");
-                    updateUserStatus(email, "Locked");
+//                    updateUserStatus(email, "Locked");
                     response.set(LoginResponse.builder().status(HttpStatus.FORBIDDEN.value()).message("Maximum login " +
                             "retries have been reached. Your account has been locked. Contact your system adimin").build());
                     return;

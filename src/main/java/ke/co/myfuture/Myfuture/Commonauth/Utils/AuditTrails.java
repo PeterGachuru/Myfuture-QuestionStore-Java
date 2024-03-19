@@ -30,6 +30,8 @@ public class AuditTrails {
         this.createdAt = now;
         this.updatedAt = now;
         this.createdBy = UserRequestContext.getCurrentUser();
+        if (UserRequestContext.getCurrentUser() == null)
+            this.createdBy = "Internal";
     }
 
     @PreUpdate

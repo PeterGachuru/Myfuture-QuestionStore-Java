@@ -30,7 +30,7 @@ public class ImageFile {
     private long fileSize;
 
     private Integer width;
-    private Integer length;
+    private Integer height;
 
     private String description;
 

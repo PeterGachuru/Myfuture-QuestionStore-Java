@@ -1,13 +1,17 @@
 package ke.co.myfuture.Myfuture.ImageStore.FileManagement;
 
+import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
@@ -50,17 +54,18 @@ public class ImageFileService {
     }
 
     public ImageFile save(MultipartFile fileUploaded) {
-        return save(fileUploaded, "", "");
+        return save(fileUploaded, "", "").getEntity();
     }
 
-    public ImageFile save(MultipartFile fileUploaded, String description, String tags) {
+
+    public UniversalResponse<ImageFile> save(MultipartFile fileUploaded, String description, String tags) {
         String fileName = fileUploaded.getOriginalFilename();
         ImageFile imageFile = new ImageFile();
         try {
             imageFile.setImageContent(fileUploaded.getBytes());
             DimensionsDTO dimensionsDTO = getDimensions(fileUploaded.getBytes());
             imageFile.setWidth(dimensionsDTO.getWidth());
-            imageFile.setLength(dimensionsDTO.getLength());
+            imageFile.setHeight(dimensionsDTO.getLength());
             imageFile.setCode(generateCode(fileName));
             imageFile.setDescription(description);
             imageFile.setTags(tags);
@@ -69,10 +74,43 @@ public class ImageFileService {
             imageFile.setContentType(fileUploaded.getContentType());
             imageFile.setFileSize(fileUploaded.getSize());
 
-            return repository.save(imageFile);
+            ImageFile savedImageFile = repository.save(imageFile);
+            UniversalResponse response = new UniversalResponse();
+            response.setStatus("Success");
+            response.setMessage("Saved successfully");
+            response.setEntity(savedImageFile);
+            response.setStatusCode(201);
+
+            return response;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Could not save");
+        response.setEntity(null);
+        response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return response;
+    }
+
+    public  byte[] imageToBytes(Image image, String formatName) throws IOException {
+        BufferedImage bufferedImage = toBufferedImage(image);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, formatName, baos);
+        return baos.toByteArray();
+    }
+
+    public  BufferedImage toBufferedImage(Image image) {
+        if (image instanceof BufferedImage) {
+            return (BufferedImage) image;
+        }
+        // Create a buffered image with transparency
+        BufferedImage bufferedImage = new BufferedImage(
+                image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        // Draw the image on to the buffered image
+        bufferedImage.getGraphics().drawImage(image, 0, 0, null);
+        // Return the buffered image
+        return bufferedImage;
     }
 
     private DimensionsDTO getDimensions(byte[] bytes) {

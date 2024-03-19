@@ -46,6 +46,9 @@ public class CurriQuestion {
     Boolean choicesWithImages;
     String imageCode;
 
+    Integer imageHeight;
+    Integer imageWidth;
+
     @OneToMany(mappedBy =  "question")
 //    @Transient
     List<CurriNormalChoice> choices;

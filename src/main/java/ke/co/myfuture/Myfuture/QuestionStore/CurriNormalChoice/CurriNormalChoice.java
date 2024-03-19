@@ -20,4 +20,7 @@ public class CurriNormalChoice {
 
     Boolean hasImage;
     String imageCode;
+
+    Integer imageHeight;
+    Integer imageWidth;
 }

@@ -72,9 +72,9 @@ public class UserHandler {
 
     @PutMapping("/lock-user/{email}")
     public ResponseEntity<AuthEntityResponse> lockUser(@PathVariable String email) {
-        AuthEntityResponse response = this.userService.updateUserStatus(email, "Locked");
+//        AuthEntityResponse response = this.userService.updateUserStatus(email, "Locked");
 
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(null);
     }
 
     @PutMapping("/unlock-user-account/{email}")

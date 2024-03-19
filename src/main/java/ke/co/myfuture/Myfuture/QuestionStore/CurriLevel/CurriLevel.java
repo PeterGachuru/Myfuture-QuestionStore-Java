@@ -25,6 +25,8 @@ public class CurriLevel {
     @Column(nullable = false)
     Integer numbering;
 
+    Integer ageEstimate;
+
     @CreationTimestamp
     Date createdAt;
     @UpdateTimestamp
@@ -32,4 +34,5 @@ public class CurriLevel {
 
     @Transient
     List<Subject> subjects = new ArrayList<>();
+
 }

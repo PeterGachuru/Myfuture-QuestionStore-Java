@@ -10,6 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -32,15 +39,9 @@ public class ImageFileController {
 
         System.out.println("description: "+description);
         System.out.println("tags: "+tags);
-        ImageFile imageFile = service.save(fileUploaded, description, tags);
 
-        ImageFile savedImageFile = repository.save(imageFile);
-        UniversalResponse response = new UniversalResponse();
-        response.setStatus("Success");
-        response.setMessage("Saved successfully");
-        response.setEntity(savedImageFile);
-        response.setStatusCode(201);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+
+        return new ResponseEntity<>(service.save(fileUploaded, description, tags), HttpStatus.OK);
     }
 
     @PutMapping("update/{id}")
@@ -62,6 +63,18 @@ public class ImageFileController {
     public ResponseEntity<?> fetchFile(@RequestParam("id") long id) {
         ImageFile imageFile = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Error: File with id " + id+" not found"));
+
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("File retrieved Successfully");
+        response.setEntity(imageFile);
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    @GetMapping("get/by/code")
+    public ResponseEntity<?> fetchFile(@RequestParam("code") String code) {
+        ImageFile imageFile = repository.findByCode(code)
+                .orElseThrow(() -> new RuntimeException("Error: File with id " + code+" not found"));
 
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
