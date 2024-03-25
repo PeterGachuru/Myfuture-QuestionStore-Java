@@ -16,7 +16,11 @@ public interface CurriTopicRepository extends JpaRepository<CurriTopic, Long> {
     List<CurriTopic> findByParent(@Param("parentId") Long parentId);
 
     @Query(value = "SELECT * FROM curri_topic  WHERE id IN(select parent from curri_topic where length(content) > 40) ORDER BY id ASC", nativeQuery = true)
-    List<CurriTopic>  findThoseWithContent();
+    List<CurriTopic> findParentsWithContent();
+
+
+    @Query(value = "SELECT * FROM curri_topic  WHERE length(content) > 40 ORDER BY id ASC", nativeQuery = true)
+    List<CurriTopic> findChildrenWithContent();
 
     @Query(value = "SELECT * FROM curri_topic  WHERE parent IS NOT NULL AND id NOT IN (SELECT subtopic_id FROM aiquery where query_purpose = :purpose) ORDER BY numbering ASC", nativeQuery = true)
 

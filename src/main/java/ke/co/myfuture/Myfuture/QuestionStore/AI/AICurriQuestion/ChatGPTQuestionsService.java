@@ -71,6 +71,8 @@ public class ChatGPTQuestionsService {
         String purpose = "curri_question";
         List<CurriTopic> curriSubTopics = curriTopicRepository.findSubtopicsWithoutAI(purpose);
         for (CurriTopic curriTopic: curriSubTopics) {
+            if(!(curriTopic.getParent().getName().toLowerCase().contains("fraction") || curriTopic.getName().toLowerCase().contains("fraction") ))
+                continue;
             AIQuery aiQuery = new AIQuery();
             String question = """
                     {
@@ -80,7 +82,7 @@ public class ChatGPTQuestionsService {
                                         
                           {
                             "role": "user",
-                            "content": "Create a list of questions for subject_replace students on subtopic_name_replace subtopic of topic_name_replace. Format your response as a json array of 50 objects with a question with a list of 4 choices, 3 of the choices being wrong and 1 right choice. Fit the content to kenyan and target age as age_replace. Specify which is the correct choice. Use only question, choices and correct_choice as the fields."
+                            "content": "Create a list of questions for subject_replace students on subtopic_name_replace subtopic of topic_name_replace. Format your response as a json array of 50 objects with a question with a list of 4 choices, 3 of the choices being wrong and 1 right choice and an explanation for the right answer. Fit the content to kenyan and target age as age_replace. Specify which is the correct choice. Use only question, choices, correct_choice and explanation as the fields. For any mathematical formula, use html and inline css for display."
                           }
                         ]
                       }

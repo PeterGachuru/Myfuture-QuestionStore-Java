@@ -1,8 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.AI.AICurriQuestion;
 
-import ke.co.myfuture.Myfuture.Commonauth.ApplicationContextProvider;
 import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
-import ke.co.myfuture.Myfuture.Dukazote.AuditsService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -37,9 +35,4 @@ public class AIQuery {
 
     @Transient
     AuditTrails.Retriever audits;
-
-    public AuditTrails.Retriever getAudits() {
-        AuditsService auditsService = ApplicationContextProvider.bean(AuditsService.class);
-        return auditsService.getAuditsForInventory(id);
-    }
 }

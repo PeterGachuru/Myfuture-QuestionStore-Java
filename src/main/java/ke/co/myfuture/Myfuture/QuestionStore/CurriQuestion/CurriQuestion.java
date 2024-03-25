@@ -20,6 +20,9 @@ public class CurriQuestion {
     @Column(nullable = false)
     String string;
 
+    @Column(nullable = false)
+    String bookModel;
+
     Long job;
     Long curriJob;
     @ManyToOne

@@ -76,7 +76,7 @@ public class CurriTopicController {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("CurriTopic retrieved Successfully");
-        response.setEntity(repository.findThoseWithContent());
+        response.setEntity(repository.findParentsWithContent());
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
