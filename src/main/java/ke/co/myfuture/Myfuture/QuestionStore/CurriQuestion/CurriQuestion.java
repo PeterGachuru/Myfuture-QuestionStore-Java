@@ -20,6 +20,8 @@ public class CurriQuestion {
     @Column(nullable = false)
     String string;
 
+    String explanation;
+
     @Column(nullable = false)
     String bookModel;
 

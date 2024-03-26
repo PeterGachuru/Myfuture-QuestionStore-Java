@@ -1,7 +1,17 @@
 package ke.co.myfuture.Myfuture.QuestionStore.AI.AICurriQuestion;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import ke.co.myfuture.Myfuture.QuestionStore.Book.BookInitialModels;
+import ke.co.myfuture.Myfuture.QuestionStore.Cgroup.Cgroup;
+import ke.co.myfuture.Myfuture.QuestionStore.Cgroup.CgroupService;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoice;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoiceRepository;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestion;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestionRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -12,8 +22,10 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,6 +34,15 @@ public class ChatGPTQuestionsService {
     CurriTopicRepository curriTopicRepository;
     @Autowired
     AIQueryRepo aiQueryRepo;
+
+    @Autowired
+    CgroupService cgroupService;
+
+    @Autowired
+    CurriQuestionRepository curriQuestionRepository;
+
+    @Autowired
+    CurriNormalChoiceRepository curriNormalChoiceRepository;
 
     @Value("${ai.api_key}")
     private String chatGPTKey;
@@ -66,13 +87,12 @@ public class ChatGPTQuestionsService {
     }
 
 
-
     public void queryCurriQuestionsForAllSubtopics() {
         String purpose = "curri_question";
         List<CurriTopic> curriSubTopics = curriTopicRepository.findSubtopicsWithoutAI(purpose);
         for (CurriTopic curriTopic: curriSubTopics) {
-            if(!(curriTopic.getParent().getName().toLowerCase().contains("fraction") || curriTopic.getName().toLowerCase().contains("fraction") ))
-                continue;
+//            if(!(curriTopic.getParent().getName().toLowerCase().contains("fraction") || curriTopic.getName().toLowerCase().contains("fraction") ))
+//                continue;
             AIQuery aiQuery = new AIQuery();
             String question = """
                     {
@@ -82,7 +102,7 @@ public class ChatGPTQuestionsService {
                                         
                           {
                             "role": "user",
-                            "content": "Create a list of questions for subject_replace students on subtopic_name_replace subtopic of topic_name_replace. Format your response as a json array of 50 objects with a question with a list of 4 choices, 3 of the choices being wrong and 1 right choice and an explanation for the right answer. Fit the content to kenyan and target age as age_replace. Specify which is the correct choice. Use only question, choices, correct_choice and explanation as the fields. For any mathematical formula, use html and inline css for display."
+                            "content": "Create a list of questions for subject_replace students on subtopic_name_replace subtopic of topic_name_replace. Format your response as a json array of 50 objects with a question with a list of 4 choices, 3 of the choices being wrong and 1 right choice and an explanation for the right answer. Fit the content to kenyan and target age as age_replace. Specify which is the correct choice. Use only question, choices, correct_choice and explanation as the fields. Don't assign order to the choices."
                           }
                         ]
                       }
@@ -103,8 +123,63 @@ public class ChatGPTQuestionsService {
             aiQuery.setAiResponse(response);
 
             aiQueryRepo.save(aiQuery);
+            saveQuestionArray(curriTopic, response);
             break;
         }
+    }
+
+    private void saveQuestionArray(CurriTopic curriTopic, String response) {
+        Gson gson = new Gson();
+
+        Questions questions = gson.fromJson(response, Questions.class);
+
+        // Parse the JSON array string into a list of MyObject
+        List<Question> myObjects = questions.questions;
+
+        for (Question question: myObjects) {
+            CurriQuestion curriQuestion = new CurriQuestion();
+            curriQuestion.setString(question.getQuestion());
+            curriQuestion.setSubtopic(curriTopic);
+            curriQuestion.setBookModel(BookInitialModels.chatGpt3_5);
+            curriQuestion.setHasImage(false);
+
+            List<CurriNormalChoice> choices = new ArrayList<>();
+            boolean foundRight = false;
+            for (String choice :
+                    question.getChoices()) {
+                CurriNormalChoice curriNormalChoice = new CurriNormalChoice();
+                curriNormalChoice.setValue(choice);
+                if (choice.equalsIgnoreCase(question.correct_choice) ) {
+                    curriNormalChoice.setType("right");
+                    if (foundRight) {
+                        foundRight = false;
+                        break;
+                    }
+                    foundRight = true;
+                }else {
+                    curriNormalChoice.setType("wrong");
+                }
+                choices.add(curriNormalChoice);
+            }
+            if (!foundRight)
+                continue;
+
+            Cgroup cgroup = new Cgroup();
+            cgroup.setType("Many");
+            cgroup.setDescription("Question group");
+            cgroup.setName("Question group");
+
+            cgroup = cgroupService.newCgroup(cgroup);
+
+            curriQuestion.setCgroup(cgroup.id);
+            CurriQuestion savedCurriQuestion = curriQuestionRepository.save(curriQuestion);
+//
+            for (CurriNormalChoice choice: choices) {
+                choice.setQuestion(savedCurriQuestion.getId());
+            }
+            curriNormalChoiceRepository.saveAll(choices);
+        }
+
     }
 
 
@@ -171,5 +246,17 @@ public class ChatGPTQuestionsService {
             }
         }
         return true;
+    }
+
+    @Data
+    class Question{
+        private String question;
+        private String correct_choice;
+        private String explanation;
+        private String[] choices;
+    }
+
+    class Questions{
+        List<Question> questions;
     }
 }
