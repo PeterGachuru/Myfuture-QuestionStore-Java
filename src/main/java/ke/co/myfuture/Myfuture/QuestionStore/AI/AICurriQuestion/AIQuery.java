@@ -25,6 +25,8 @@ public class AIQuery {
 //    @JoinColumn(nullable = false)
     private Long subtopicId;
 
+    Boolean migrated;
+
     @Lob
     private String aiResponse;
 

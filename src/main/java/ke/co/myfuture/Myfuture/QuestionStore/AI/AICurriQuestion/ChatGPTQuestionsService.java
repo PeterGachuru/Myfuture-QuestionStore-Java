@@ -1,7 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.AI.AICurriQuestion;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import ke.co.myfuture.Myfuture.QuestionStore.Book.BookInitialModels;
 import ke.co.myfuture.Myfuture.QuestionStore.Cgroup.Cgroup;
 import ke.co.myfuture.Myfuture.QuestionStore.Cgroup.CgroupService;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -95,17 +93,7 @@ public class ChatGPTQuestionsService {
 //                continue;
             AIQuery aiQuery = new AIQuery();
             String question = """
-                    {
-                        "model": "gpt-3.5-turbo-0125",
-                        "response_format": { "type": "json_object" },
-                        "messages": [
-                                        
-                          {
-                            "role": "user",
-                            "content": "Create a list of questions for subject_replace students on subtopic_name_replace subtopic of topic_name_replace. Format your response as a json array of 50 objects with a question with a list of 4 choices, 3 of the choices being wrong and 1 right choice and an explanation for the right answer. Fit the content to kenyan and target age as age_replace. Specify which is the correct choice. Use only question, choices, correct_choice and explanation as the fields. Don't assign order to the choices."
-                          }
-                        ]
-                      }
+                Create a list of questions for subject_replace students on subtopic_name_replace subtopic of topic_name_replace. Format your response as a json array of 50 objects with a question with a list of 4 choices, 3 of the choices being wrong and 1 right choice and an explanation for the right answer. Fit the content to kenyan and target age as age_replace. Specify which is the correct choice. Use only question, choices, correct_choice and explanation as the fields. Don't assign order to the choices.
                     """;
             question = question.replaceAll("subtopic_name_replace", curriTopic.getName());
             question = question.replaceAll("topic_name_replace", curriTopic.getParent().getName());
@@ -119,12 +107,20 @@ public class ChatGPTQuestionsService {
             aiQuery = aiQueryRepo.save(aiQuery);
 
             String response = gpt3_5Turbo0125Query(question);
-            System.out.println(response);
+
+//            while (!isJSONValid(response)) {
+//                response += gpt3_5Turbo0125Query("keep going");
+//            }
+
+//            System.out.println(response);
             aiQuery.setAiResponse(response);
 
-            aiQueryRepo.save(aiQuery);
-            saveQuestionArray(curriTopic, response);
-            break;
+            aiQuery = aiQueryRepo.save(aiQuery);
+            if (isJSONValid(response)) {
+                aiQuery.setMigrated(true);
+                saveQuestionArray(curriTopic, response);
+            }
+//            break;
         }
     }
 
@@ -182,13 +178,43 @@ public class ChatGPTQuestionsService {
 
     }
 
+    public static boolean isValidJson(String str) {
+        try {
+            new JSONObject(str);
+            return true;
+        } catch (JSONException e) {
+            return false;
+        }
+    }
 
     private String gpt3_5Turbo0125Query(String question) {
+        return normalChatGptCall(question, "gpt-3.5-turbo-0125");
+    }
 
+    private String gpt40125(String question) {
+        return normalChatGptCall(question, "gpt-4-0125-preview");
+    }
+
+    private String normalChatGptCall(String question, String model) {
+        String payload = """
+                    {
+                        "model": "ai_model_replace",
+                        "response_format": { "type": "json_object" },
+                        "messages": [
+                                        
+                          {
+                            "role": "user",
+                            "content": "question_replace"
+                          }
+                        ]
+                      }
+                    """;
+        payload = payload.replaceAll("question_replace", question.trim());
+        payload = payload.replaceAll("ai_model_replace", model.trim());
         try {
             String url = "https://api.openai.com/v1/chat/completions";
             System.out.println(url);
-            System.out.println(question);
+            System.out.println(payload);
 
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -206,11 +232,17 @@ public class ChatGPTQuestionsService {
             con.setDoOutput(true);
 
             // Write the request body
-            con.getOutputStream().write(question.getBytes("UTF-8"));
+            con.getOutputStream().write(payload.getBytes("UTF-8"));
 
             // Get the response
             int responseCode = con.getResponseCode();
             System.out.println("Response Code: " + responseCode);
+
+            if (responseCode >= 400) {
+                System.out.println("error result");
+                displayHttpError(con, responseCode);
+                return "";
+            }
 
             // Read the response body
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -227,12 +259,30 @@ public class ChatGPTQuestionsService {
             boolean isJSONValid= isJSONValid(response.toString());
             if(isJSONValid) {
                 JSONObject jsonObject = new JSONObject(response.toString());
-                return ((JSONObject) jsonObject.getJSONArray("choices").get(0)).getJSONObject("message").getString("content");
+                String responseString = ((JSONObject) jsonObject.getJSONArray("choices").get(0)).getJSONObject("message").getString("content");
+                System.out.println(responseString);
+                return responseString;
             }
         } catch (IOException | JSONException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         return null;
+    }
+
+
+
+    private void displayHttpError(HttpURLConnection connection, int responseCode) throws IOException {
+        BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+        String inputLine;
+        StringBuilder errorMessage = new StringBuilder();
+
+        while ((inputLine = errorReader.readLine()) != null) {
+            errorMessage.append(inputLine);
+        }
+        errorReader.close();
+
+        System.out.println("Error response code: " + responseCode);
+        System.out.println("Error message: " + errorMessage);
     }
 
     public boolean isJSONValid(String json) {
