@@ -10,6 +10,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.LoginResp
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Otp.OtpService;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.Request.OtpRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.Response.OtpResponse;
+import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.JwtStatusContext;
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MailServiceException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,12 @@ public class AuthHandler {
             exceptionLogger.logError(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @PostMapping("/expired")
+    public ResponseEntity<?> expired() {
+        System.out.println("check expired");
+        return ResponseEntity.ok().body(JwtStatusContext.getExpiredJWT());
     }
 
     @PostMapping("/update-password")

@@ -1,0 +1,59 @@
+package ke.co.myfuture.Myfuture.Treasury.Account;
+
+import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@CrossOrigin
+@RequestMapping("treasury/account")
+public class AccountController {
+    @Autowired
+    AccountRepository repository;
+
+    @Autowired
+    AccountService accountService;
+
+    @PostMapping("add")
+    public ResponseEntity<?> newAccount(@RequestBody Account account) {
+        UniversalResponse response = accountService.saveAccount(account);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("update")
+    public ResponseEntity<?> updateAccount(@RequestBody Account account) {
+        Account updatedAccount = repository.save(account);
+
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Updated Successfully");
+        response.setEntity(updatedAccount);
+        response.setStatusCode(201);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    @GetMapping("get/by/id")
+    public ResponseEntity<?> fetchAccount(@RequestParam("id") Long id) {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Account retrieved Successfully");
+        response.setEntity(repository.findById(id));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    @GetMapping("all")
+    public ResponseEntity<?> fetchProductCategory() {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("ProductCategory retrieved Successfully");
+        List<Account> accountList = repository.findAllByAuditTrails_DeletedFlag(false);
+//        for (Account account: accountList)
+//            account.setAudits(repository.getAudits(account.getId()));
+        response.setEntity(accountList);
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+}

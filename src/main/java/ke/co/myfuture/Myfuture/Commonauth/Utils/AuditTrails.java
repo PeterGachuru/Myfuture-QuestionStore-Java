@@ -17,6 +17,8 @@ public class AuditTrails {
     Date updatedAt;
 
 //    @CreationTimestamp
+
+    @Column(updatable = false)
     Date createdAt;
 
     Boolean deletedFlag = false;

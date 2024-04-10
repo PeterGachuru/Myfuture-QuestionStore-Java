@@ -75,7 +75,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             clientinformation.getClientInformation(request);
             System.out.println("jwt: "+jwt);
 
-            if (jwt != null ){
+            if (jwt != null ) {
             if (jwtUtils.validateJwtToken(jwt)) {
                 System.out.println("Jwt is not null");
                 String email = jwtUtils.getUserNameFromJwtToken(jwt);
@@ -105,7 +105,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 System.out.println("JWT is null");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            JwtStatusContext.setExpiredJWT(true);
             log.info("Could not be authenticated");
             SecurityContextHolder.clearContext();
         } finally {

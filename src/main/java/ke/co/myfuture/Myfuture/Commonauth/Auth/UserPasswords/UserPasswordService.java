@@ -19,7 +19,7 @@ public class UserPasswordService {
     private final UserRepository userRepository;
 
     // runs at 0000 am every day
-    @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0 0 0 * * ?")
     private void autoPasswordExpiry(){
 
         log.info("Updating passwords");
