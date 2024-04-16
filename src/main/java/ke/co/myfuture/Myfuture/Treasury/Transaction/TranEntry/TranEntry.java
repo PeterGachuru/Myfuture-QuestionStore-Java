@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry;
 
+import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -21,4 +22,10 @@ public class TranEntry {
 
     @Column(nullable = false)
     private String particulars;
+
+    @ManyToOne
+    private Account account;
+
+    @Transient
+    Long accountId;
 }

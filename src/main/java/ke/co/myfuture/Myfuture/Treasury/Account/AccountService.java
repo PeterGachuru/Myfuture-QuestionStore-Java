@@ -2,6 +2,11 @@ package ke.co.myfuture.Myfuture.Treasury.Account;
 
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlanRepository;
+import ke.co.myfuture.Myfuture.Treasury.Person.Person;
+import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;
+import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
+import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroupRepository;
+import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroupService;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,12 +20,36 @@ public class AccountService {
     AccountRepository repository;
 
     @Autowired
-    ContributionsPlanRepository contributionsPlanRepository;
+    PeopleGroupRepository peopleGroupRepository;
 
+    @Autowired
+    PersonRepository personRepository;
+
+    @Autowired
+    ContributionsPlanRepository contributionsPlanRepository;
     public UniversalResponse saveAccount(Account account) {
-        Optional<ContributionsPlan> contributionsPlan = contributionsPlanRepository.findById(account.getPlanId());
-        if (contributionsPlan.isEmpty()) return null;
-        account.setContributionsPlan(contributionsPlan.get());
+        Optional<PeopleGroup> peopleGroup = peopleGroupRepository.findById(account.getGroupId());
+        if (peopleGroup.isEmpty()) return null;
+        account.setPeopleGroup(peopleGroup.get());
+        if (account.getOwnershipType().equalsIgnoreCase("EXPENSE") ||
+                account.getOwnershipType().equalsIgnoreCase("INCOME")) {
+            if (account.getPlanId() == null)
+                return null;
+            Optional<ContributionsPlan> contributionsPlan = contributionsPlanRepository.findById(account.getPlanId());
+            if (contributionsPlan.isEmpty()) return null;
+            account.setContributionsPlan(contributionsPlan.get());
+        }
+
+        if (account.getOwnershipType().equalsIgnoreCase("CASH") ||
+                account.getOwnershipType().equalsIgnoreCase("INCOME")) {
+            if (account.getPersonId() == null)
+                return null;
+            Optional<Person> person = personRepository.findById(account.getPersonId());
+            if (person.isEmpty()) return null;
+            account.setOwner(person.get());
+        }
+
+
         Account savedAccount = repository.save(account);
         System.out.println(savedAccount);
         UniversalResponse response = new UniversalResponse();

@@ -3,9 +3,12 @@ package ke.co.myfuture.Myfuture.Treasury.Transaction;
 
 import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
 
+import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranEntry;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranType;
 import lombok.Data;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.List;
@@ -22,10 +25,21 @@ public class Transaction {
 
 	private String status = "NORMAL";
 
-	@Column(nullable = false)
-	private String category;
+	private String notes;
 
-	@OneToMany
+	@ManyToOne
+	ContributionsPlan contributionsPlan;
+
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private TransactionCategory category;
+
+	@Transient
+	Long planId;
+
+
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(targetEntity = TranEntry.class, cascade = CascadeType.ALL)
 	private List<TranEntry> tranEntries;
 
 	@Embedded
@@ -41,6 +55,8 @@ public class Transaction {
 			if (tranEntry.getTranType() == TranType.DEBIT)
 				totalDebits += tranEntry.getAmount();
 		}
+
+		amountInvolved = totalCredits;
 
         return totalCredits == totalDebits;
     }

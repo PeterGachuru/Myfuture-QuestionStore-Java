@@ -23,6 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 				.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 		    Gson g = new Gson();
 			UserDetailsRequestContext.setCurrentUserDetails(g.toJson(user));
+			UserDetailsRequestContext.setCurrentUser(user);
 		return UserDetailsImpl.build(user);
 	}
 }

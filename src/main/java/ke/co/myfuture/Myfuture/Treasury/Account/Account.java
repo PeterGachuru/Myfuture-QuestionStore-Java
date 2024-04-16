@@ -27,7 +27,7 @@ public class Account {
 
 	String notes;
 
-	String targetType = "anyhow";//pledge//anyhow//weekly//monthly//annual
+//	String targetType = "anyhow";//pledge//anyhow//weekly//monthly//annual
 
 	Double targetAmount = 0.0;
 

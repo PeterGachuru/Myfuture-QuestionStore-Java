@@ -21,8 +21,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,7 +65,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             EntityRequestContext.setCurrentEntityId(request.getHeader("entityId"));
 
             if (request.getRequestURI().matches("/auth/signin") || request.getRequestURI().matches("/auth/signup") || request.getRequestURI().matches("/swagger-ui/")) {
-                UserRequestContext.setCurrentUser("Guest");
+                UserRequestContext.setCurrentUserName("Guest");
                 EntityRequestContext.setCurrentEntityId("001");
             }
 
@@ -83,9 +81,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 Map<String, Object> jwtHeaders = jwtUtils.getHeadersFromJwtToken(jwt);
                 Optional<User> user = usersRepository.findByEmail(email);
 
-                UserRequestContext.setCurrentUser(email);
+                UserRequestContext.setCurrentUserName(email);
+                UserRequestContext.setCurrentUser(user.get());
 
-                UserRequestContext.setCurrentUser(email);
                 EntityRequestContext.setCurrentEntityId(String.valueOf(user.get().getId()));
 
                 UserData userData = userService.getUserDetails(email).getUser();

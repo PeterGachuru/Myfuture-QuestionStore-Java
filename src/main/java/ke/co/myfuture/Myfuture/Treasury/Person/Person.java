@@ -1,12 +1,10 @@
 package ke.co.myfuture.Myfuture.Treasury.Person;
 
-import ke.co.myfuture.Myfuture.Commonauth.ApplicationContextProvider;
 import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.List;
 
 
@@ -23,6 +21,9 @@ public class Person {
 	private String role;
 
 	private boolean active=true;
+
+	private Long systemUserId;
+	private String systemUserName;
 
 	@Transient
 	List<PeopleGroup> peopleGroup;

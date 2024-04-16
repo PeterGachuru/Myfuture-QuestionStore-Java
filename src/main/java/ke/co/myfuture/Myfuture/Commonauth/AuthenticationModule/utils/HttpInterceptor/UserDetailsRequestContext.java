@@ -1,9 +1,18 @@
 package ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.utils.HttpInterceptor;
 
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
+import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Users.Users;
+
 public class UserDetailsRequestContext {
 
     private static ThreadLocal<String> currentUserDetails = new InheritableThreadLocal<>();
-
+    private static ThreadLocal<Users> currentUser = new InheritableThreadLocal<>();
+    public static void setCurrentUser(Users user) {
+        currentUser.set(user);
+    }
+    public static Users getcurrentUser() {
+        return currentUser.get();
+    }
     public static String getcurrentUserDetails() {
         return currentUserDetails.get();
     }
@@ -12,7 +21,10 @@ public class UserDetailsRequestContext {
         currentUserDetails.set(userDetails);
     }
 
+
     public static void clear() {
         currentUserDetails.set(null);
     }
+
+
 }

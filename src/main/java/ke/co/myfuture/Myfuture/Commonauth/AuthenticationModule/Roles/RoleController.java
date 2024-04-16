@@ -36,7 +36,7 @@ public class RoleController {
                         response.setEntity(role);
                         return new ResponseEntity<>(response, HttpStatus.OK);
                     } else {
-                        role.setPostedBy(UserRequestContext.getCurrentUser());
+                        role.setPostedBy(UserRequestContext.getCurrentUserName());
                         role.setPostedFlag('Y');
                         role.setPostedTime(new Date());
                         Role newRole = roleService.addRole(role);
@@ -86,7 +86,7 @@ public class RoleController {
     @PutMapping("/modify")
     public ResponseEntity<?> updateRole(@RequestBody Role role) {
         try {
-                    role.setModifiedBy(UserRequestContext.getCurrentUser());
+                    role.setModifiedBy(UserRequestContext.getCurrentUserName());
                     Optional<Role> role1 = roleRepository.findById(role.getId());
                     if (role1.isPresent()) {
                         role.setModifiedFlag('Y');
@@ -94,7 +94,7 @@ public class RoleController {
                         role.setModifiedTime(new Date());
                         role.setPostedTime(role1.get().getPostedTime());
                         role.setPostedBy(role1.get().getPostedBy());
-                        role.setModifiedBy(UserRequestContext.getCurrentUser());
+                        role.setModifiedBy(UserRequestContext.getCurrentUserName());
                         roleService.updateRole(role);
                         EntityResponse response = new EntityResponse();
                         response.setMessage("ROLE WITH NAME " + role.getName() + " MODIFIED SUCCESSFULLY AT " + role.getModifiedTime());
@@ -121,7 +121,7 @@ public class RoleController {
                     if (role1.isPresent()) {
                         Role role = role1.get();
                         // Check Maker Checker
-                        if (role.getPostedBy().equalsIgnoreCase(UserRequestContext.getCurrentUser())){
+                        if (role.getPostedBy().equalsIgnoreCase(UserRequestContext.getCurrentUserName())){
                             EntityResponse response = new EntityResponse();
                             response.setMessage("You Can Not Verify What you initiated");
                             response.setStatusCode(HttpStatus.UNAUTHORIZED.value());
@@ -130,7 +130,7 @@ public class RoleController {
                         }else{
                             role.setVerifiedFlag('Y');
                             role.setVerifiedTime(new Date());
-                            role.setVerifiedBy(UserRequestContext.getCurrentUser());
+                            role.setVerifiedBy(UserRequestContext.getCurrentUserName());
                             roleRepository.save(role);
                             EntityResponse response = new EntityResponse();
                             response.setMessage("ROLE WITH NAME " + role.getName() + " VERIFIED SUCCESSFULLY AT " + role.getVerifiedTime());
@@ -163,7 +163,7 @@ public class RoleController {
                         role.setDeletedTime(new Date());
                         role.setPostedTime(role1.get().getPostedTime());
                         role.setPostedBy(role1.get().getPostedBy());
-                        role.setDeletedBy(UserRequestContext.getCurrentUser());
+                        role.setDeletedBy(UserRequestContext.getCurrentUserName());
                         roleRepository.save(role);
                         EntityResponse response = new EntityResponse();
                         response.setMessage("ROLE WITH NAME " + role1.get().getName() + " DELETED SUCCESSFULLY AT " + role.getDeletedTime());

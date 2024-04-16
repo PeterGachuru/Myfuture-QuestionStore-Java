@@ -1,8 +1,6 @@
 package ke.co.myfuture.Myfuture.Commonauth.Utils;
 
 import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -31,8 +29,8 @@ public class AuditTrails {
         Date now = new Date();
         this.createdAt = now;
         this.updatedAt = now;
-        this.createdBy = UserRequestContext.getCurrentUser();
-        if (UserRequestContext.getCurrentUser() == null)
+        this.createdBy = UserRequestContext.getCurrentUserName();
+        if (UserRequestContext.getCurrentUserName() == null)
             this.createdBy = "Internal";
     }
 
