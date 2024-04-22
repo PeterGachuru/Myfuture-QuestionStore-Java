@@ -19,4 +19,7 @@ public interface ContributionsPlanRepository extends JpaRepository<Contributions
     @Query(nativeQuery = true, value = "select * from contributions_plan where deleted_flag = :deletedFlag")
     List<ContributionsPlan> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag);
 
+    @Query(nativeQuery = true, value = "select * from contributions_plan where deleted_flag = :deletedFlag AND people_group_id = :groupId")
+    List<ContributionsPlan> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag, @Param("groupId") Long groupId);
 }
+

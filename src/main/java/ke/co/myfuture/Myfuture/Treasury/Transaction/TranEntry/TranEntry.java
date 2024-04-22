@@ -1,6 +1,8 @@
 package ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
+import ke.co.myfuture.Myfuture.Treasury.Transaction.Transaction;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -23,9 +25,18 @@ public class TranEntry {
     @Column(nullable = false)
     private String particulars;
 
-    @ManyToOne
-    private Account account;
+    @Column(nullable = false)
+    Long accountId;
+
+    @Column(nullable = false)
+    private String accountName;
 
     @Transient
-    Long accountId;
+    private Account account;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tran_id")
+    Transaction transaction;
+
+
 }

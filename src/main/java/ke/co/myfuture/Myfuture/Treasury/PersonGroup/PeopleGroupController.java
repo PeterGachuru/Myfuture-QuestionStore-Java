@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.PersonGroup;
 
+import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -7,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -17,6 +19,9 @@ public class PeopleGroupController {
 
     @Autowired
     PeopleGroupService accountService;
+
+    @Autowired
+    PersonRepository personRepository;
 
     @PostMapping("add")
     public ResponseEntity<?> newPeopleGroup(@RequestBody PeopleGroup account) {
@@ -40,7 +45,12 @@ public class PeopleGroupController {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("PeopleGroup retrieved Successfully");
-        response.setEntity(repository.findById(id));
+        Optional<PeopleGroup> peopleGroup = repository.findById(id);
+        if (peopleGroup.isPresent()) {
+            System.out.println("Is present ");
+            peopleGroup.get().setMembers(personRepository.findPersonsByGroupId(id));
+        }
+        response.setEntity(peopleGroup.get());
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

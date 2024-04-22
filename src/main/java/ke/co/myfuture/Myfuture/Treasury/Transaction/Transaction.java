@@ -37,9 +37,9 @@ public class Transaction {
 	@Transient
 	Long planId;
 
-
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(targetEntity = TranEntry.class, cascade = CascadeType.ALL)
+//    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "transaction")
 	private List<TranEntry> tranEntries;
 
 	@Embedded

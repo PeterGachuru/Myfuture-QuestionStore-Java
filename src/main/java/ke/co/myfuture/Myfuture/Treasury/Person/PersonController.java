@@ -48,11 +48,16 @@ public class PersonController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("all")
-    public ResponseEntity<?> fetchProductCategory() {
+    public ResponseEntity<?> fetchProductCategory(@RequestParam(required = false, name = "parentId") Long parentId) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("ProductCategory retrieved Successfully");
-        List<Person> accountList = repository.findAllByAuditTrails_DeletedFlag(false);
+        List<Person> accountList;
+        if (parentId == 0)
+            accountList = repository.findAllByAuditTrails_DeletedFlag(false);
+        else {
+            accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId);
+        }
 //        for (Person account: accountList)
 //            account.setAudits(repository.getAudits(account.getId()));
         response.setEntity(accountList);

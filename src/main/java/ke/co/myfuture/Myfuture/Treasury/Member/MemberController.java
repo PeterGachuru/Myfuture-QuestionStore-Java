@@ -1,7 +1,5 @@
-package ke.co.myfuture.Myfuture.Treasury.ContributionsPlan;
+package ke.co.myfuture.Myfuture.Treasury.Member;
 
-import ke.co.myfuture.Myfuture.Treasury.Account.Account;
-import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,49 +7,39 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("treasury/contribution-plan")
-public class ContributionsPlanController {
+@RequestMapping("treasury/member")
+public class MemberController {
     @Autowired
-    ContributionsPlanRepository repository;
+    MemberRepository repository;
 
     @Autowired
-    ContributionsPlanService accountService;
+    MemberService accountService;
 
     @PostMapping("add")
-    public ResponseEntity<?> newContributionsPlan(@RequestBody ContributionsPlan account, @RequestParam("parentId") Long parentId) {
-        UniversalResponse response = accountService.saveContributionsPlan(account, parentId);
+    public ResponseEntity<?> newMember(@RequestParam("personId") Long personId,
+                                       @RequestParam("groupId") Long groupId) {
+        UniversalResponse response = accountService.saveMember(personId, groupId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("update")
-    public ResponseEntity<?> updateContributionsPlan(@RequestBody ContributionsPlan account, @RequestParam("parentId") Long parentId) {
-        return new ResponseEntity<>(accountService.updateContributionsPlan(account, parentId), HttpStatus.OK);
-    }
     @GetMapping("get/by/id")
-    public ResponseEntity<?> fetchContributionsPlan(@RequestParam("id") Long id) {
+    public ResponseEntity<?> fetchMember(@RequestParam("id") Long id) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
-        response.setMessage("ContributionsPlan retrieved Successfully");
+        response.setMessage("Member retrieved Successfully");
         response.setEntity(repository.findById(id));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("all")
-    public ResponseEntity<?> fetchProductCategory(@RequestParam(required = false, name = "parentId") Long parentId) {
+    public ResponseEntity<?> fetchProductCategory() {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("ProductCategory retrieved Successfully");
-
-        List<ContributionsPlan> accountList;
-        if (parentId == null || parentId == 0)
-            accountList = repository.findAllByAuditTrails_DeletedFlag(false);
-        else {
-            accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId);
-        }
+        List<Member> accountList = repository.findAllByAuditTrails_DeletedFlag(false);
         response.setEntity(accountList);
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);

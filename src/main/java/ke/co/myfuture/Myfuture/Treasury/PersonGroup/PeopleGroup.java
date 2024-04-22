@@ -26,7 +26,7 @@ public class PeopleGroup {
 //    @OneToMany
 
     @Transient
-    List<Person> people;
+    List<Person> members;
 
 //    @OneToMany
 

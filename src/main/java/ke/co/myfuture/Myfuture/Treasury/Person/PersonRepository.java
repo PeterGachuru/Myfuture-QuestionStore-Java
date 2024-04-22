@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PersonRepository extends JpaRepository<Person, Long> {
     @Query(nativeQuery = true, value = "select updated_at AS updatedAt, created_by AS createdBy, created_at AS createdAt, deleted_flag AS deletedFlag from person where id = :id")
@@ -19,4 +20,14 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     @Query(nativeQuery = true, value = "select * from person where deleted_flag = :deletedFlag")
     List<Person> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag);
 
+    @Query(nativeQuery = true, value = "select * from person where system_user_id = :userId AND id IN (SELECT person_id FROM member WHERE people_group_id = :groupId )")
+    Optional<Person> findPersonByUserIdAndGroupId(@Param("userId") Long userId, @Param("groupId") Long groupId);
+
+    @Query(nativeQuery = true, value = "select * from person where id IN (SELECT person_id FROM member WHERE people_group_id = :groupId )")
+    List<Person> findPersonsByGroupId(@Param("groupId") Long id);
+
+
+    @Query(nativeQuery = true, value = "select * from person where deleted_flag = :deletedFlag AND id IN (SELECT person_id FROM member WHERE people_group_id = :groupId )")
+
+    List<Person> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag, @Param("groupId") Long groupId);
 }

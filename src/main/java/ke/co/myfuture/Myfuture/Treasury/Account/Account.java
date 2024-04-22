@@ -4,6 +4,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.Person.Person;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
+import ke.co.myfuture.Myfuture.Treasury.Transaction.TransactionCategory;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -23,7 +24,11 @@ public class Account {
 
 	String status = "ACTIVE";
 
-	String ownershipType = "expense";//income or cash or personal
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private AccountOwnershipType ownershipType;
+
+//	String ownershipType = "expense";//income or cash or personal
 
 	String notes;
 

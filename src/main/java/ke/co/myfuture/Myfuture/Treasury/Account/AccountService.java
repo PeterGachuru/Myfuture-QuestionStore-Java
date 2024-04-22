@@ -31,8 +31,8 @@ public class AccountService {
         Optional<PeopleGroup> peopleGroup = peopleGroupRepository.findById(account.getGroupId());
         if (peopleGroup.isEmpty()) return null;
         account.setPeopleGroup(peopleGroup.get());
-        if (account.getOwnershipType().equalsIgnoreCase("EXPENSE") ||
-                account.getOwnershipType().equalsIgnoreCase("INCOME")) {
+        if (account.getOwnershipType() == AccountOwnershipType.EXPENSE ||
+                account.getOwnershipType() == AccountOwnershipType.INCOME) {
             if (account.getPlanId() == null)
                 return null;
             Optional<ContributionsPlan> contributionsPlan = contributionsPlanRepository.findById(account.getPlanId());
@@ -40,8 +40,8 @@ public class AccountService {
             account.setContributionsPlan(contributionsPlan.get());
         }
 
-        if (account.getOwnershipType().equalsIgnoreCase("CASH") ||
-                account.getOwnershipType().equalsIgnoreCase("INCOME")) {
+        if (account.getOwnershipType() == AccountOwnershipType.EXPENSE ||
+                account.getOwnershipType() == AccountOwnershipType.INCOME) {
             if (account.getPersonId() == null)
                 return null;
             Optional<Person> person = personRepository.findById(account.getPersonId());
@@ -58,5 +58,11 @@ public class AccountService {
         response.setEntity(savedAccount);
         response.setStatusCode(201);
         return response;
+    }
+
+    public Account saveAutoCreatedAccount(Account account) {
+        System.out.println("---saveAutoCreatedAccount--");
+        account.setBalance(0.0);
+        return repository.save(account);
     }
 }

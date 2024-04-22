@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.Account;
 
+import ke.co.myfuture.Myfuture.Treasury.Person.Person;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,13 +46,17 @@ public class AccountController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("all")
-    public ResponseEntity<?> fetchProductCategory() {
+    public ResponseEntity<?> fetchProductCategory(@RequestParam(required = false, name = "parentId") Long parentId) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("ProductCategory retrieved Successfully");
-        List<Account> accountList = repository.findAllByAuditTrails_DeletedFlag(false);
-//        for (Account account: accountList)
-//            account.setAudits(repository.getAudits(account.getId()));
+        List<Account> accountList;
+        if (parentId == null || parentId == 0)
+            accountList = repository.findAllByAuditTrails_DeletedFlag(false);
+        else {
+            accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId);
+        }
+//
         response.setEntity(accountList);
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
