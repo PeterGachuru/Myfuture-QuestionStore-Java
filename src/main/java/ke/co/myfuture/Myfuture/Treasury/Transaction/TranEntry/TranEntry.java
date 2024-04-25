@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.Transaction;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @Data
+@ToString
 public class TranEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +38,7 @@ public class TranEntry {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tran_id")
+    @ToString.Exclude
+            @JsonIgnore
     Transaction transaction;
-
-
 }

@@ -81,12 +81,16 @@ public class TransactionService {
 
     private Transaction save(Transaction transaction) {
         List<TranEntry> tranEntryList = transaction.getTranEntries();
+        transaction.setTranEntries(new ArrayList<>());
+        Transaction savedTransaction = repository.save(transaction);
         for (TranEntry tranEntry: tranEntryList) {
             Account account = tranEntry.getAccount();
             tranEntry.setAccountId(account.getId());
             tranEntry.setAccountName(account.getName());
+            tranEntry.setTransaction(savedTransaction);
+            tranEntryRepository.save(tranEntry);
         }
-        return repository.save(transaction);
+        return repository.findById(savedTransaction.getId()).get();
     }
 //    private Transaction save(Transaction transaction) {
 //        List<TranEntry> tranEntryList = transaction.getTranEntries();

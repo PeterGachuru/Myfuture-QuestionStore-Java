@@ -1,6 +1,7 @@
 package ke.co.myfuture.Myfuture.Treasury.Transaction;
 
 
+import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranEntryRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -18,6 +20,9 @@ public class TransactionController {
 
     @Autowired
     TransactionService accountService;
+
+    @Autowired
+    TranEntryRepository tranEntryRepository;
 
     @PostMapping("add")
     public ResponseEntity<?> newTransaction(@RequestBody Transaction account) {
@@ -41,7 +46,11 @@ public class TransactionController {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Transaction retrieved Successfully");
-        response.setEntity(repository.findById(id));
+        Optional<Transaction> transactionOptional = repository.findById(id);
+        if (transactionOptional.isPresent()) {
+            transactionOptional.get().setTranEntries(tranEntryRepository.findByTransactionId(transactionOptional.get().getId()));
+        }
+        response.setEntity(transactionOptional);
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
