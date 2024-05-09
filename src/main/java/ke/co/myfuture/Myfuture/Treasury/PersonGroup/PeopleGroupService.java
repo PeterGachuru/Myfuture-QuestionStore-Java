@@ -4,12 +4,20 @@ import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class PeopleGroupService {
     @Autowired
     PeopleGroupRepository repository;
 
     public UniversalResponse savePeopleGroup(PeopleGroup account) {
+        if (account.getParentId() != null && account.getParentId() > 0) {
+            Optional<PeopleGroup> peopleGroup = repository.findById(account.getParentId());
+
+            peopleGroup.ifPresent(account::setParent);
+        }
+
         PeopleGroup savedPeopleGroup = repository.save(account);
         System.out.println(savedPeopleGroup);
         UniversalResponse response = new UniversalResponse();

@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.PersonGroup;
 
+import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,12 +56,17 @@ public class PeopleGroupController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("all")
-    public ResponseEntity<?> fetchProductCategory() {
+    public ResponseEntity<?> fetchProductCategory(@RequestParam(required = false, name = "parentId") Long parentId) {
         System.out.println("all");
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("ProductCategory retrieved Successfully");
-        List<PeopleGroup> accountList = repository.findAllByAuditTrails_DeletedFlag(false);
+        List<PeopleGroup> accountList;
+        if (parentId == null || parentId == 0)
+            accountList = repository.findAllByAuditTrails_DeletedFlag(false);
+        else {
+            accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId);
+        }
 //        for (PeopleGroup account: accountList)
 //            account.setAudits(repository.getAudits(account.getId()));
         response.setEntity(accountList);

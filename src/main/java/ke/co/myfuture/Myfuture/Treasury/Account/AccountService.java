@@ -28,6 +28,7 @@ public class AccountService {
     @Autowired
     ContributionsPlanRepository contributionsPlanRepository;
     public UniversalResponse saveAccount(Account account) {
+        if (account.getOwnershipType() == null) return null;
         Optional<PeopleGroup> peopleGroup = peopleGroupRepository.findById(account.getGroupId());
         if (peopleGroup.isEmpty()) return null;
         account.setPeopleGroup(peopleGroup.get());
@@ -35,6 +36,18 @@ public class AccountService {
                 account.getOwnershipType() == AccountOwnershipType.INCOME) {
             if (account.getPlanId() == null)
                 return null;
+            if (account.getOwnershipType() == AccountOwnershipType.INCOME) {
+                if (account.getPersonId() == null) return null;
+                Optional<Account> existingIncomeAccount = repository.findByPersonAndPlan(account.getPersonId(), account.getPlanId());
+                if (existingIncomeAccount.isPresent()) {
+                    UniversalResponse response = new UniversalResponse();
+                    response.setStatus("Error");
+                    response.setMessage("Person already has an income account with him");
+                    response.setEntity(null);
+                    response.setStatusCode(HttpStatus.NOT_ACCEPTABLE.value());
+                    return response;
+                }
+            }
             Optional<ContributionsPlan> contributionsPlan = contributionsPlanRepository.findById(account.getPlanId());
             if (contributionsPlan.isEmpty()) return null;
             account.setContributionsPlan(contributionsPlan.get());

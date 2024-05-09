@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -27,15 +28,25 @@ public class AccountController {
 
     @PutMapping("update")
     public ResponseEntity<?> updateAccount(@RequestBody Account account) {
-        Account updatedAccount = repository.save(account);
+
+        Optional<Account> accountOptional = repository.findById(account.getId());
+        if (accountOptional.isEmpty()){
+            return null;
+        }
+
+        accountOptional.get().update(account);
+
+        Account updatedAccount = repository.save(accountOptional.get());
 
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Updated Successfully");
         response.setEntity(updatedAccount);
         response.setStatusCode(201);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @GetMapping("get/by/id")
     public ResponseEntity<?> fetchAccount(@RequestParam("id") Long id) {
         UniversalResponse response = new UniversalResponse();
@@ -46,15 +57,16 @@ public class AccountController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("all")
-    public ResponseEntity<?> fetchProductCategory(@RequestParam(required = false, name = "parentId") Long parentId) {
+    public ResponseEntity<?> fetchProductCategory(@RequestParam(required = false, name = "parentId") Long parentId,
+                                                  @RequestParam(name = "ownershipType") String ownershipType) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("ProductCategory retrieved Successfully");
         List<Account> accountList;
         if (parentId == null || parentId == 0)
-            accountList = repository.findAllByAuditTrails_DeletedFlag(false);
+            accountList = repository.findAllByAuditTrails_DeletedFlag(false, ownershipType);
         else {
-            accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId);
+            accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId, ownershipType);
         }
 //
         response.setEntity(accountList);
@@ -62,3 +74,4 @@ public class AccountController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
+

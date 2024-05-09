@@ -57,8 +57,17 @@ public class Account {
 	@JoinColumn(nullable = false)
 	PeopleGroup peopleGroup;
 
-	Integer pinPriority  =  2;
+	Integer pinPriority  =  1;
 
 	@Embedded
 	AuditTrails auditTrails = new AuditTrails();
+
+	public void update(Account account) {
+		this.name = account.name;
+		this.ownershipType = account.ownershipType;
+		this.notes = account.notes;
+		this.promisedDate = account.promisedDate;
+		this.targetAmount = account.targetAmount;
+		this.pinPriority = account.pinPriority;
+	}
 }

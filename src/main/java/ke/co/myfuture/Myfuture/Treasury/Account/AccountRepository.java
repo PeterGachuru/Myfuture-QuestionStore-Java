@@ -15,13 +15,16 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query(nativeQuery = true, value = "select * from account where deleted_flag = :deletedFlag AND DATE(created_at) >= DATE(:startDate) AND DATE(created_at) <= :endDate")
     List<Account> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag, @Param("startDate") String startDate, @Param("endDate") String endDate);
 
-    @Query(nativeQuery = true, value = "select * from account where deleted_flag = :deletedFlag")
-    List<Account> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag);
+    @Query(nativeQuery = true, value = "select * from account where deleted_flag = :deletedFlag AND ownership_type = :ownershipType")
+    List<Account> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag,  @Param("ownershipType") String ownershipType);
 
-    @Query(nativeQuery = true, value = "select * from account where deleted_flag = :deletedFlag AND contributions_plan_id = :planId")
+    @Query(nativeQuery = true, value = "select * from account where deleted_flag = :deletedFlag AND contributions_plan_id = :planId AND ownership_type = :ownershipType order by id ASC")
 
-    List<Account> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag, @Param("planId") Long planId);
+    List<Account> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag, @Param("planId") Long planId, @Param("ownershipType") String ownershipType);
 
     @Query(nativeQuery = true, value = "select * from account where owner_id = :id AND ownership_type = :ownershipType")
     Optional<Account> findAccountForPersonByType(@Param("id") Long id, @Param("ownershipType") AccountOwnershipType ownershipType);
+
+    @Query(nativeQuery = true, value = "select * from account where owner_id = :personId AND contributions_plan_id = :planId")
+    Optional<Account> findByPersonAndPlan(@Param("personId") Long personId, @Param("planId") Long planId);
 }

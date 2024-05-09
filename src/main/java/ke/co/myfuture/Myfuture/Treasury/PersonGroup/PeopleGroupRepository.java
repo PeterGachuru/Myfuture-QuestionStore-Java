@@ -1,8 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.PersonGroup;
 
 import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
-import ke.co.myfuture.Myfuture.Treasury.Account.Account;
-import ke.co.myfuture.Myfuture.Treasury.Transaction.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +17,7 @@ public interface PeopleGroupRepository extends JpaRepository<PeopleGroup, Long> 
     @Query(nativeQuery = true, value = "select * from people_group where deleted_flag = :deletedFlag")
     List<PeopleGroup> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag);
 
+    @Query(nativeQuery = true, value = "select * from people_group where deleted_flag = :deletedFlag AND parent_id = :parentId")
+
+    List<PeopleGroup> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag, @Param("parentId") Long parentId);
 }

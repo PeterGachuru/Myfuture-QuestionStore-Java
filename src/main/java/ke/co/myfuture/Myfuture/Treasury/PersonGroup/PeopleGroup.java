@@ -23,6 +23,9 @@ public class PeopleGroup {
     String notes;
     @ManyToOne
     private PeopleGroup parent;
+
+    @Transient
+    private Long parentId;
 //    @OneToMany
 
     @Transient

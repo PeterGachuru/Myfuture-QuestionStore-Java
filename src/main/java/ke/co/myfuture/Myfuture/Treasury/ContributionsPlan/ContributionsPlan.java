@@ -23,6 +23,7 @@ public class ContributionsPlan {
     String targetType = "anyhow"; //pledge//anyhow//weekly//monthly//annual
     Double targetAmount = 0.0;
     String name;
+    String notes;
     Double individualContributorTarget = 0.0;
     Integer pinPriority = 1;
     @ManyToOne
@@ -35,4 +36,17 @@ public class ContributionsPlan {
 
     @Embedded
     AuditTrails auditTrails = new AuditTrails();
+
+    public void update(ContributionsPlan account) {
+        this.name = account.name;
+        this.startDate = account.startDate;
+        this.notes = account.notes;
+        this.targetType = account.targetType;
+        this.individualContributorTarget = account.individualContributorTarget;
+        this.targetAmount = account.targetAmount;
+        this.deadlineDate = account.deadlineDate;
+        this.closureDate = account.closureDate;
+        this.targetAmount = account.targetAmount;
+        this.pinPriority = account.pinPriority;
+    }
 }

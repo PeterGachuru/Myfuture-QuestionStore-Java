@@ -56,11 +56,14 @@ public class TransactionController {
     }
     @GetMapping("all")
     public ResponseEntity<?> fetchProductCategory(@RequestParam("startDate") String startDate,
-                                                  @RequestParam("endDate") String endDate) {
+                                                  @RequestParam("endDate") String endDate,
+                                                  @RequestParam("category") String category,
+                                                  @RequestParam("planId") Long planId,
+                                                  @RequestParam("groupId") Long groupId) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("ProductCategory retrieved Successfully");
-        List<Transaction> accountList = repository.findAllByAuditTrails_DeletedFlagOrderByAuditTrails_CreatedAtDesc(false, startDate, endDate);
+        List<Transaction> accountList = repository.findAllByAuditTrails_DeletedFlagOrderByAuditTrails_CreatedAtDesc(false, startDate, endDate, category, planId, groupId);
 //        for (Transaction account: accountList)
 //            account.setAudits(repository.getAudits(account.getId()));
         response.setEntity(accountList);

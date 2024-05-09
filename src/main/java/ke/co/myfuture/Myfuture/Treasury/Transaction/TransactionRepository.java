@@ -12,7 +12,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     AuditTrails.Retriever getAudits(@Param("id") Long id);
 
 
-    @Query(nativeQuery = true, value = "select * from transaction where deleted_flag = :deletedFlag AND DATE(created_at) >= DATE(:startDate) AND DATE(created_at) <= :endDate")
-    List<Transaction> findAllByAuditTrails_DeletedFlagOrderByAuditTrails_CreatedAtDesc(@Param("deletedFlag") boolean deletedFlag, @Param("startDate") String startDate, @Param("endDate") String endDate);
+    @Query(nativeQuery = true, value = "select * from transaction where deleted_flag = :deletedFlag AND DATE(created_at) >= DATE(:startDate) AND DATE(created_at) <= :endDate AND category = :category AND id IN(select tran_id from tran_entry where account_id IN(SELECT id FROM account WHERE contributions_plan_id = :planId AND people_group_id = :groupId))")
+    List<Transaction> findAllByAuditTrails_DeletedFlagOrderByAuditTrails_CreatedAtDesc(@Param("deletedFlag") boolean deletedFlag, @Param("startDate") String startDate, @Param("endDate") String endDate, @Param("category") String category, @Param("planId") Long planId,  @Param("groupId") Long groupId);
 
 }

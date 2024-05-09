@@ -28,6 +28,9 @@ public class Person {
 	@Transient
 	List<PeopleGroup> peopleGroup;
 
+	@Transient
+	Long initialGroupId;
+
 	private String notes;
 
 	@Embedded
