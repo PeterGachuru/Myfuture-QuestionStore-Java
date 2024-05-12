@@ -19,6 +19,7 @@ import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -79,6 +80,7 @@ public class TransactionService {
         return response;
     }
 
+
     private Transaction save(Transaction transaction) {
         List<TranEntry> tranEntryList = transaction.getTranEntries();
         transaction.setTranEntries(new ArrayList<>());
@@ -90,8 +92,25 @@ public class TransactionService {
             tranEntry.setTransaction(savedTransaction);
             tranEntryRepository.save(tranEntry);
         }
-        return repository.findById(savedTransaction.getId()).get();
+        return post(savedTransaction.getId());
     }
+
+    @Transactional
+    private Transaction post(Long id) {
+        Optional<Transaction> transaction = repository.findById(id);
+        if (transaction.isEmpty()) return null;
+        List<TranEntry> tranEntryList = transaction.get().getTranEntries();
+        for (TranEntry tranEntry: tranEntryList) {
+            Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
+            if (account.isEmpty()) return null;
+            Double currentBalance = account.get().getBalance();
+            Double newBalance = currentBalance + (tranEntry.getTranType() == TranType.DEBIT? -1*tranEntry.getAmount(): tranEntry.getAmount());
+            account.get().setBalance(newBalance);
+            accountRepository.save(account.get());
+        }
+        return transaction.get();
+    }
+
 //    private Transaction save(Transaction transaction) {
 //        List<TranEntry> tranEntryList = transaction.getTranEntries();
 //        Transaction savedTransaction = repository.save(transaction);
@@ -180,7 +199,14 @@ public class TransactionService {
             System.out.println("User "+user.getId()+" not created in the group "+peopleGroup.getId());
             return null;
         }
-        Optional<Account> account = accountRepository.findAccountForPersonByType(person.get().getId(), AccountOwnershipType.CASH);
+
+        System.out.println("get account for person id: "+person.get().getId()+", group id:"+peopleGroup.getId()+" ,type: "+AccountOwnershipType.CASH);
+
+        Optional<Account> account = accountRepository.findAccountForPersonByType(person.get().getId(), peopleGroup.getId(), AccountOwnershipType.CASH.name());
+
+        if (account.isEmpty()) {
+            System.out.println("cash account is empty, will need to create");
+        }
 
         //create cash account for this user
         return account.orElseGet(() -> createCashAccount(person.get(), peopleGroup));

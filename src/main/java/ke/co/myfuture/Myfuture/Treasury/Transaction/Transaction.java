@@ -27,6 +27,12 @@ public class Transaction {
 
 	private String notes;
 
+	@Column(nullable = false)
+	private String holderParticulars;
+
+	@Column(nullable = false)
+	private String oneOfTheAccounts;
+
 	@ManyToOne
 	ContributionsPlan contributionsPlan;
 

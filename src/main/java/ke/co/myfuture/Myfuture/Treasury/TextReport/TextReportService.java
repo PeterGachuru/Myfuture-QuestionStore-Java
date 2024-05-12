@@ -71,7 +71,8 @@ public class TextReportService {
     private String generateReportText(TextReport textReport) {
         String report = textReport.getTemplate();
         report = attachOverallData(report, textReport.contributionsPlan.getId());
-        report = attachAccounts(report, textReport.contributionsPlan.getId());
+        report = attachAccounts(report, textReport.contributionsPlan.getId(), "<open-income-accounts>", "<close-income-accounts>", "INCOME");
+        report = attachAccounts(report, textReport.contributionsPlan.getId(), "<open-expense-accounts>", "<close-expense-accounts>", "EXPENSE");
         return report;
     }
 
@@ -86,27 +87,27 @@ public class TextReportService {
                 .replaceAll("\\{\\{budget}}", String.valueOf(totalBudget));
     }
 
-    private String attachAccounts(String report, Long planId) {
-        if (report == null || !report.contains("<open-accounts>"))
+    private String attachAccounts(String report, Long planId, String openingTag, String closingTag, String ownershipType) {
+        if (report == null || !report.contains(openingTag))
             return report;
-        int startIndex = report.indexOf("<open-accounts>");
-        int endIndex = report.indexOf("<close-accounts>");
+        int startIndex = report.indexOf(openingTag);
+        int endIndex = report.indexOf(closingTag);
 
         if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
-            String extractedString = report.substring(startIndex + "<open-accounts>".length(), endIndex);
+            String extractedString = report.substring(startIndex + openingTag.length(), endIndex);
             System.out.println("Extracted substring: " + extractedString);
             String prepend = report.substring(0, startIndex).trim();
-            String accountString = individualAccoutsReport(extractedString, planId);
-            String append = report.substring(endIndex+"<close-accounts>".length()).trim();
-            return attachAccounts(prepend+"\n\n"+accountString+"\n\n"+append, planId);
+            String accountString = individualAccountsReport(extractedString, planId, ownershipType);
+            String append = report.substring(endIndex+closingTag.length());
+            return attachAccounts(prepend+accountString+append, planId, openingTag, closingTag, ownershipType);
         } else {
             System.out.println("Start or end string not found, or end string appears before start string.");
             return report;
         }
     }
 
-    private String individualAccoutsReport(String extractedString, Long planId) {
-        List<Account> accountList = accountRepository.findAllByAuditTrails_DeletedFlag(false, planId, "INCOME");
+    private String individualAccountsReport(String extractedString, Long planId, String ownershipType) {
+        List<Account> accountList = accountRepository.findAllByPlanId(false, planId, ownershipType);
 
         String accountListString = "";
         int i = 1;

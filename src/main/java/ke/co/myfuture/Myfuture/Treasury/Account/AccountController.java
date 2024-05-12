@@ -57,16 +57,19 @@ public class AccountController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("all")
-    public ResponseEntity<?> fetchProductCategory(@RequestParam(required = false, name = "parentId") Long parentId,
+    public ResponseEntity<?> fetchProductCategory(@RequestParam(required = false, name = "planId") Long planId,
+                                                  @RequestParam(name = "groupId") Long groupId,
                                                   @RequestParam(name = "ownershipType") String ownershipType) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("ProductCategory retrieved Successfully");
         List<Account> accountList;
-        if (parentId == null || parentId == 0)
-            accountList = repository.findAllByAuditTrails_DeletedFlag(false, ownershipType);
-        else {
-            accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId, ownershipType);
+        if (ownershipType.equalsIgnoreCase("CASH") || planId == null || planId == 0) {
+            System.out.println("get accounts by groupId: "+groupId+", ownershipType: "+ownershipType);
+            accountList = repository.findAllByAuditTrails_DeletedFlag(false, groupId, ownershipType);
+        } else {
+            System.out.println();
+            accountList = repository.findAllByAuditTrails_DeletedFlag(false, groupId, planId, ownershipType);
         }
 //
         response.setEntity(accountList);
