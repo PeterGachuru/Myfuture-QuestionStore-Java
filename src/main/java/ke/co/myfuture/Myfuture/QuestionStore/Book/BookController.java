@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("book")
+@RequestMapping("questionstore/book")
 public class BookController {
     @Autowired
     BookRepository bookRepository;

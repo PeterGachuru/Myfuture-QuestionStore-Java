@@ -23,7 +23,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RestController
 @CrossOrigin
 @RequestMapping("questions")
-
 public class CurriQuestionController {
     @Autowired
     CurriQuestionRepository repository;
