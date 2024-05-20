@@ -23,6 +23,11 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     @Query(nativeQuery = true, value = "select * from person where system_user_id = :userId AND id IN (SELECT person_id FROM member WHERE people_group_id = :groupId )")
     Optional<Person> findPersonByUserIdAndGroupId(@Param("userId") Long userId, @Param("groupId") Long groupId);
 
+
+    @Query(nativeQuery = true, value = "select * from person where id IN (SELECT person_id FROM group_access WHERE username = :loginUsername) AND id IN (SELECT person_id FROM member WHERE people_group_id = :groupId )")
+    Optional<Person> findPersonByLoginUsernameAndGroupId(@Param("loginUsername") String loginUsername, @Param("groupId") Long groupId);
+
+
     @Query(nativeQuery = true, value = "select * from person where id IN (SELECT person_id FROM member WHERE people_group_id = :groupId )")
     List<Person> findPersonsByGroupId(@Param("groupId") Long id);
 

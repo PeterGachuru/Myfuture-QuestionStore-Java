@@ -17,6 +17,9 @@ public interface GroupAccessRepository extends JpaRepository<GroupAccess, Long> 
     @Query(nativeQuery = true, value = "select * from group_access where deleted_flag = :deletedFlag")
     List<GroupAccess> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag);
 
+    @Query(nativeQuery = true, value = "select username from group_access where people_group_id = :groupId")
+    List<String> findAllUsernames(@Param("groupId") Long groupId);
+
     @Query(nativeQuery = true, value = "select * from group_access where people_group_id = :groupId")
-    List<String> findEmails(@Param("groupId") Long groupId);
+    List<GroupAccess> findForGroup(@Param("groupId") Long groupId);
 }

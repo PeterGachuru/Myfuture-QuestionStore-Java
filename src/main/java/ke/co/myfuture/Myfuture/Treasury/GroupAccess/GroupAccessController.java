@@ -19,10 +19,11 @@ public class GroupAccessController {
     @Autowired
     GroupAccessService accountService;
 
+
     @PostMapping("add")
-    public ResponseEntity<?> newGroupAccess(@RequestParam("email") String email,
-                                       @RequestParam("groupId") Long groupId) {
-        UniversalResponse response = accountService.saveGroupAccess(email, groupId);
+    public ResponseEntity<?> add(@RequestBody GroupAccess groupAccess) {
+        System.out.println("add(@RequestBody GroupAccess groupAccess)");
+        UniversalResponse response = accountService.saveGroupAccess(groupAccess);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -35,15 +36,15 @@ public class GroupAccessController {
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @GetMapping("all")
     public ResponseEntity<?> fetchProductCategory(@RequestParam("groupId") Long groupId) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("ProductCategory retrieved Successfully");
-        List<String> accountList = repository.findEmails(groupId);
+        List<GroupAccess> accountList = repository.findForGroup(groupId);
         response.setEntity(accountList);
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 }

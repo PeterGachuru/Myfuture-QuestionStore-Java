@@ -8,6 +8,8 @@ import ke.co.myfuture.Myfuture.Treasury.Account.AccountRepository;
 import ke.co.myfuture.Myfuture.Treasury.Account.AccountService;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlanRepository;
+import ke.co.myfuture.Myfuture.Treasury.GroupAccess.GroupAccess;
+import ke.co.myfuture.Myfuture.Treasury.GroupAccess.GroupAccessService;
 import ke.co.myfuture.Myfuture.Treasury.Person.Person;
 import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
@@ -43,6 +45,9 @@ public class TransactionService {
 
     @Autowired
     TranEntryRepository tranEntryRepository;
+
+    @Autowired
+    GroupAccessService groupAccessService;
 
     public UniversalResponse error(String message) {
         UniversalResponse response = new UniversalResponse();
@@ -193,33 +198,34 @@ public class TransactionService {
             return null;
         }
 
-        Optional<Person> person = personRepository.findPersonByUserIdAndGroupId(user.getId(), peopleGroup.getId());
+//        Optional<Person> person = personRepository.findPersonByUserIdAndGroupId(user.getId(), peopleGroup.getId());
+        Optional<GroupAccess> groupAccess = groupAccessService.findGroupAccess(user.getId(), peopleGroup.getId());
 
-        if (person.isEmpty()) {
-            System.out.println("User "+user.getId()+" not created in the group "+peopleGroup.getId());
+        if (groupAccess.isEmpty()) {
+            System.out.println("User "+user.getId()+" does not have access to the group "+peopleGroup.getId());
             return null;
         }
 
-        System.out.println("get account for person id: "+person.get().getId()+", group id:"+peopleGroup.getId()+" ,type: "+AccountOwnershipType.CASH);
-
-        Optional<Account> account = accountRepository.findAccountForPersonByType(person.get().getId(), peopleGroup.getId(), AccountOwnershipType.CASH.name());
+        Optional<Account> account = accountRepository.findAccountForPersonByType(groupAccess.get().getPerson().getId(), peopleGroup.getId(), AccountOwnershipType.CASH.name());
 
         if (account.isEmpty()) {
             System.out.println("cash account is empty, will need to create");
         }
 
         //create cash account for this user
-        return account.orElseGet(() -> createCashAccount(person.get(), peopleGroup));
+        return account.orElseGet(() -> createCashAccount(groupAccess.get(), peopleGroup));
     }
 
-    private Account createCashAccount(Person person, PeopleGroup peopleGroup) {
+    private Account createCashAccount(GroupAccess groupAccess, PeopleGroup peopleGroup) {
         Account account = new Account();
-        account.setOwner(person);
+        account.setOwner(groupAccess.getPerson());
         account.setPeopleGroup(peopleGroup);
-        account.setName(person.getName()+" Cash");
+        account.setName(groupAccess.getPerson().getName()+" Cash");
         account.setPinPriority(1);
         account.setOwnershipType(AccountOwnershipType.CASH);
 
-        return accountService.saveAutoCreatedAccount(account);
+        Account account1 = accountService.saveAutoCreatedAccount(account);
+
+        return account1;
     }
 }

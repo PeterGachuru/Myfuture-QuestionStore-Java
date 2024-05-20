@@ -1,6 +1,7 @@
 package ke.co.myfuture.Myfuture.Treasury.PersonGroup;
 
 import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Treasury.GroupAccess.GroupAccessRole;
 import ke.co.myfuture.Myfuture.Treasury.GroupAccess.GroupAccessService;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,8 @@ public class PeopleGroupService {
         }
 
         PeopleGroup savedPeopleGroup = repository.save(account);
-        groupAccessService.saveGroupAccess(UserRequestContext.getCurrentUserName(), savedPeopleGroup.getId());
+        UniversalResponse universalResponse = groupAccessService.saveGroupAccess(UserRequestContext.getCurrentUserName(), GroupAccessRole.ADMIN, savedPeopleGroup);
+        System.out.println(universalResponse);
         System.out.println(savedPeopleGroup);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");

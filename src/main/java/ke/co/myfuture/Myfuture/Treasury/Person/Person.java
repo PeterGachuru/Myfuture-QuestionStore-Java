@@ -22,9 +22,6 @@ public class Person {
 
 	private boolean active=true;
 
-	private Long systemUserId;
-	private String systemUserName;
-
 	@Transient
 	List<PeopleGroup> peopleGroup;
 
@@ -35,9 +32,4 @@ public class Person {
 
 	@Embedded
 	AuditTrails auditTrails = new AuditTrails();
-
-//	public AuditTrails.Retriever getAudits() {
-//		AuditsService auditsService = ApplicationContextProvider.bean(AuditsService.class);
-//		return auditsService.getAuditsForCart(id);
-//	}
 }

@@ -62,7 +62,6 @@ public class AccountService {
             account.setOwner(person.get());
         }
 
-
         Account savedAccount = repository.save(account);
         System.out.println(savedAccount);
         UniversalResponse response = new UniversalResponse();
