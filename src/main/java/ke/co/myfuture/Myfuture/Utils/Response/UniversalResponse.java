@@ -14,5 +14,9 @@ public class UniversalResponse<T> {
     private String Status;
     private String message; //Saved succesfully
     private T entity; //{}
+
+    private Integer currentPage;
+    private Integer totalItems;
+    private Integer totalPages;
     private Integer statusCode; //201
 }

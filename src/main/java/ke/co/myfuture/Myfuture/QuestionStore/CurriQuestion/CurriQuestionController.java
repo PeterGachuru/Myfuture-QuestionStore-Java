@@ -9,6 +9,9 @@ import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +25,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 @CrossOrigin
-@RequestMapping("questions")
+@RequestMapping("questionstore/questions")
 public class CurriQuestionController {
     @Autowired
     CurriQuestionRepository repository;
@@ -125,6 +128,31 @@ public class CurriQuestionController {
         response.setStatus("Success");
         response.setMessage("CurriQuestion retrieved Successfully");
         response.setEntity(repository.findById(id));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("get/all")
+    public ResponseEntity<?> fetchCurriQuestion(@RequestParam("model") String model,
+                                                @RequestParam("lastUpdateId") String lastUpdateId,
+                                                @RequestParam("curriculum") Long curriculum,
+                                                @RequestParam("page") int page,
+                                                @RequestParam("size") int size) {
+        System.out.println("model: "+model+", lastUpdateId: "+lastUpdateId+", curriculum: "+curriculum+", page: "+", "+size);
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("CurriQuestion retrieved Successfully");
+        System.out.println(new Date());
+        System.out.println("Started reading questions");
+        Pageable paging = PageRequest.of(page, size);
+        Page<CurriQuestion> curriQuestions = repository.findByBookModel(paging, model, lastUpdateId, curriculum);
+        System.out.println(curriQuestions.getContent().size());
+        response.setEntity(curriQuestions.getContent());
+        response.setCurrentPage(page);
+        response.setTotalItems(curriQuestions.getSize());
+        response.setTotalPages(curriQuestions.getTotalPages());
+        System.out.println("Completed reading questions");
+        System.out.println(new Date());
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

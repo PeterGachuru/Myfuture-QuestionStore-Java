@@ -1,6 +1,7 @@
 package ke.co.myfuture.Myfuture.Commonauth.Utils;
 
 import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -9,6 +10,7 @@ import javax.persistence.PreUpdate;
 import java.util.Date;
 
 @Embeddable
+@Data
 public class AuditTrails {
 
 //    @UpdateTimestamp

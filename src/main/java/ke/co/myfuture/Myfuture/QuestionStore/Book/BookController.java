@@ -19,13 +19,13 @@ public class BookController {
     public ResponseEntity<?> newBook(@RequestBody Book book) {
         if (book.id != null)
             return null;
-
+        System.out.println(book);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Saved successfully");
         response.setStatusCode(201);
-            Book savedBook = bookRepository.save(book);
-            response.setEntity(savedBook);
+        Book savedBook = bookRepository.save(book);
+        response.setEntity(savedBook);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

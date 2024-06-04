@@ -9,6 +9,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+
+import static ke.co.myfuture.Myfuture.Utils.Response.StaticFunctionUtils.simpleDateFormat;
+
 @Entity
 @Data
 public class CurriQuestion {
@@ -36,17 +39,32 @@ public class CurriQuestion {
     Boolean reviewed = false;
 
     @CreationTimestamp
-    Date datewritten;
-    Date dateARequest ;
-    Date dateApproved;
-    @Column(unique = true)
-    Long cgroup;
-    Integer editionNumber = 1;
+    Date createdAt;
+//    public String getCreatedAt() {
+//        return StaticFunctionUtils.simpleDateFormat(createdAt);
+//    }
+    Date approverRequestDate;
+//    public String getApproverRequestDate() {
+//        return StaticFunctionUtils.simpleDateFormat(approverRequestDate);
+//    }
+    Date approvalDate;
+//    public String getApprovalDate() {
+//        return StaticFunctionUtils.simpleDateFormat(approvalDate);
+//    }
     @UpdateTimestamp
     Date updatedAt;
+//    public String getUpdatedAt() {
+//        return StaticFunctionUtils.simpleDateFormat(updatedAt);
+//    }
     @Column(nullable = false)
     Integer imageLevel = 1;
 
+
+    @Column(unique = true)
+    Long cgroup;
+    Integer editionNumber = 1;
+    @Column(nullable = false)
+    Long updateId ;
     Boolean hasImage;
     Boolean choicesWithImages;
     String imageCode;
@@ -58,10 +76,10 @@ public class CurriQuestion {
 //    @Transient
     List<CurriNormalChoice> choices;
 
-//    public void updateChoices()
-//    {
-//        for (CurriNormalChoice curriNormalChoice: choices) {
-//            curriNormalChoice.setQuestion(this);
-//        }
-//    }
+    Boolean deleted = false;
+
+    @PrePersist
+    void init() {
+        deleted = false;
+    }
 }

@@ -8,6 +8,7 @@ import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoice
 import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoiceRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestion;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestionRepository;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestionService;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
 import lombok.Data;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -34,16 +36,13 @@ public class ChatGPTQuestionsService {
     AIQueryRepo aiQueryRepo;
 
     @Autowired
-    CgroupService cgroupService;
-
-    @Autowired
     CurriQuestionRepository curriQuestionRepository;
-
-    @Autowired
-    CurriNormalChoiceRepository curriNormalChoiceRepository;
 
     @Value("${ai.api_key}")
     private String chatGPTKey;
+
+    @Autowired
+    private CurriQuestionService curriQuestionService;
 
 
     public void queryContentForAllSubtopics() {
@@ -85,15 +84,19 @@ public class ChatGPTQuestionsService {
     }
 
 
+//    @Bean
     public void queryCurriQuestionsForAllSubtopics() {
+        System.out.println("IN queryCurriQuestionsForAllSubtopics");
         String purpose = "curri_question";
-        List<CurriTopic> curriSubTopics = curriTopicRepository.findSubtopicsWithoutAI(purpose);
+        List<CurriTopic> curriSubTopics = curriTopicRepository.findSubtopicsWithLessAIQuestions();
+        System.out.println("Count: "+curriSubTopics.size());
         for (CurriTopic curriTopic: curriSubTopics) {
+            System.out.println("Sutopic "+curriTopic.id);
 //            if(!(curriTopic.getParent().getName().toLowerCase().contains("fraction") || curriTopic.getName().toLowerCase().contains("fraction") ))
 //                continue;
             AIQuery aiQuery = new AIQuery();
             String question = """
-                Create a list of questions for subject_replace students on subtopic_name_replace subtopic of topic_name_replace. Format your response as a json array of 50 objects with a question with a list of 4 choices, 3 of the choices being wrong and 1 right choice and an explanation for the right answer. Fit the content to kenyan and target age as age_replace. Specify which is the correct choice. Use only question, choices, correct_choice and explanation as the fields. Don't assign order to the choices.
+                Create a list of questions for subject_replace students on subtopic_name_replace subtopic of topic_name_replace. Format your response as a json array of 25 objects with a question with a list of 4 choices, 3 of the choices being wrong and 1 right choice and an explanation for the right answer. Fit the content to kenyan and target age as age_replace. Specify which is the correct choice. Use only question, choices, correct_choice and explanation as the fields. Don't assign order to the choices.
                     """;
             question = question.replaceAll("subtopic_name_replace", curriTopic.getName());
             question = question.replaceAll("topic_name_replace", curriTopic.getParent().getName());
@@ -125,13 +128,30 @@ public class ChatGPTQuestionsService {
     }
 
     private void saveQuestionArray(CurriTopic curriTopic, String response) {
+        if (response == null )
+            return;
+        response = response.trim();
+        if (!response.startsWith("{") || !response.endsWith("}") ) {
+            System.out.println("Is not json");
+            return;
+        }
+        System.out.println("To convert to questions");
+
         Gson gson = new Gson();
 
-        Questions questions = gson.fromJson(response, Questions.class);
+        Questions questions;
+        try {
+            questions = gson.fromJson(response, Questions.class);
+        } catch (Exception e){
+            return;
+        }
 
         // Parse the JSON array string into a list of MyObject
         List<Question> myObjects = questions.questions;
 
+        long questionsUpdateId = curriQuestionService.getNewUpdateId();
+
+        if (questions.questions != null)
         for (Question question: myObjects) {
             CurriQuestion curriQuestion = new CurriQuestion();
             curriQuestion.setString(question.getQuestion());
@@ -141,6 +161,7 @@ public class ChatGPTQuestionsService {
 
             List<CurriNormalChoice> choices = new ArrayList<>();
             boolean foundRight = false;
+            if (question.getChoices() != null)
             for (String choice :
                     question.getChoices()) {
                 CurriNormalChoice curriNormalChoice = new CurriNormalChoice();
@@ -160,22 +181,8 @@ public class ChatGPTQuestionsService {
             if (!foundRight)
                 continue;
 
-            Cgroup cgroup = new Cgroup();
-            cgroup.setType("Many");
-            cgroup.setDescription("Question group");
-            cgroup.setName("Question group");
-
-            cgroup = cgroupService.newCgroup(cgroup);
-
-            curriQuestion.setCgroup(cgroup.id);
-            CurriQuestion savedCurriQuestion = curriQuestionRepository.save(curriQuestion);
-//
-            for (CurriNormalChoice choice: choices) {
-                choice.setQuestion(savedCurriQuestion.getId());
-            }
-            curriNormalChoiceRepository.saveAll(choices);
+            curriQuestionService.saveNewQuestion(curriQuestion, choices, questionsUpdateId);
         }
-
     }
 
     public static boolean isValidJson(String str) {
@@ -261,6 +268,8 @@ public class ChatGPTQuestionsService {
                 JSONObject jsonObject = new JSONObject(response.toString());
                 String responseString = ((JSONObject) jsonObject.getJSONArray("choices").get(0)).getJSONObject("message").getString("content");
                 System.out.println(responseString);
+
+                isJSONValid= isJSONValid(response.toString());
                 return responseString;
             }
         } catch (IOException | JSONException e) {
@@ -287,6 +296,8 @@ public class ChatGPTQuestionsService {
 
     public boolean isJSONValid(String json) {
         try {
+            if (json == null)
+                return false;
             new JSONObject(json);
         } catch (JSONException e) {
             try {

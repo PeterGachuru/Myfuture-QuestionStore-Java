@@ -1,5 +1,7 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +19,7 @@ public interface CurriQuestionRepository extends JpaRepository<CurriQuestion, Lo
     @Transactional
     @Query(nativeQuery = true, value = "UPDATE curri_question SET book_model = :bookModel WHERE book_model IS NULL")
     void setDefaultBookModel(@Param("bookModel") String bookModel);
+
+    @Query(value = "SELECT * FROM curri_question WHERE book_model = :model AND update_id > :lastUpdateId AND deleted = 0 AND subtopic IN (SELECT id FROM curri_topic WHERE curri_level IN(SELECT id FROM curri_level WHERE curriculum = :curriculum))  ", nativeQuery = true)
+    Page<CurriQuestion> findByBookModel(Pageable paging, @Param("model") String model, @Param("lastUpdateId") String lastUpdateId, Long curriculum);
 }
