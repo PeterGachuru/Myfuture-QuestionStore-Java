@@ -132,7 +132,7 @@ public class CurriQuestionController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("get/all")
+    @GetMapping("get/all/curriculum")
     public ResponseEntity<?> fetchCurriQuestion(@RequestParam("model") String model,
                                                 @RequestParam("lastUpdateId") String lastUpdateId,
                                                 @RequestParam("curriculum") Long curriculum,
@@ -146,6 +146,33 @@ public class CurriQuestionController {
         System.out.println("Started reading questions");
         Pageable paging = PageRequest.of(page, size);
         Page<CurriQuestion> curriQuestions = repository.findByBookModel(paging, model, lastUpdateId, curriculum);
+        System.out.println(curriQuestions.getContent().size());
+        response.setEntity(curriQuestions.getContent());
+        response.setCurrentPage(page);
+        response.setTotalItems(curriQuestions.getSize());
+        response.setTotalPages(curriQuestions.getTotalPages());
+        System.out.println("Completed reading questions");
+        System.out.println(new Date());
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("get/all/level/and/subject")
+    public ResponseEntity<?> fetchCurriQuestion(@RequestParam("model") String model,
+                                                @RequestParam("lastUpdateId") String lastUpdateId,
+                                                @RequestParam("curriculum") Long curriculum,
+                                                @RequestParam("level") Long level,
+                                                @RequestParam("subject") Long subject,
+                                                @RequestParam("page") int page,
+                                                @RequestParam("size") int size) {
+        System.out.println("model: "+model+", lastUpdateId: "+lastUpdateId+", curriculum: "+curriculum+", level: "+level+", subject: "+subject+", page: "+", "+size);
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("CurriQuestion retrieved Successfully");
+        System.out.println(new Date());
+        System.out.println("Started reading questions");
+        Pageable paging = PageRequest.of(page, size);
+        Page<CurriQuestion> curriQuestions = repository.findByBookModel(paging, model, lastUpdateId, curriculum, level, subject);
         System.out.println(curriQuestions.getContent().size());
         response.setEntity(curriQuestions.getContent());
         response.setCurrentPage(page);
