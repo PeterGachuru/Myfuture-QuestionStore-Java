@@ -18,6 +18,7 @@ public class AuthenticationHttpFilters extends AbstractHttpConfigurer<Authentica
                         .mvcMatchers("/powers/create-role").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
                         .mvcMatchers("/powers/update-role").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
                         .mvcMatchers("/users/create-user").hasAnyAuthority(AccessRight.CREATE_USER.toString())
+                        .mvcMatchers("/users/register").permitAll()
                         .mvcMatchers("/users/update-user/:id").hasAnyAuthority(AccessRight.CREATE_USER.toString())
                         .mvcMatchers("/powers/activate-role").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
                         .mvcMatchers("/users/all-accounts").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())

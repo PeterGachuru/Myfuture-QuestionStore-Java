@@ -40,6 +40,7 @@ public class User implements Serializable {
 
     @Column(name="first_name")
     private String firstName;
+    private String county;
 
     @Column(name="last_name")
     private String lastName;
@@ -73,6 +74,8 @@ public class User implements Serializable {
 
     @Column(name = "login_status")
     private Integer isLoggedIn = 0;
+
+    private Long installId;
 
     @JsonIgnore
     private Timestamp lastLogin = new Timestamp(System.currentTimeMillis());

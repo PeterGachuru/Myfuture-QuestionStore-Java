@@ -13,5 +13,10 @@ public class UserCreateRequest implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
-    private Long role;
+    private String phone;
+    private String county;
+    private Long roleId;
+    private Long installId;
+    private String role;
+    private String password;
 }

@@ -103,6 +103,7 @@ public class GroupAccessService {
 
     public Optional<GroupAccess> findGroupAccess(Long userId, Long groupId) {
 //        return null;
-        return Optional.empty();
+        return repository.findByUserIdAndGroupId(userId, groupId);
+//        return Optional.empty();
     }
 }

@@ -38,7 +38,7 @@ public class MailService2 {
             throw new MailServiceException("Configured mail credentials are invalid. Please contact your system admin");
         }catch (MailParseException ignored){
             throw new MailServiceException("Mail content failed to parse or the email has an invalid format");
-        }catch (MailPreparationException ignored){
+        }catch (MailPreparationException ignored) {
             throw new MailServiceException("Error in email preparation");
         }catch (MailException e) {
             throw new MailServiceException(Objects.requireNonNull(e.getMessage()).split(";")[0]);

@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Builder
 public class LoginResponse implements Serializable {
     @Builder.Default
-    private Integer status = HttpStatus.NOT_FOUND.value();
+    private Integer statusCode = HttpStatus.NOT_FOUND.value();
 
     @Builder.Default
     private String message = HttpStatus.NOT_FOUND.getReasonPhrase();

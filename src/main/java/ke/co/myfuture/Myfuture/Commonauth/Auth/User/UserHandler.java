@@ -25,18 +25,22 @@ public class UserHandler {
     @Autowired
     private UserRepository userRepository;
 
+    @PostMapping("/register")
+    public ResponseEntity<AuthEntityResponse> createRegister(@RequestBody UserCreateRequest body) {
+        AuthEntityResponse response = new AuthEntityResponse();
+        if (!body.getEmail().contains("@")) return null;
+
+        response = this.userService.createUser(body);
+
+        return ResponseEntity.ok().body(response);
+    }
+
     @PostMapping("/create-user")
     public ResponseEntity<AuthEntityResponse> createUser(@RequestBody UserCreateRequest body) {
         AuthEntityResponse response = new AuthEntityResponse();
-        String[] splitEmail = body.getEmail().split("@");
+        if (!body.getEmail().contains("@")) return null;
 
-        response = this.userService.createUser(body.getEmail(), body.getFirstName(), body.getLastName(), body.getRole());
-//        if (splitEmail.length == 2 && splitEmail[1].trim().equals("equitybank.co.ke")){
-//             response = this.userService.createUser(body.getEmail(), body.getFirstName(), body.getLastName(), body.getRole());
-//        }else{
-//            response.setStatusCode(403);
-//            response.setMessage("Invalid Email Address");
-//        }
+        response = this.userService.createUser(body);
 
         return ResponseEntity.ok().body(response);
     }

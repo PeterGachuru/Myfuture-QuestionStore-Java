@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface GroupAccessRepository extends JpaRepository<GroupAccess, Long> {
     @Query(nativeQuery = true, value = "select updated_at AS updatedAt, created_by AS createdBy, created_at AS createdAt, deleted_flag AS deletedFlag from group_access where id = :id")
@@ -22,4 +23,8 @@ public interface GroupAccessRepository extends JpaRepository<GroupAccess, Long> 
 
     @Query(nativeQuery = true, value = "select * from group_access where people_group_id = :groupId")
     List<GroupAccess> findForGroup(@Param("groupId") Long groupId);
+
+    @Query(nativeQuery = true, value = "select * from group_access where people_group_id = :groupId AND person_id = :userId")
+
+    Optional<GroupAccess> findByUserIdAndGroupId(@Param("userId") Long userId, @Param("groupId") Long groupId);
 }

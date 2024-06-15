@@ -2,6 +2,7 @@ package ke.co.myfuture.Myfuture.Commonauth.Auth.User;
 
 //import co.ke.emtechhousee.emtr.Auditing.AuditTrail.AuditTrailProvider;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UpdateUserRequest;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UserCreateRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.AuthEntityResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.LoginResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.UserResponse;
@@ -94,7 +95,7 @@ public class UserService {
                 if (!otpService.validateLoginRetries(email)) {
                     System.out.println("User is locked");
 //                    updateUserStatus(email, "Locked");
-                    response.set(LoginResponse.builder().status(HttpStatus.FORBIDDEN.value()).message("Maximum login " +
+                    response.set(LoginResponse.builder().statusCode(HttpStatus.FORBIDDEN.value()).message("Maximum login " +
                             "retries have been reached. Your account has been locked. Contact your system adimin").build());
                     return;
                 }
@@ -112,7 +113,7 @@ public class UserService {
 
                 if (inProd && user.getIsLoggedIn() == 1 && lastLogin.after(now)) {
                     System.out.println("More than one login");
-                    response.set(LoginResponse.builder().status(HttpStatus.FORBIDDEN.value()).message("User cannot " +
+                    response.set(LoginResponse.builder().statusCode(HttpStatus.FORBIDDEN.value()).message("User cannot " +
                             "login to have more than one session").build());
 //                    audit.log("AUTHENTICATION", "Attempted multiple session login for user: ", email);
                     System.out.println("Returning");
@@ -128,7 +129,7 @@ public class UserService {
                     UserData userData = getUserDetails(user.getEmail()).getUser();
 
                     if (user.getEmail().equalsIgnoreCase("no-reply@equitybank.co.ke") && user.getFirstLogin() == 0) {
-                        response.set(LoginResponse.builder().status(HttpStatus.UNAUTHORIZED.value()).message("Account" +
+                        response.set(LoginResponse.builder().statusCode(HttpStatus.UNAUTHORIZED.value()).message("Account" +
                                 " Is Deactivated").build());
                         return;
                     }
@@ -155,49 +156,49 @@ public class UserService {
 
 
 
-                        response.set(LoginResponse.builder().status(HttpStatus.OK.value()).message("Login successful").user(authResponse).build());
+                        response.set(LoginResponse.builder().statusCode(HttpStatus.OK.value()).message("Login successful").user(authResponse).build());
 
                     } catch (MailServiceException e) {
                         e.printStackTrace();
-                        response.set(LoginResponse.builder().status(HttpStatus.SERVICE_UNAVAILABLE.value()).message(e.getMessage()).build());
+                        response.set(LoginResponse.builder().statusCode(HttpStatus.SERVICE_UNAVAILABLE.value()).message(e.getMessage()).build());
                     }
                 } else {
                     //to-do lock user if password is invalid 5 times
                     System.out.println("Password does not match");
-                    response.set(LoginResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Error").build());
+                    response.set(LoginResponse.builder().statusCode(HttpStatus.BAD_REQUEST.value()).message("Error").build());
                 }
             } else {
                 System.out.println("Account is inactive");
-                response.set(LoginResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Account is " +
+                response.set(LoginResponse.builder().statusCode(HttpStatus.BAD_REQUEST.value()).message("Account is " +
                         "inactive. Please contact your system admin.").build());
             }
         }, () -> {
             System.out.println("Did not find user");
-            response.set(LoginResponse.builder().status(HttpStatus.BAD_REQUEST.value()).message("Error").build());
+            response.set(LoginResponse.builder().statusCode(HttpStatus.BAD_REQUEST.value()).message("Error").build());
         });
 
         return response.get();
     }
 
-    public AuthEntityResponse createUser(@NonNull String email, @NonNull String firstName, @NonNull String lastName,
-                                         @NonNull Long role) {
+    public AuthEntityResponse createUser(UserCreateRequest userCreateRequest) {
         System.out.println("Creating user");
         AtomicReference<AuthEntityResponse> res = new AtomicReference<>();
 
-        userRepository.findByEmail(email).ifPresentOrElse(myUser -> {
+        userRepository.findByEmail(userCreateRequest.getEmail()).ifPresentOrElse(myUser -> {
             res.set(AuthEntityResponse.builder().statusCode(HttpStatus.BAD_REQUEST.value()).message(String.format(
-                    "User with the email %s already exists ", email)).build());
-        }, () -> this.roleConfigRepository.findById(role).ifPresentOrElse(roleConfig -> {
+                    "User with the email %s already exists ", userCreateRequest.getEmail())).build());
+        }, () -> this.roleConfigRepository.findByName(userCreateRequest.getRole()).ifPresentOrElse(roleConfig -> {
             if (roleConfig.getStatus().compareTo(1) == 0) {
                 User user = new User();
-                user.setEmail(email.trim());
-                user.setFirstName(firstName.trim());
-                user.setLastName(lastName.trim());
+                user.setEmail(userCreateRequest.getEmail().trim());
+                user.setFirstName(userCreateRequest.getFirstName());
+                user.setLastName(userCreateRequest.getLastName());
+                user.setCounty(userCreateRequest.getCounty());
+                user.setInstallId(userCreateRequest.getInstallId());
                 user.setStatus("Active");
                 user.setFirstLogin(1);
 
-
-                String password = passwordGenerator.generatePassword();
+                String password = userCreateRequest.getPassword() == null || userCreateRequest.getPassword().trim().isEmpty()?  passwordGenerator.generatePassword(): userCreateRequest.getPassword().trim();
                 System.out.println(password);
                 UserPassword userPassword = new UserPassword();
                 userPassword.setPassword(passwordUtil.encode(password));

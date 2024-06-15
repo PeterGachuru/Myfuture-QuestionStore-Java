@@ -12,9 +12,9 @@ public class StudentAccountController {
     @Autowired
     StudentAccountRepository repository;
 
-
-    @PostMapping("add/")
+    @PostMapping("add")
     public ResponseEntity<?> newStudentAccount(@RequestBody StudentAccount student) {
+        if (student.id != null) return null;
         StudentAccount savedStudentAccount = repository.save(student);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
@@ -26,6 +26,7 @@ public class StudentAccountController {
 
     @PutMapping("update/")
     public ResponseEntity<?> updateStudentAccount(@RequestBody StudentAccount student) {
+        if (student.id == null) return null;
         StudentAccount updatedStudentAccount = repository.save(student);
 
         UniversalResponse response = new UniversalResponse();

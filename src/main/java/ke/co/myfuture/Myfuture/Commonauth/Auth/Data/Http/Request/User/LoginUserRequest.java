@@ -13,6 +13,8 @@ import java.io.Serializable;
 public class LoginUserRequest implements Serializable {
     @JsonProperty(value = "email")
     private String email;
+    @JsonProperty(value = "username")
+    private String username;
 
     @JsonProperty(value = "password")
     private String password;

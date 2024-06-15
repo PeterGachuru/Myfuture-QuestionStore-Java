@@ -27,19 +27,21 @@ public class StudentAccount {
 //    @Column(nullable = false)
 //    Long parent;
 
-    @ManyToOne()
-    @JoinColumn(name = "parent")
+    @Transient()
     UserAccount useraccount;
+
+    @Column(nullable = false)
+    Long parent;
+//    Long parent;
+//    Long parent;
+
     String name;
-
-
 
     @OneToOne
     @JoinColumn(name = "install_id", nullable = false)
     Install install;
     @Column(nullable = false)
     Long inid;
-
 
     @CreationTimestamp
     public Date createdAt;

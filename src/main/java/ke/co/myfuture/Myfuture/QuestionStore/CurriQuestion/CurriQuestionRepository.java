@@ -20,9 +20,9 @@ public interface CurriQuestionRepository extends JpaRepository<CurriQuestion, Lo
     @Query(nativeQuery = true, value = "UPDATE curri_question SET book_model = :bookModel WHERE book_model IS NULL")
     void setDefaultBookModel(@Param("bookModel") String bookModel);
 
-    @Query(value = "SELECT * FROM curri_question WHERE book_model = :model AND update_id > :lastUpdateId AND deleted = 0 AND subtopic IN (SELECT id FROM curri_topic WHERE curri_level IN(SELECT id FROM curri_level WHERE curriculum = :curriculum)) ORDER BY update_id ASC ", nativeQuery = true)
+    @Query(value = "SELECT * FROM curri_question WHERE book_model = :model AND update_id >= :lastUpdateId AND deleted = 0 AND subtopic IN (SELECT id FROM curri_topic WHERE curri_level IN(SELECT id FROM curri_level WHERE curriculum = :curriculum)) ORDER BY update_id ASC ", nativeQuery = true)
     Page<CurriQuestion> findByBookModel(Pageable paging, @Param("model") String model, @Param("lastUpdateId") String lastUpdateId, Long curriculum);
 
-    @Query(value = "SELECT * FROM curri_question WHERE book_model = :model AND update_id > :lastUpdateId AND deleted = 0 AND subtopic IN (SELECT id FROM curri_topic WHERE curri_level = :level AND subject = :subject AND curri_level IN(SELECT id FROM curri_level WHERE curriculum = :curriculum)) ORDER BY update_id ASC ", nativeQuery = true)
+    @Query(value = "SELECT * FROM curri_question WHERE book_model = :model AND update_id >= :lastUpdateId AND deleted = 0 AND subtopic IN (SELECT id FROM curri_topic WHERE curri_level = :level AND subject = :subject AND curri_level IN(SELECT id FROM curri_level WHERE curriculum = :curriculum)) ORDER BY update_id ASC ", nativeQuery = true)
     Page<CurriQuestion> findByBookModel(Pageable paging, @Param("model") String model, @Param("lastUpdateId") String lastUpdateId, Long curriculum, Long level, Long subject);
 }
