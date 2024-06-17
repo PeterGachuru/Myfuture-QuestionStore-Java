@@ -9,6 +9,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.UsersResp
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.Response.OtpResponse;
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MailServiceException;
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MakerCheckerFailException;
+import ke.co.myfuture.Myfuture.Commonauth.Utils.CustomMailSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class UserHandler {
     UserService userService;
     @Autowired
     private UserRepository userRepository;
+
 
     @PostMapping("/register")
     public ResponseEntity<AuthEntityResponse> createRegister(@RequestBody UserCreateRequest body) {

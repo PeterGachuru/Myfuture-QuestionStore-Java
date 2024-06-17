@@ -26,7 +26,16 @@ public enum AccessRight {
     DUKA_OPERATIONS("Operate Duka","OPERATE", "OPERATE"),
     MODIFY_TOPIC("Modify Topic","WRITE_CONTENT", "TOPICS"),
     VIEW_ACCESSPRIV("View Access Rights","ACCESS", "VIEW"),
-    CREATE_USER("Modify Access Rights","ACCESS", "EDIT");
+    CREATE_USER("Modify Access Rights","ACCESS", "EDIT"),
+
+    CREATE_PEOPLE_GROUP("Create People Group","PEOPLE_GROUP", "CREATE"),
+    VIEW_PEOPLE_GROUP("View people Group","PEOPLE_GROUP", "VIEW"),
+    CREATE_PERSON("Create a person","PERSON", "CREATE"),
+    VIEW_PERSON("View person","PERSON", "VIEW"),
+    CREATE_FUNDING_COMPAIGN("Create funding Compaign","FUNDING_COMPAIGN", "EDIT"),
+    VIEW_FUNDING_COMPAIGN("Modify Access Rights","FUNDING_COMPAIGN", "EDIT"),
+    TRANSACT("Transact","TRANSACTIONS", "TRANSACT"),
+    ;
 
 
     private final String name;

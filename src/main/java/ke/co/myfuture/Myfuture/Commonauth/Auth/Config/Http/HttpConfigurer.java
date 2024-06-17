@@ -62,6 +62,7 @@ public class HttpConfigurer  {
                 .apply(new DukazoteHttpFilters()).and()
                 .apply(new MyScpHttpFilters()).and()
                 .apply(new ImageStoreHttpFilters()).and()
+                .apply(new TreasuryHttpFilters()).and()
                 .apply(new AuthenticationHttpFilters()).and()
 
                 .authorizeHttpRequests((auth) -> auth

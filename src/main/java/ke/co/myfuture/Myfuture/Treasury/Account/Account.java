@@ -8,6 +8,7 @@ import ke.co.myfuture.Myfuture.Treasury.Transaction.TransactionCategory;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
@@ -34,6 +35,7 @@ public class Account {
 
 //	String targetType = "anyhow";//pledge//anyhow//weekly//monthly//annual
 
+	@NotNull
 	Double targetAmount = 0.0;
 
 	Date promisedDate;

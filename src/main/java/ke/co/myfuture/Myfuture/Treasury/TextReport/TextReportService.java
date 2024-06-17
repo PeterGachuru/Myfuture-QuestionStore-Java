@@ -114,7 +114,8 @@ public class TextReportService {
         for (Account account: accountList) {
             accountListString += extractedString.replaceAll("\\{\\{numbering}}", String.valueOf(i++))
                     .replaceAll("\\{\\{full_name}}", account.getName())
-                    .replaceAll("\\{\\{balance}}", String.valueOf(account.getBalance()))+"\n";
+                    .replaceAll("\\{\\{uncleared}}", account.getTargetAmount()-account.getBalance() > 0 ? String.valueOf(account.getTargetAmount()-account.getBalance())+"\uD83C\uDD7F\uFE0F": "")
+                    .replaceAll("\\{\\{balance}}", account.getBalance() != 0.0? String.valueOf(account.getBalance())+"✅": "").trim()+"\n";
         }
 
         return accountListString;

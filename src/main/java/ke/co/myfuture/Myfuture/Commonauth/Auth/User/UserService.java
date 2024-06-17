@@ -24,6 +24,7 @@ import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MailServiceExceptio
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MakerCheckerFailException;
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MaximumRetriesException;
 import ke.co.myfuture.Myfuture.Commonauth.MailComponent.MailService2;
+import ke.co.myfuture.Myfuture.Commonauth.Utils.CustomMailSender;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +57,8 @@ public class UserService {
     private final OtpService otpService;
 
     private final MailService2 mailService2;
+
+    private CustomMailSender customMailSender;
     @Value("${production}")
     private boolean inProd;
 
@@ -69,6 +72,12 @@ public class UserService {
         });
 
         return roles;
+    }
+
+    private CustomMailSender getCustomMailSender() {
+        if (customMailSender == null)
+            customMailSender = new CustomMailSender("mailconfigs/authmail.properties");
+        return customMailSender;
     }
 
     public Optional<User> getLoggedInUser(String email) {
@@ -151,10 +160,16 @@ public class UserService {
                     try {
                         log.info("otp is {}",otp);
                         System.out.println("About to send email");
-                        if (inProd)
-                            mailService2.sendEmail(userData.getEmail(), "Your OTP is: " + otp, "OTP");
-
-
+                        System.out.println("inProd: "+inProd);
+                        if (inProd) {
+                            System.out.println("Is in prod");
+                            CustomMailSender customMailSender1 = getCustomMailSender();
+                            customMailSender1.sendEmail("Ibuka: User Login", "You have just logged in at "+new Date(), new String[]{user.getEmail()}, new String[]{}, new String[]{});
+                            log.info("password {}",password);
+//                        mailService2.sendEmail(user.getEmail(),
+//                                "Your Myfuture password is: " + password + "  Do not share your password with anyone",
+//                                "Myfuture password");
+                        }
 
                         response.set(LoginResponse.builder().statusCode(HttpStatus.OK.value()).message("Login successful").user(authResponse).build());
 
@@ -208,19 +223,14 @@ public class UserService {
                 user.setPasswords(userPasswords);
 
                 try {
-                    if (inProd)
-                        mailService2.sendEmail(user.getEmail(),
-                                "Your Myfuture password is: " + password + "  Do not share your password with anyone",
-                                "Myfuture password");
-
-                    log.info("Password: {}", password);
-                    if (inProd) {
-                        mailService2.sendEmail(user.getEmail(),
-                                "Your Myfuture password is: " + password + "  Do not share your password with anyone",
-                                "Myfuture password");
+                    if (inProd){
+                        CustomMailSender customMailSender1 = getCustomMailSender();
+                        customMailSender1.sendEmail("Ibuka: User Registration", "Your Ibuka password is: " + password + ".  Do not share your password with anyone", new String[]{user.getEmail()}, new String[]{}, new String[]{});
                         log.info("password {}",password);
-                    };
-
+//                        mailService2.sendEmail(user.getEmail(),
+//                                "Your Myfuture password is: " + password + "  Do not share your password with anyone",
+//                                "Myfuture password");
+                    }
 
                     user = userRepository.save(user);
 

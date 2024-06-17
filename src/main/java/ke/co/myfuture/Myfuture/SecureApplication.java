@@ -26,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
@@ -76,7 +77,6 @@ public class SecureApplication {
 
 
     private void initRoles() {
-
         List<RoleConfig> currentRoles = roleConfigRepository.findAll();
         System.out.println("Printing roles");
         System.out.println(Arrays.deepToString(currentRoles.toArray()));
@@ -93,39 +93,45 @@ public class SecureApplication {
         }
     }
 
+    private void updateRole() {
+        List<AccessRight> accessRights = Arrays.asList(AccessRight.values());
+        log.log(Level.INFO, String.format("Access Rights %s : ", accessRights));
+        Optional<RoleConfig> roleConfig = roleConfigRepository.findByName(ERole.ROLE_SUPERUSER.toString());
+        if (roleConfig.isPresent()) {
+            roleConfig.get().setAccessRights(accessRights);
+            roleConfigRepository.save(roleConfig.get());
+        }
+    }
+
     private void initMaker() {
-
         if (userRepository.findAll().isEmpty()) {
-
             initRoles();
-
             AtomicReference<User> user = new AtomicReference<>(new User());
-
             roleConfigRepository.findByName(ERole.ROLE_SUPERUSER.toString()).ifPresentOrElse(roleConfig -> {
-                        user.get().setEmail(superUserEmail.trim());
-                        user.get().setFirstName(superUserFirstName.trim());
-                        user.get().setLastName(superUserLastName.trim());
-                        user.get().setStatus("Active");
-                        user.get().setFirstLogin(1);
-                        UserPassword userPassword = new UserPassword();
-                        userPassword.setPassword(passwordUtil.encode("12345678"));
-                        user.get().setPasswords(List.of(userPassword));
-                        user.set(userRepository.save(user.get()));
-                        log.log(Level.INFO, String.format("User created [ %s ]", user.get()));
-                        log.log(Level.INFO, String.format("Role Details [ %s ]", roleConfig));
+                    user.get().setEmail(superUserEmail.trim());
+                    user.get().setFirstName(superUserFirstName.trim());
+                    user.get().setLastName(superUserLastName.trim());
+                    user.get().setStatus("Active");
+                    user.get().setFirstLogin(1);
+                    UserPassword userPassword = new UserPassword();
+                    userPassword.setPassword(passwordUtil.encode("12345678"));
+                    user.get().setPasswords(List.of(userPassword));
+                    user.set(userRepository.save(user.get()));
+                    log.log(Level.INFO, String.format("User created [ %s ]", user.get()));
+                    log.log(Level.INFO, String.format("Role Details [ %s ]", roleConfig));
 
-                        if (this.userService.assignRole(user.get(), roleConfig, true)) {
-                            log.log(Level.INFO, String.format("User assigned role [ %s ]", user.get()));
-                        }
-                        try {
-                            SendCredentialsToEmail sm = new SendCredentialsToEmail();
-                            log.log(Level.INFO, String.format("User Email [ %s ]", user.get().getEmail()));
-                            if (inProd)
-                                sm.sendMail(user.get().getEmail(), user.get().getFirstName() + " " + user.get().getLastName(), "12345678");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }, () -> log.log(Level.WARNING, "Provided role is not found")
+                    if (this.userService.assignRole(user.get(), roleConfig, true)) {
+                        log.log(Level.INFO, String.format("User assigned role [ %s ]", user.get()));
+                    }
+                    try {
+                        SendCredentialsToEmail sm = new SendCredentialsToEmail();
+                        log.log(Level.INFO, String.format("User Email [ %s ]", user.get().getEmail()));
+                        if (inProd)
+                            sm.sendMail(user.get().getEmail(), user.get().getFirstName() + " " + user.get().getLastName(), "12345678");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }, () -> log.log(Level.WARNING, "Provided role is not found")
             );
         }
     }
@@ -138,8 +144,9 @@ public class SecureApplication {
     @Bean
     CommandLineRunner runner() {
         return args -> {
-            if (enableMaker.equalsIgnoreCase("true")){
+            if (enableMaker.equalsIgnoreCase("true")) {
                 initMaker();
+                updateRole();
             }
             System.out.println("Initialization is okay");
         };
