@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.contest.ContestInvitee;
 
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccount;
+import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -21,7 +21,7 @@ public class ContestInvitee {
     public Long contest;
     @OneToOne
     @JoinColumn(name = "invitee_id", nullable = false)
-    StudentAccount studentaccount;
+    IbukaStudentAccount studentaccount;
     Integer score;
     boolean attempted;
     @CreationTimestamp

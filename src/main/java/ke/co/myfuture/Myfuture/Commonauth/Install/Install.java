@@ -1,6 +1,7 @@
-package ke.co.myfuture.Myfuture.UserManagement.Install;
+package ke.co.myfuture.Myfuture.Commonauth.Install;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -8,6 +9,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Install {

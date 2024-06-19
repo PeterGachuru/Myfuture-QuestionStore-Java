@@ -18,15 +18,16 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javax.transaction.Transactional;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ChatGPTQuestionsService {
@@ -127,34 +128,39 @@ public class ChatGPTQuestionsService {
         }
     }
 
-    private void saveQuestionArray(CurriTopic curriTopic, String response) {
+    private List<Question> responseToQuestionArray(String response) {
         if (response == null )
-            return;
+            return null;
         response = response.trim();
-        if (!response.startsWith("{") || !response.endsWith("}") ) {
-            System.out.println("Is not json");
-            return;
+        if (!response.startsWith("{") || !response.endsWith("}")) {
+//            System.out.println("Is not json");
+            return null;
         }
-        System.out.println("To convert to questions");
+
+//        System.out.println("To convert to questions");
 
         Gson gson = new Gson();
 
         Questions questions;
         try {
             questions = gson.fromJson(response, Questions.class);
-        } catch (Exception e){
-            return;
+        } catch (Exception e) {
+            return null;
         }
+        return questions.questions;
+    }
 
+    private void saveQuestionArray(CurriTopic curriTopic, String response) {
         // Parse the JSON array string into a list of MyObject
-        List<Question> myObjects = questions.questions;
+        List<Question> myObjects = responseToQuestionArray(response);
 
-        long questionsUpdateId = curriQuestionService.getNewUpdateId();
+        long questionsUpdateId;
 
-        if (questions.questions != null)
+        if (myObjects != null)
         for (Question question: myObjects) {
             CurriQuestion curriQuestion = new CurriQuestion();
             curriQuestion.setString(question.getQuestion());
+            curriQuestion.setExplanation(question.getExplanation());
             curriQuestion.setSubtopic(curriTopic);
             curriQuestion.setBookModel(BookInitialModels.chatGpt3_5);
             curriQuestion.setHasImage(false);
@@ -180,8 +186,98 @@ public class ChatGPTQuestionsService {
             }
             if (!foundRight)
                 continue;
-
+            questionsUpdateId = curriQuestionService.getNewUpdateId();
             curriQuestionService.saveNewQuestion(curriQuestion, choices, questionsUpdateId);
+        }
+    }
+
+    public void updateExplanationForgotten() {
+        StringBuilder sql = new StringBuilder();
+        Pageable paging = PageRequest.of(0, 10);
+        Page<AIQuery> curriQuestions = aiQueryRepo.findAllForQuestions(paging);
+        int totalPages = curriQuestions.getTotalPages();
+        Set<Long> subtopics = new HashSet<>();
+        for (int i = 0; i < totalPages; i++) {
+            System.out.println("page: "+i+" / "+totalPages);
+            paging = PageRequest.of(i, 10);
+            curriQuestions = aiQueryRepo.findAllForQuestions(paging);
+            for (AIQuery aiQuery: curriQuestions.getContent()) {
+                long questionsUpdateId;
+                List<Question> myObjects = responseToQuestionArray(aiQuery.getAiResponse());
+                if (myObjects != null) {
+                    for (Question question: myObjects) {
+                        questionsUpdateId = curriQuestionService.getNewUpdateId();
+//                        System.out.println("question: "+question.getQuestion());
+//                        System.out.println("explanation: "+question.getExplanation());
+//                        subtopics.add(aiQuery.getSubtopicId());
+                        sql.append("UPDATE curri_question SET explanation = '").append(escapeStringForSql(question.getExplanation())).append("' WHERE subtopic = "+aiQuery.getSubtopicId()+" AND string LIKE '%").append(escapeStringForSql(question.getQuestion().trim())).append("%';\n");
+//                        sql.append("SELECT * FROM curri_question WHERE explanation LIKE '%").append(escapeStringForSql(question.getExplanation())).append("%' AND subtopic = "+aiQuery.getSubtopicId()+" AND string LIKE '%").append(escapeStringForSql(question.getQuestion().trim())).append("%';\n");
+//                        curriQuestionRepository.updateExplanation(question.getExplanation(), question.getQuestion().trim(), questionsUpdateId);
+                    }
+                }
+            }
+            writeToFile(sql.toString());
+            sql = new StringBuilder();
+//            break;
+        }
+        System.out.println(Arrays.deepToString(subtopics.toArray()));
+    }
+
+    public static String escapeStringForSql(String input) {
+        if (input == null) {
+            return null;
+        }
+
+        // Common escape sequences
+        StringBuilder escaped = new StringBuilder();
+        for (char c : input.toCharArray()) {
+            switch (c) {
+                case '\'':
+                    escaped.append("''"); // Escape single quote
+                    break;
+                case '\\':
+                    escaped.append("\\\\"); // Escape backslash
+                    break;
+                case '\0':
+                    escaped.append("\\0"); // Escape null character
+                    break;
+                case '\n':
+                    escaped.append("\\n"); // Escape newline
+                    break;
+                case '\r':
+                    escaped.append("\\r"); // Escape carriage return
+                    break;
+                case '\t':
+                    escaped.append("\\t"); // Escape tab
+                    break;
+                case '\b':
+                    escaped.append("\\b"); // Escape backspace
+                    break;
+                case '\032':
+                    escaped.append("\\Z"); // Escape escape character
+                    break;
+                case '%':
+                    escaped.append("\\%"); // Escape percent for LIKE queries
+                    break;
+                case '_':
+                    escaped.append("\\_"); // Escape underscore for LIKE queries
+                    break;
+                default:
+                    escaped.append(c);
+                    break;
+            }
+        }
+
+        return escaped.toString();
+    }
+
+
+    private void writeToFile(String content){
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("updates.sql", true))) {
+            writer.write(content);
+            System.out.println("Content written to file successfully.");
+        } catch (IOException e) {
+            System.err.println("An error occurred while writing to the file: " + e.getMessage());
         }
     }
 

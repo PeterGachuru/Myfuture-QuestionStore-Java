@@ -150,6 +150,7 @@ public class UserService {
                             .token(token)
                             .id(userData.getId())
                             .firstName(userData.getFirstName())
+                            .phoneNumber(userData.getPhoneNumber())
                             .lastName(userData.getLastName())
                             .email(userData.getEmail())
                             .firstLogin(userData.getFirstLogin())
@@ -208,6 +209,8 @@ public class UserService {
                 user.setEmail(userCreateRequest.getEmail().trim());
                 user.setFirstName(userCreateRequest.getFirstName());
                 user.setLastName(userCreateRequest.getLastName());
+                user.setCounty(userCreateRequest.getCounty());
+                user.setPhoneNumber(userCreateRequest.getPhone());
                 user.setCounty(userCreateRequest.getCounty());
                 user.setInstallId(userCreateRequest.getInstallId());
                 user.setStatus("Active");
@@ -516,6 +519,7 @@ public class UserService {
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .email(user.getEmail())
+                    .phoneNumber(user.getPhoneNumber())
                     .status(user.getStatus())
                     .creationDate(user.getCreationDate())
                     .updateDate(user.getUpdateDate())

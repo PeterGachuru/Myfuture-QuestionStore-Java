@@ -13,9 +13,10 @@ public class StudentAccountController {
     StudentAccountRepository repository;
 
     @PostMapping("add")
-    public ResponseEntity<?> newStudentAccount(@RequestBody StudentAccount student) {
+    public ResponseEntity<?> newStudentAccount(@RequestBody IbukaStudentAccount student) {
         if (student.id != null) return null;
-        StudentAccount savedStudentAccount = repository.save(student);
+
+        IbukaStudentAccount savedStudentAccount = repository.save(student);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Saved successfully");
@@ -25,9 +26,9 @@ public class StudentAccountController {
     }
 
     @PutMapping("update/")
-    public ResponseEntity<?> updateStudentAccount(@RequestBody StudentAccount student) {
+    public ResponseEntity<?> updateStudentAccount(@RequestBody IbukaStudentAccount student) {
         if (student.id == null) return null;
-        StudentAccount updatedStudentAccount = repository.save(student);
+        IbukaStudentAccount updatedStudentAccount = repository.save(student);
 
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
@@ -43,6 +44,16 @@ public class StudentAccountController {
         response.setStatus("Success");
         response.setMessage("StudentAccount retrieved Successfully");
         response.setEntity(repository.findById(studentId));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("get/by/parent")
+    public ResponseEntity<?> fetchAll(@RequestParam("parentId") Long parentId) {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("StudentAccount retrieved Successfully");
+        response.setEntity(repository.findByParent(parentId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

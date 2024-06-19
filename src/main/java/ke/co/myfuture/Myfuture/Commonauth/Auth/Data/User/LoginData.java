@@ -19,6 +19,8 @@ public class LoginData implements Serializable {
 
     @Builder.Default
     private String email = null;
+    @Builder.Default
+    private String phoneNumber = null;
 
     @Builder.Default
     private Integer firstLogin = null;

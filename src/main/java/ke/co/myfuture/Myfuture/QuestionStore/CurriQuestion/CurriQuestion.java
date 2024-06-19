@@ -23,6 +23,7 @@ public class CurriQuestion {
     @Column(nullable = false)
     String string;
 
+    @Lob
     String explanation;
 
     @Column(nullable = false)

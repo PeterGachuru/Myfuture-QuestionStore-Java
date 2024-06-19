@@ -1,13 +1,12 @@
 package ke.co.myfuture.Myfuture.UserManagement.Useraccount;
 
-import ke.co.myfuture.Myfuture.UserManagement.Install.Install;
+import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Data
@@ -28,8 +27,9 @@ public class UserAccount {
     @Column(nullable = false)
     String password;
 
-    @OneToOne
-    @JoinColumn(name = "install_id")
+    @Column(name = "install_id", nullable = false)
+    Long installId;
+    @Transient
     Install install;
 
 

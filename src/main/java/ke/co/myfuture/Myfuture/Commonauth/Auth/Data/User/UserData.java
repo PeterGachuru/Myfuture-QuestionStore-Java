@@ -18,6 +18,8 @@ public class UserData implements Serializable {
 
     @Builder.Default
     private String email = null;
+    @Builder.Default
+    private String phoneNumber = null;
 
     @Builder.Default
     private String firstName = null;

@@ -1,7 +1,7 @@
 package ke.co.myfuture.Myfuture.UserManagement.Post.Postatempt;
 
 import ke.co.myfuture.Myfuture.UserManagement.Post.Post;
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccount;
+import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -23,7 +23,7 @@ public class Postattempt {
     Post post;
     @OneToOne
     @JoinColumn(name = "student_id", nullable = false)
-    StudentAccount studentaccount;
+    IbukaStudentAccount studentaccount;
     @Column(nullable = false)
     String scored;
     @Column(nullable = false)

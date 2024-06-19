@@ -1,7 +1,7 @@
 package ke.co.myfuture.Myfuture.UserManagement.Post;
 
-import ke.co.myfuture.Myfuture.UserManagement.Install.Install;
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccount;
+import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
+import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -19,15 +19,16 @@ public class Post {
     @Column(name = "id", nullable = false)
     public Long id;
 
-    @OneToOne
-    @JoinColumn(name = "install_id", nullable = false)
+    @Column(name = "install_id", nullable = false)
+    Long installId;
+    @Transient
     Install install;
     @Column(nullable = false)
     Long inid;
 
     @OneToOne
     @JoinColumn(name = "sender_id", nullable = false)
-    StudentAccount studentaccount;
+    IbukaStudentAccount studentaccount;
 
     @Column(nullable = false)
     Long questionid;

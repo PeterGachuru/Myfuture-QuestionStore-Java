@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.UserManagement.Install;
+package ke.co.myfuture.Myfuture.Commonauth.Install;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

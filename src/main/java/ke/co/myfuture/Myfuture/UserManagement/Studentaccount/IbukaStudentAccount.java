@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.Studentaccount;
 
-import ke.co.myfuture.Myfuture.UserManagement.Install.Install;
+import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
 import ke.co.myfuture.Myfuture.UserManagement.Useraccount.UserAccount;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 @Table(uniqueConstraints =
         {@UniqueConstraint(columnNames = {"inid", "install_id"})})
-public class StudentAccount {
+public class IbukaStudentAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -32,13 +32,16 @@ public class StudentAccount {
 
     @Column(nullable = false)
     Long parent;
+    @Column(nullable = false)
+    String parentUsername;
 //    Long parent;
 //    Long parent;
 
     String name;
 
-    @OneToOne
-    @JoinColumn(name = "install_id", nullable = false)
+    @Column(name = "install_id", nullable = false)
+    Long installId;
+    @Transient
     Install install;
     @Column(nullable = false)
     Long inid;

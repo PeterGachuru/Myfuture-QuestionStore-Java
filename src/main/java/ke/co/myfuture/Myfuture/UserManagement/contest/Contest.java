@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.contest;
 
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccount;
+import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.contest.ContestInvitee.ContestInvitee;
 import ke.co.myfuture.Myfuture.UserManagement.contest.Contestquestion.ContestQuestion;
 import lombok.AllArgsConstructor;
@@ -36,9 +36,9 @@ public class Contest {
     @Column(nullable = false)
     String creatorName;
 
-    @OneToOne(targetEntity = StudentAccount.class)
+    @OneToOne(targetEntity = IbukaStudentAccount.class)
     @JoinColumn(name = "creator_id", referencedColumnName = "id")
-    public StudentAccount creatorId;
+    public IbukaStudentAccount creatorId;
 
     @OneToMany
     @JoinColumn(name = "contest")
