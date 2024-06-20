@@ -64,9 +64,9 @@ public class ContestController {
 //    $search = $data->search;
 //    $classlevel = $data->classlevel;
 
-    @GetMapping("search/invitees/{search}")
+    @GetMapping("search/invitees")
     public ResponseEntity<?> searchContestInvitees(@RequestParam("search") String search, @RequestParam() Integer count,
-                                                   @RequestParam("classlevel") Integer classlevel,
+                                                   @RequestParam("classlevel") Long classlevel,
                                                    @RequestParam("studentId") Long studentId) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");

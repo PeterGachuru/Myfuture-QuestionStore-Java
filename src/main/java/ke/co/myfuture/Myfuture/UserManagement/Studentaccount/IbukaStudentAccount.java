@@ -23,6 +23,8 @@ public class IbukaStudentAccount {
     Long classlevel;
     Long curriculum;
     Long totalScore;
+    @Transient
+    Long unsyncedScore;
 
 //    @Column(nullable = false)
 //    Long parent;
@@ -50,4 +52,14 @@ public class IbukaStudentAccount {
     public Date createdAt;
     @UpdateTimestamp
     public Date updatedAt;
+
+    public void update(IbukaStudentAccount student) {
+        name = student.name;
+        school = student.school;
+        curriculum = student.curriculum;
+        classlevel = student.classlevel;
+        if (student.unsyncedScore > 0) {
+            totalScore += student.unsyncedScore;
+        }
+    }
 }

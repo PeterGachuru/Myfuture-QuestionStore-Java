@@ -1,10 +1,14 @@
 package ke.co.myfuture.Myfuture.UserManagement.Studentaccount;
 
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("student")
@@ -25,10 +29,14 @@ public class StudentAccountController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("update/")
+    @PutMapping("update")
     public ResponseEntity<?> updateStudentAccount(@RequestBody IbukaStudentAccount student) {
         if (student.id == null) return null;
-        IbukaStudentAccount updatedStudentAccount = repository.save(student);
+
+        Optional<IbukaStudentAccount> studentAccountFromDb = repository.findById(student.id);
+        if (studentAccountFromDb.isEmpty()) return null;
+        studentAccountFromDb.get().update(student);
+        IbukaStudentAccount updatedStudentAccount = repository.save(studentAccountFromDb.get());
 
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
@@ -56,5 +64,34 @@ public class StudentAccountController {
         response.setEntity(repository.findByParent(parentId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("from/ids")
+    public ResponseEntity<?> fetchAll(@RequestBody Ids ids) {
+        System.out.println(" @PostMapping(\"from/ids\")");
+        System.out.println(ids);
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("StudentAccount retrieved Successfully");
+        response.setEntity(repository.findAllById(ids.ids));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("contest/Invitees")
+    public ResponseEntity<?> forContest(@RequestParam String search, @RequestParam Long studentId,
+                                        @RequestParam Long classlevel,
+                                        @RequestParam Integer count) {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("StudentAccount retrieved Successfully");
+        response.setEntity(repository.contestInvitees(search, count, classlevel, studentId));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Data
+    static class Ids{
+        List<Long> ids;
     }
 }
