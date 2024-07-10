@@ -2,14 +2,15 @@ package ke.co.myfuture.Myfuture.Treasury.Account;
 
 import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
+import ke.co.myfuture.Myfuture.Treasury.PeriodicContributionAnalysis.PeriodicContributionAnalysis;
 import ke.co.myfuture.Myfuture.Treasury.Person.Person;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
-import ke.co.myfuture.Myfuture.Treasury.Transaction.TransactionCategory;
 import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -61,8 +62,13 @@ public class Account {
 
 	Integer pinPriority  =  1;
 
+	@Transient
+	List<PeriodicContributionAnalysis> periodicContributionAnalyses;
+
 	@Embedded
 	AuditTrails auditTrails = new AuditTrails();
+
+	Date lastAnalysisDate;
 
 	public void update(Account account) {
 		this.name = account.name;

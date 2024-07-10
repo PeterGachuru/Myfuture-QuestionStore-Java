@@ -96,7 +96,7 @@ public class TextReportService {
         if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
             String extractedString = report.substring(startIndex + openingTag.length(), endIndex);
             System.out.println("Extracted substring: " + extractedString);
-            String prepend = report.substring(0, startIndex).trim();
+            String prepend = report.substring(0, startIndex).trim()+"\n";
             String accountString = individualAccountsReport(extractedString, planId, ownershipType);
             String append = report.substring(endIndex+closingTag.length());
             return attachAccounts(prepend+accountString+append, planId, openingTag, closingTag, ownershipType);

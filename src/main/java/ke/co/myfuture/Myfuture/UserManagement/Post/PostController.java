@@ -6,14 +6,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("post")
 public class PostController {
     @Autowired
     PostRepository repository;
 
+    @Autowired
+    PostService postService;
 
-    @PostMapping("add/")
+
+    @PostMapping("add")
     public ResponseEntity<?> newPost(@RequestBody Post post) {
         Post savedPost = repository.save(post);
         UniversalResponse response = new UniversalResponse();
@@ -24,7 +29,19 @@ public class PostController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("update/")
+    @PostMapping("addmany")
+    public ResponseEntity<?> newPosts(@RequestBody PostService.PostsHolder postsHolder) {
+        System.out.println("addmany");
+        List<Post> savedPosts = postService.save(postsHolder);
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Saved successfully");
+        response.setEntity(savedPosts);
+        response.setStatusCode(201);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("update")
     public ResponseEntity<?> updatePost(@RequestBody Post post) {
         Post updatedPost = repository.save(post);
 
@@ -46,12 +63,13 @@ public class PostController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("getall/after/id/{postId}")
-    public ResponseEntity<?> fetchAllAfterPost(@PathVariable("postId") Long postId) {
+    @GetMapping("getall/after/id")
+    public ResponseEntity<?> fetchAllAfterPost(@RequestParam("latestPostId") Long latestPostId) {
+        System.out.println("latestPostId: "+latestPostId);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Post retrieved Successfully");
-        response.setEntity(repository.postsAfter(postId));
+        response.setEntity(repository.postsAfter(latestPostId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

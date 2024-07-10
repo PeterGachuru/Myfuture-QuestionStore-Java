@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.UserManagement.contest.ContestInvitee;
+package ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee;
 
 import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
 import lombok.Data;

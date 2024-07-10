@@ -20,8 +20,9 @@ public class Cronjobs {
 
     @Autowired
     AllTimeScoreRepository allTimeScoreRepository;
-    @Scheduled(fixedDelay = 3600000, initialDelay = 10)
+    @Scheduled(fixedDelay = 360000, initialDelay = 10)
     void analyzeScores() {
+        System.out.println("Insert new scores");
         studentAccountRepository.analyzeScores();
 
         System.out.println("Analyze for week");

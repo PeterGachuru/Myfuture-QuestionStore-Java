@@ -1,8 +1,8 @@
-package ke.co.myfuture.Myfuture.UserManagement.contest;
+package ke.co.myfuture.Myfuture.UserManagement.Contest;
 
 import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
-import ke.co.myfuture.Myfuture.UserManagement.contest.ContestInvitee.ContestInvitee;
-import ke.co.myfuture.Myfuture.UserManagement.contest.Contestquestion.ContestQuestion;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInvitee;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion.ContestQuestion;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,20 +25,20 @@ public class Contest {
     public Integer invitesCount;
 
     @Column(nullable = false)
-    public Integer classlevelId;
+    public Long classlevelId;
 
     @Column(nullable = false)
-    public Integer subjectId;
+    public Long subjectId;
 
     @Column(unique = true)
-    public Integer cgroup ;
+    public Long cgroup ;
 
     @Column(nullable = false)
     String creatorName;
 
     @OneToOne(targetEntity = IbukaStudentAccount.class)
     @JoinColumn(name = "creator_id", referencedColumnName = "id")
-    public IbukaStudentAccount creatorId;
+    public IbukaStudentAccount creator;
 
     @OneToMany
     @JoinColumn(name = "contest")
@@ -46,7 +46,7 @@ public class Contest {
 
     @OneToMany
     @JoinColumn(name = "contest")
-    public List<ContestQuestion> contestquestion;
+    public List<ContestQuestion> contestQuestions;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

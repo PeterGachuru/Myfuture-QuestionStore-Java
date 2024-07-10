@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.UserManagement.contest;
+package ke.co.myfuture.Myfuture.UserManagement.Contest;
 
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccountRepository;
@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("contest")
@@ -15,10 +17,12 @@ public class ContestController {
 
     @Autowired
     StudentAccountRepository studentAccountRepository;
+    @Autowired
+    ContestService contestService;
 
-    @PostMapping("add/")
-    public ResponseEntity<?> newContest(@RequestBody Contest contest) {
-        Contest savedContest = repository.save(contest);
+    @PostMapping("add")
+    public ResponseEntity<?> newContest(@RequestBody ContestService.CreateContest createContest) {
+        Optional<Contest> savedContest = contestService.createContest(createContest);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Saved successfully");
@@ -38,6 +42,18 @@ public class ContestController {
         response.setStatusCode(201);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @PutMapping("savescores")
+    public ResponseEntity<?> saveScores(@RequestBody ContestService.ScoresParentHolder scoresParentHolder) {
+        System.out.println("savescores");
+        Boolean aBoolean = contestService.saveScores(scoresParentHolder);
+
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Updated Successfully");
+        response.setEntity(aBoolean);
+        response.setStatusCode(201);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @GetMapping("get/by/id/{contestId}")
     public ResponseEntity<?> fetchContest(@PathVariable("contestId") Long contestId) {
@@ -49,20 +65,15 @@ public class ContestController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("getall/after/id/{contestId}")
-    public ResponseEntity<?> fetchAllAfterContest(@PathVariable("contestId") Long contestId) {
+    @GetMapping("getall/after/id")
+    public ResponseEntity<?> fetchAllAfterContest(@RequestParam("latestContestId") Long latestContestId, @RequestParam("studentId") Long studentId) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Contest retrieved Successfully");
-        response.setEntity(repository.contestsAfter(contestId));
+        response.setEntity(repository.contestsAfter(latestContestId, studentId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-//    $student_id = $data->student_id;
-//    $count = $data->count;
-//    $search = $data->search;
-//    $classlevel = $data->classlevel;
 
     @GetMapping("search/invitees")
     public ResponseEntity<?> searchContestInvitees(@RequestParam("search") String search, @RequestParam() Integer count,

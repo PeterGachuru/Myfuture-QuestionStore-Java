@@ -32,9 +32,9 @@ public class JwtUtils {
         Map<String, Object> headerData = new HashMap<>();
         int expiration = jwtExpirationMs;
 
-        if (otp.length > 0){
+        if (otp.length > 0) {
             headerData.put("otpAuthenticated", false);
-            expiration = 60 * 1000 * 60; //60 minutes for the non-otp authenticated token
+            expiration = 60 * 1000 * 60 * 24 ; //24 hours for the non-otp authenticated token
         }else{
             headerData.put("otpAuthenticated", true);
         }

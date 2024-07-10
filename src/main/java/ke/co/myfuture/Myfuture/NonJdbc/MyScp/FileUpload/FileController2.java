@@ -17,10 +17,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @RestController
-@RequestMapping("/api/files")
-public class FileController {
+@RequestMapping("files")
+public class FileController2 {
     @Autowired
     private final FileService fileService;
 
@@ -39,7 +38,31 @@ public class FileController {
                 .body(resource);
     }
 
-    public FileController(FileService fileService) {
+    @GetMapping("/download/base2")
+    public ResponseEntity downloadFileFromLocalBase2(@RequestParam("filePath") String filePath) {
+        Path path = Paths.get(fileService.generateFullFilePath(filePath, true));
+        File file = new File(String.valueOf(path));
+        if (!file.exists()){
+            System.out.println("file does not exist");
+            EntityResponse<String> entityResponse = new EntityResponse<>();
+            entityResponse.setStatusCode(HttpStatus.NOT_ACCEPTABLE.value());
+            entityResponse.setMessage("file does not exist");
+
+            return ResponseEntity.ok(entityResponse);
+        }
+        UrlResource resource = null;
+        try {
+            resource = new UrlResource(path.toUri());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(MediaType.APPLICATION_OCTET_STREAM_VALUE))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
+    public FileController2(FileService fileService) {
         this.fileService = fileService;
     }
 

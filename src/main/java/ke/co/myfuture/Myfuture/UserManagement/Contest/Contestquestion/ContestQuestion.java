@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.UserManagement.contest.Contestquestion;
+package ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion;
 
 import lombok.Data;
 
@@ -6,6 +6,9 @@ import javax.persistence.*;
 
 @Entity
 @Data
+@Table(name = "contest_question", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"contest", "question"})
+})
 public class ContestQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
