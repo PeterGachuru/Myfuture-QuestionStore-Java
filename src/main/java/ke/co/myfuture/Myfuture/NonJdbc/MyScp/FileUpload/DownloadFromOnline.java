@@ -19,21 +19,18 @@ import static ke.co.myfuture.Myfuture.Utils.Response.OnlineUtils.getArrayFromOnl
 @Service
 public class DownloadFromOnline {
 
-    String[] sourceFolders = new String[]{
-            "",
-            "",
-            "",
-            "",
-            ""
+    String[] sourceFolders = new String[] {
+            "C:\\Users\\USER\\personal\\data",
     };
-    String saveRootFolder = "";
-    String baseUrlFolders = "";
-    String baseUrlReadFiles = "";
-    String baseUrlDownloadFiles = "";
+    String saveRootFolder = "C:\\Users\\USER\\personal\\testbackup";
+    String baseUrlFolders = "http://localhost:2024/files/listfolders";
+    String baseUrlReadFiles = "http://localhost:2024/files/listfiles";
+    String baseUrlDownloadFiles = "http://localhost:2024/files/download/base2";
 
-    @Bean
+//    @Bean
     public void downloadRecussively() throws JSONException, IOException {
-        for (String folder: sourceFolders){
+        System.out.println("downloadRecussively");
+        for (String folder: sourceFolders) {
             recurseFolder(folder);
         }
     }
@@ -59,10 +56,11 @@ public class DownloadFromOnline {
     }
 
     public void downloadFilesFromFolder(String folder) throws JSONException, IOException {
-
         String url = makeUrl(baseUrlReadFiles, folder);
 
         JSONArray files = getArrayFromOnline(url);
+        if (files == null)
+            return;
         int s = files.length();
         for (int i = 0; i < s; i++) {
 
@@ -70,7 +68,7 @@ public class DownloadFromOnline {
 
             String downloadUrl = makeUrl(baseUrlDownloadFiles, file);
 
-            downloadFile(downloadUrl, saveRootFolder+file);
+            downloadFile(downloadUrl, saveRootFolder);
         }
     }
 

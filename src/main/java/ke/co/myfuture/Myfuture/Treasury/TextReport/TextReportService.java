@@ -71,8 +71,16 @@ public class TextReportService {
     private String generateReportText(TextReport textReport) {
         String report = textReport.getTemplate();
         report = attachOverallData(report, textReport.contributionsPlan.getId());
-        report = attachAccounts(report, textReport.contributionsPlan.getId(), "<open-income-accounts>", "<close-income-accounts>", "INCOME");
-        report = attachAccounts(report, textReport.contributionsPlan.getId(), "<open-expense-accounts>", "<close-expense-accounts>", "EXPENSE");
+        report = attachAccounts(report, textReport.contributionsPlan.getId(), "<open-income-accounts>",
+                "<close-income-accounts>", "INCOME", 0, 1, 1, 1);
+        report = attachAccounts(report, textReport.contributionsPlan.getId(), "<open-uncleared-pledges-accounts>",
+                "<close-uncleared-pledges-accounts>", "INCOME", 1, 0, 1, 0);
+        report = attachAccounts(report, textReport.contributionsPlan.getId(), "<open-income-all-accounts>",
+                "<close-income-all-accounts>", "INCOME", 1, 1, 1, 1);
+        report = attachAccounts(report, textReport.contributionsPlan.getId(), "<open-pledges-accounts>",
+                "<close-pledges-accounts>", "INCOME", 1, 0, 1, 1);
+        report = attachAccounts(report, textReport.contributionsPlan.getId(), "<open-expense-accounts>",
+                "<close-expense-accounts>", "EXPENSE", 1,1,1,1);
         return report;
     }
 
@@ -87,7 +95,8 @@ public class TextReportService {
                 .replaceAll("\\{\\{budget}}", String.valueOf(totalBudget));
     }
 
-    private String attachAccounts(String report, Long planId, String openingTag, String closingTag, String ownershipType) {
+    private String attachAccounts(String report, Long planId, String openingTag, String closingTag, String ownershipType, Integer allowsZeroBalance,
+                                  Integer allowsZeroPledges, Integer allowsUncleared, Integer allowsCleared) {
         if (report == null || !report.contains(openingTag))
             return report;
         int startIndex = report.indexOf(openingTag);
@@ -97,23 +106,25 @@ public class TextReportService {
             String extractedString = report.substring(startIndex + openingTag.length(), endIndex);
             System.out.println("Extracted substring: " + extractedString);
             String prepend = report.substring(0, startIndex).trim()+"\n";
-            String accountString = individualAccountsReport(extractedString, planId, ownershipType);
+            String accountString = individualAccountsReport(extractedString, planId, ownershipType, allowsZeroBalance, allowsZeroPledges, allowsUncleared, allowsCleared );
             String append = report.substring(endIndex+closingTag.length());
-            return attachAccounts(prepend+accountString+append, planId, openingTag, closingTag, ownershipType);
+            return attachAccounts(prepend+accountString+append, planId, openingTag, closingTag, ownershipType,  allowsZeroBalance, allowsZeroPledges, allowsUncleared, allowsCleared);
         } else {
             System.out.println("Start or end string not found, or end string appears before start string.");
             return report;
         }
     }
 
-    private String individualAccountsReport(String extractedString, Long planId, String ownershipType) {
-        List<Account> accountList = accountRepository.findAllByPlanId(false, planId, ownershipType);
+    private String individualAccountsReport(String extractedString, Long planId, String ownershipType, Integer allowsZeroBalance,
+                                            Integer allowsZeroPledges, Integer allowsUncleared, Integer allowsCleared) {
+        List<Account> accountList = accountRepository.findAllByPlanId(false, planId, ownershipType, allowsZeroBalance, allowsZeroPledges, allowsUncleared, allowsCleared);
 
         String accountListString = "";
         int i = 1;
         for (Account account: accountList) {
             accountListString += extractedString.replaceAll("\\{\\{numbering}}", String.valueOf(i++))
                     .replaceAll("\\{\\{full_name}}", account.getName())
+                    .replaceAll("\\{\\{pledge}}", String.valueOf(account.getTargetAmount()))
                     .replaceAll("\\{\\{uncleared}}", account.getTargetAmount()-account.getBalance() > 0 ? String.valueOf(account.getTargetAmount()-account.getBalance())+"\uD83C\uDD7F\uFE0F": "")
                     .replaceAll("\\{\\{balance}}", account.getBalance() != 0.0? String.valueOf(account.getBalance())+"✅": "").trim()+"\n";
         }

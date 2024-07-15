@@ -2,6 +2,7 @@ package ke.co.myfuture.Myfuture.NonJdbc.MyScp.FileUpload;
 
 import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.utils.EntityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,6 +24,8 @@ import java.util.List;
 public class FileController2 {
     @Autowired
     private final FileService fileService;
+    @Autowired
+    protected DownloadFromOnline downloadFromOnline;
 
     @GetMapping("/download")
     public ResponseEntity downloadFileFromLocal(@RequestParam String filePath) {
@@ -36,6 +40,12 @@ public class FileController2 {
                 .contentType(MediaType.parseMediaType(MediaType.APPLICATION_OCTET_STREAM_VALUE))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+    @GetMapping("/move")
+    public ResponseEntity moveBatch() throws JSONException, IOException {
+        downloadFromOnline.downloadRecussively();
+        return null;
     }
 
     @GetMapping("/download/base2")
@@ -78,7 +88,7 @@ public class FileController2 {
         entityResponse.setStatusCode(HttpStatus.OK.value());
         Path path = Paths.get(fileService.generateFullFilePath(filePath, true));
         File file = new File(String.valueOf(path));
-        if (!file.exists()){
+        if (!file.exists()) {
             System.out.println("file does not exist");
             entityResponse.setStatusCode(HttpStatus.NOT_ACCEPTABLE.value());
             entityResponse.setMessage("file does not exist");
@@ -97,7 +107,7 @@ public class FileController2 {
         entityResponse.setStatusCode(HttpStatus.OK.value());
         Path path = Paths.get(fileService.generateFullFilePath(filePath, true));
         File file = new File(String.valueOf(path));
-        if (!file.exists()){
+        if (!file.exists()) {
             System.out.println("file does not exist");
             entityResponse.setStatusCode(HttpStatus.NOT_ACCEPTABLE.value());
             entityResponse.setMessage("file does not exist");
@@ -124,8 +134,8 @@ public class FileController2 {
 //                    System.out.println("is file "+file.isFile());
 //                    System.out.println("need file "+isFile);
                     if (file.isFile() == isFile) {
-                        fileList.add(file.getName());
-                    }else {
+                        fileList.add(file.getAbsolutePath());
+                    } else {
                         System.out.println("ignored "+file.getName());
                     }
                 }
@@ -133,7 +143,6 @@ public class FileController2 {
         } else {
             System.out.println("Invalid directory path.");
         }
-
         return fileList;
     }
 }
