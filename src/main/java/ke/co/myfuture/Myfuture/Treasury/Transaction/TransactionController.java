@@ -19,14 +19,14 @@ public class TransactionController {
     TransactionRepository repository;
 
     @Autowired
-    TransactionService accountService;
+    TransactionService transactionService;
 
     @Autowired
     TranEntryRepository tranEntryRepository;
 
     @PostMapping("add")
     public ResponseEntity<?> newTransaction(@RequestBody Transaction account) {
-        UniversalResponse response = accountService.saveTransaction(account);
+        UniversalResponse response = transactionService.saveTransaction(account);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -54,6 +54,16 @@ public class TransactionController {
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @PostMapping("reverse")
+    public ResponseEntity<?> reverse(@RequestParam("id") Long id) {
+        Optional<Transaction> transactionOptional = repository.findById(id);
+        if (transactionOptional.isPresent()) {
+            UniversalResponse universalResponse = transactionService.reverseTransaction(transactionOptional.get());
+            return new ResponseEntity<>(universalResponse, HttpStatus.OK);
+        }
+        return null;
+    }
+
     @GetMapping("all")
     public ResponseEntity<?> fetchProductCategory(@RequestParam("startDate") String startDate,
                                                   @RequestParam("endDate") String endDate,

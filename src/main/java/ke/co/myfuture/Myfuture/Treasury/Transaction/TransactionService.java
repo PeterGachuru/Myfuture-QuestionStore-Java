@@ -10,7 +10,6 @@ import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlanRepository;
 import ke.co.myfuture.Myfuture.Treasury.GroupAccess.GroupAccess;
 import ke.co.myfuture.Myfuture.Treasury.GroupAccess.GroupAccessService;
-import ke.co.myfuture.Myfuture.Treasury.Person.Person;
 import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranEntry;
@@ -75,7 +74,7 @@ public class TransactionService {
             return response;
         }
         System.out.println(transaction);
-        Transaction savedTransaction = save(transaction);
+        Transaction savedTransaction = saveNew(transaction);
         System.out.println(savedTransaction);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
@@ -86,7 +85,7 @@ public class TransactionService {
     }
 
 
-    private Transaction save(Transaction transaction) {
+    private Transaction saveNew(Transaction transaction) {
         List<TranEntry> tranEntryList = transaction.getTranEntries();
         transaction.setTranEntries(new ArrayList<>());
         Transaction savedTransaction = repository.save(transaction);
@@ -94,6 +93,17 @@ public class TransactionService {
             Account account = tranEntry.getAccount();
             tranEntry.setAccountId(account.getId());
             tranEntry.setAccountName(account.getName());
+            tranEntry.setTransaction(savedTransaction);
+            tranEntryRepository.save(tranEntry);
+        }
+        return post(savedTransaction.getId());
+    }
+
+    private Transaction saveReversal(Transaction transaction) {
+        List<TranEntry> tranEntryList = transaction.getTranEntries();
+        transaction.setTranEntries(new ArrayList<>());
+        Transaction savedTransaction = repository.save(transaction);
+        for (TranEntry tranEntry: tranEntryList) {
             tranEntry.setTransaction(savedTransaction);
             tranEntryRepository.save(tranEntry);
         }
@@ -116,18 +126,6 @@ public class TransactionService {
         return transaction.get();
     }
 
-//    private Transaction save(Transaction transaction) {
-//        List<TranEntry> tranEntryList = transaction.getTranEntries();
-//        Transaction savedTransaction = repository.save(transaction);
-//        savedTransaction.setTranEntries(new ArrayList<>());
-//
-//        for (TranEntry tranEntry: tranEntryList) {
-//            tranEntry.setTransaction(savedTransaction);
-//            savedTransaction.getTranEntries().add(tranEntryRepository.save(tranEntry));
-//        }
-//        return savedTransaction;
-//    }
-
     private boolean attachAccounts(Transaction transaction) {
         System.out.println("---attachAccounts--");
         for (TranEntry tranEntry: transaction.getTranEntries()) {
@@ -143,17 +141,72 @@ public class TransactionService {
         return true;
     }
 
+    public UniversalResponse reverseTransaction(Transaction transaction) {
+        if (transaction.reversal != null && transaction.reversal) {
+            UniversalResponse response = new UniversalResponse();
+            response.setStatus("Error");
+            response.setMessage("Already reversed");
+            response.setEntity(null);
+            response.setStatusCode(HttpStatus.SC_NOT_ACCEPTABLE);
+            return response;
+        }
+        Transaction reversalTransaction = new Transaction(transaction);
+        reversalTransaction.setCategory(TransactionCategory.REVERSAL);
+        reversalTransaction.reversalFor = transaction.getId();
+        reversalTransaction.setReversal(true);
+        transaction.setReversal(true);
+
+        reversalTransaction.setTranEntries(new ArrayList<>());
+
+        TranEntry newEntry;
+        for (TranEntry tranEntry: transaction.getTranEntries()){
+            newEntry = new TranEntry();
+            newEntry.setAmount(tranEntry.getAmount());
+            newEntry.setAccount(tranEntry.getAccount());
+            newEntry.setAccountId(tranEntry.getAccountId());
+            newEntry.setAccountName(tranEntry.getAccountName());
+            newEntry.setTranType(tranEntry.getTranType() == TranType.CREDIT? TranType.DEBIT: TranType.CREDIT);
+            newEntry.setParticulars("Reversed: "+transaction.getId());
+
+            reversalTransaction.getTranEntries().add(newEntry);
+        }
+
+        if (!reversalTransaction.balances()) {
+            UniversalResponse response = new UniversalResponse();
+            response.setStatus("Error");
+            response.setMessage("Transaction does not balance");
+            response.setEntity(null);
+            response.setStatusCode(HttpStatus.SC_NOT_ACCEPTABLE);
+            return response;
+        }
+
+        Transaction transaction1 = saveReversal(reversalTransaction);
+        repository.save(transaction);
+
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Reversed successfully");
+        response.setEntity(transaction1);
+        response.setStatusCode(HttpStatus.SC_OK);
+        return response;
+    }
+
     private boolean attachOtherTranEntries(Transaction transaction) {
         System.out.println("----attachOtherTranEntries----");
         if (transaction.getCategory() == TransactionCategory.EXPENSE) {
-            Account expenseAccount = transaction.getContributionsPlan().getExpenseAccount();
             Double totalAmount = 0.0;
             for (TranEntry tranEntry: transaction.getTranEntries()) {
                 if (tranEntry.getTranType() != TranType.DEBIT || tranEntry.getAmount() <=0 ) {
+                    System.out.println("Is not debit");
                     return false;
                 }
                 totalAmount += tranEntry.getAmount();
-                tranEntry.setAccount(expenseAccount);
+                Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
+                if (account.isEmpty()) {
+                    System.out.println("Did not find account");
+                    return false;
+                }
+                tranEntry.setAccount(account.get());
             }
             addCashAccount(totalAmount, TranType.CREDIT, transaction, transaction.getContributionsPlan().getName()+" expenses ");
         } else if (transaction.getCategory() == TransactionCategory.INCOME) {
@@ -168,13 +221,12 @@ public class TransactionService {
                     return false;
                 tranEntry.setAccount(account.get());
             }
-            addCashAccount(totalAmount, TranType.DEBIT, transaction, transaction.getContributionsPlan().getName()+" expenses ");
+            addCashAccount(totalAmount, TranType.DEBIT, transaction, transaction.getContributionsPlan().getName()+" income ");
         }
         return true;
     }
 
     private void addCashAccount(Double amount, TranType tranType, Transaction transaction, String particulars) {
-
         System.out.println("----addCashAccount----");
         Account cashAccount = getCashAccount(transaction.getContributionsPlan().getPeopleGroup());
         if (cashAccount == null) {

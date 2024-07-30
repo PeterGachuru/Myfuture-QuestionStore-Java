@@ -34,8 +34,10 @@ public class AccountService {
         account.setPeopleGroup(peopleGroup.get());
         if (account.getOwnershipType() == AccountOwnershipType.EXPENSE ||
                 account.getOwnershipType() == AccountOwnershipType.INCOME) {
-            if (account.getPlanId() == null)
+            if (account.getPlanId() == null) {
+                System.out.println("Plan Id is null");
                 return null;
+            }
             if (account.getOwnershipType() == AccountOwnershipType.INCOME) {
                 if (account.getPersonId() == null) return null;
                 Optional<Account> existingIncomeAccount = repository.findByPersonAndPlan(account.getPersonId(), account.getPlanId());
@@ -49,16 +51,23 @@ public class AccountService {
                 }
             }
             Optional<ContributionsPlan> contributionsPlan = contributionsPlanRepository.findById(account.getPlanId());
-            if (contributionsPlan.isEmpty()) return null;
+            if (contributionsPlan.isEmpty()) {
+                System.out.println("Did not find plan");
+                return null;
+            }
             account.setContributionsPlan(contributionsPlan.get());
         }
 
-        if (account.getOwnershipType() == AccountOwnershipType.EXPENSE ||
-                account.getOwnershipType() == AccountOwnershipType.INCOME) {
-            if (account.getPersonId() == null)
+        if (account.getOwnershipType() == AccountOwnershipType.INCOME) {
+            if (account.getPersonId() == null) {
+                System.out.println("No person is attached");
                 return null;
+            }
             Optional<Person> person = personRepository.findById(account.getPersonId());
-            if (person.isEmpty()) return null;
+            if (person.isEmpty()) {
+                System.out.println("No person found");
+                return null;
+            }
             account.setOwner(person.get());
         }
 

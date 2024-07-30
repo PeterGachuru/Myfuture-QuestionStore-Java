@@ -56,6 +56,29 @@ public class AccountController {
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @DeleteMapping("delete")
+    public ResponseEntity<?> deleteAccount(@RequestParam("accountId") Long id) {
+        Optional<Account> account = repository.findById(id);
+        if (account.isEmpty())
+            return null;
+        if (account.get().getBalance() != 0.0){
+            UniversalResponse response = new UniversalResponse();
+            response.setStatus("Error");
+            response.setMessage("Cannot delete");
+            response.setStatusCode(HttpStatus.NOT_ACCEPTABLE.value());
+            return  new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        account.get().getAuditTrails().delete();
+        repository.save(account.get());
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Deleted Successfully");
+        response.setEntity(repository.findById(id));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping("all")
     public ResponseEntity<?> fetchProductCategory(@RequestParam(required = false, name = "planId") Long planId,
                                                   @RequestParam(name = "groupId") Long groupId,

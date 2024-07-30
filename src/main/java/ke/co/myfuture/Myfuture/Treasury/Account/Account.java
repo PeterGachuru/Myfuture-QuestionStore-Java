@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.Account;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.PeriodicContributionAnalysis.PeriodicContributionAnalysis;
@@ -39,7 +40,10 @@ public class Account {
 	@NotNull
 	Double targetAmount = 0.0;
 
+	Date startDate ;
 	Date promisedDate;
+	@JsonIgnore
+	Date lastCalculationDate;
 
 	@Transient
 	Long planId;
@@ -75,6 +79,7 @@ public class Account {
 		this.ownershipType = account.ownershipType;
 		this.notes = account.notes;
 		this.promisedDate = account.promisedDate;
+		this.startDate = account.startDate;
 		this.targetAmount = account.targetAmount;
 		this.pinPriority = account.pinPriority;
 	}

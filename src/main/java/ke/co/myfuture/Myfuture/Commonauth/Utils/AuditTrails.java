@@ -21,10 +21,17 @@ public class AuditTrails {
     @Column(updatable = false)
     Date createdAt;
 
+    Date deletedAt;
+
     Boolean deletedFlag = false;
 
     @Column(nullable = false)
     String createdBy;
+
+    public void delete() {
+        this.deletedAt = new Date();
+        this.deletedFlag = true;
+    }
 
     @PrePersist
     public void prePersist() {

@@ -19,8 +19,9 @@ public class TextReportController {
     TextReportService accountService;
 
     @PostMapping("add")
-    public ResponseEntity<?> newTextReport(@RequestBody TextReport account) {
-        UniversalResponse response = accountService.saveTextReport(account);
+    public ResponseEntity<?> newTextReport(@RequestBody TextReport textReport) {
+        System.out.println("Report in: "+textReport);
+        UniversalResponse response = accountService.saveTextReport(textReport);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

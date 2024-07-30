@@ -43,7 +43,6 @@ public class ContributionsPlan {
         this.notes = account.notes;
         this.targetType = account.targetType;
         this.individualContributorTarget = account.individualContributorTarget;
-        this.targetAmount = account.targetAmount;
         this.deadlineDate = account.deadlineDate;
         this.closureDate = account.closureDate;
         this.targetAmount = account.targetAmount;

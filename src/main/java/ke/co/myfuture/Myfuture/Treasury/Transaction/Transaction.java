@@ -43,6 +43,10 @@ public class Transaction {
 	@Transient
 	Long planId;
 
+	Boolean reversal = false;
+
+	Long reversalFor;
+
     @LazyCollection(LazyCollectionOption.FALSE)
 //    @OneToMany(cascade = CascadeType.ALL)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "transaction")
@@ -66,4 +70,24 @@ public class Transaction {
 
         return totalCredits == totalDebits;
     }
+
+	public Transaction(){
+
+	}
+
+	public Transaction(Transaction other) {
+		this.amountInvolved = other.amountInvolved;
+		this.status = other.status;
+		this.notes = other.notes;
+		this.holderParticulars = other.holderParticulars;
+		this.oneOfTheAccounts = other.oneOfTheAccounts;
+		this.contributionsPlan = other.contributionsPlan;  // Assuming shallow copy is sufficient
+		this.category = other.category;
+		this.planId = other.planId;
+	}
+
+	// Clone method
+	public Transaction clone() {
+		return new Transaction(this);
+	}
 }

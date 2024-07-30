@@ -21,12 +21,12 @@ public class TextReportService {
 
     @Autowired
     AccountRepository accountRepository;
-    public UniversalResponse saveTextReport(TextReport account) {
-        Optional<ContributionsPlan> contributionsPlan = contributionsPlanRepository.findById(account.planId);
+    public UniversalResponse saveTextReport(TextReport textReport) {
+        Optional<ContributionsPlan> contributionsPlan = contributionsPlanRepository.findById(textReport.planId);
         if (contributionsPlan.isEmpty())
             return null;
-        account.setContributionsPlan(contributionsPlan.get());
-        TextReport savedTextReport = repository.save(account);
+        textReport.setContributionsPlan(contributionsPlan.get());
+        TextReport savedTextReport = repository.save(textReport);
         System.out.println(savedTextReport);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
@@ -80,7 +80,7 @@ public class TextReportService {
         report = attachAccounts(report, textReport.contributionsPlan.getId(), "<open-pledges-accounts>",
                 "<close-pledges-accounts>", "INCOME", 1, 0, 1, 1);
         report = attachAccounts(report, textReport.contributionsPlan.getId(), "<open-expense-accounts>",
-                "<close-expense-accounts>", "EXPENSE", 1,1,1,1);
+                "<close-expense-accounts>", "EXPENSE", 0,1,1,1);
         return report;
     }
 

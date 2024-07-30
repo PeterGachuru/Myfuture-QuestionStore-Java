@@ -53,6 +53,11 @@ public class DatesCalculator {
         return simpleDateFormat.format(date);
     }
 
+    public String customDateFormat(Date date, String format) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+        return simpleDateFormat.format(date);
+    }
+
     //TODO: FUNCTION TO SUBSTRACT DATE BY MONTHS/DAYS/YEARS DURATION(days, weeks, months, years)
     public LocalDate substractDate(LocalDate dateToBeSubstracted, Integer period, String durationId) {
         try {

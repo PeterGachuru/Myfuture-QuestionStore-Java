@@ -3,6 +3,7 @@ package ke.co.myfuture.Myfuture.Treasury.PeriodicContributionAnalysis;
 
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -27,4 +28,8 @@ public class PeriodicContributionAnalysis {
 
     @Transient
     Long accountId;
+
+    @CreationTimestamp
+    @Column(nullable = false)
+    Date creationDate;
 }

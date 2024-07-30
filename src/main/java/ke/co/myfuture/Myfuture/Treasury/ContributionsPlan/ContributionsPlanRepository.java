@@ -22,10 +22,10 @@ public interface ContributionsPlanRepository extends JpaRepository<Contributions
     @Query(nativeQuery = true, value = "select * from contributions_plan where deleted_flag = :deletedFlag AND people_group_id = :groupId")
     List<ContributionsPlan> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag, @Param("groupId") Long groupId);
 
-    @Query(nativeQuery = true, value = "select sum(target_amount) from account where contributions_plan_id = :planId")
+    @Query(nativeQuery = true, value = "select sum(target_amount) from account where contributions_plan_id = :planId AND deleted_flag <> 1")
     Double totalPledges(@Param("planId") Long planId);
 
-    @Query(nativeQuery = true, value = "select sum(target_amount) from account where contributions_plan_id = :planId AND target_amount > balance")
+    @Query(nativeQuery = true, value = "select sum(target_amount) from account where contributions_plan_id = :planId AND target_amount > balance  AND deleted_flag <> 1")
     Double totalPendingPledges(@Param("planId") Long planId);
 
 
