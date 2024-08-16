@@ -7,10 +7,15 @@ import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoice
 import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoiceRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.QuestionSettings.QuestionSettings;
 import ke.co.myfuture.Myfuture.QuestionStore.QuestionSettings.QuestionSettingsRepo;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.Contest;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestRepository;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion.ContestQuestion;
+import org.aspectj.weaver.patterns.TypePatternQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +28,9 @@ public class CurriQuestionService {
 
     @Autowired
     CgroupService cgroupService;
+
+    @Autowired
+    ContestRepository contestRepository;
 
     @Autowired
     CurriNormalChoiceRepository curriNormalChoiceRepository;
@@ -67,5 +75,17 @@ public class CurriQuestionService {
             questionSettingsOptional.get().setSettingValue(String.valueOf(value+1));
             return Long.parseLong(questionSettingsRepo.save(questionSettingsOptional.get()).getSettingValue());
         }
+    }
+
+    public List<CurriQuestion> forContestQuestionDownload(Long contestId) {
+        Optional<Contest> contestOptional = contestRepository.findById(contestId);
+        ArrayList<Long> questions = new ArrayList<>();
+
+        for (ContestQuestion contestQuestion: contestOptional.get().contestQuestions) {
+            System.out.print(", "+contestQuestion.getQuestion());
+            questions.add(contestQuestion.getQuestion());
+        }
+
+        return curriQuestionRepository.forContestDownload(questions);
     }
 }

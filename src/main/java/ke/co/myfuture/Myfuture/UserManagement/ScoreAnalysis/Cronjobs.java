@@ -5,10 +5,12 @@ import ke.co.myfuture.Myfuture.UserManagement.ScoreAnalysis.TodayScore.TodayScor
 import ke.co.myfuture.Myfuture.UserManagement.ScoreAnalysis.WeekScore.WeekScoreRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class Cronjobs {
     @Autowired
     StudentAccountRepository studentAccountRepository;
@@ -20,8 +22,13 @@ public class Cronjobs {
 
     @Autowired
     AllTimeScoreRepository allTimeScoreRepository;
-    @Scheduled(fixedDelay = 360000, initialDelay = 10)
+//    @Scheduled(fixedDelay = 3600000, initialDelay = 10)
     void analyzeScores() {
+        analyzeScoresDeep();
+    }
+
+    @Async
+    public void analyzeScoresDeep() {
         System.out.println("Insert new scores");
         studentAccountRepository.analyzeScores();
 

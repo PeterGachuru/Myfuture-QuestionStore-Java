@@ -14,7 +14,7 @@ public class OnlineUtils {
 
     public static JSONArray getArrayFromOnline(String url) {
         try {
-            System.out.println(url);
+//            System.out.println(url);
 
             String response = getTextFromURL(url);
 

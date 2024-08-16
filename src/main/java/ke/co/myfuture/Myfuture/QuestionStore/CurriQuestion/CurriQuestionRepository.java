@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface CurriQuestionRepository extends JpaRepository<CurriQuestion, Long> {
@@ -30,4 +31,7 @@ public interface CurriQuestionRepository extends JpaRepository<CurriQuestion, Lo
     @Transactional
     @Query(nativeQuery = true, value = "UPDATE curri_question SET explanation = :explanation, update_id = :questionsUpdateId WHERE string LIKE CONCAT('%', :question, '%') ")
     void updateExplanation(@Param("explanation") String explanation, @Param("question") String question, @Param("questionsUpdateId") long questionsUpdateId);
+
+    @Query(value = "select cq.* from (select * from curri_question where id in (:ids)) cq join curri_topic ct ON ct.id = cq.subtopic group by ct.curri_level, ct.parent", nativeQuery = true)
+    List<CurriQuestion> forContestDownload(@Param("ids") List<Long> ids);
 }

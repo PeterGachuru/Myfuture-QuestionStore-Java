@@ -66,11 +66,11 @@ public class ContestController {
     }
 
     @GetMapping("getall/after/id")
-    public ResponseEntity<?> fetchAllAfterContest(@RequestParam("latestContestId") Long latestContestId, @RequestParam("studentId") Long studentId) {
+    public ResponseEntity<?> fetchAllAfterContest(@RequestParam("latestInviteId") Long latestInviteId, @RequestParam("studentId") Long studentId) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Contest retrieved Successfully");
-        response.setEntity(repository.contestsAfter(latestContestId, studentId));
+        response.setEntity(repository.contestsAfterInvite(latestInviteId, studentId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

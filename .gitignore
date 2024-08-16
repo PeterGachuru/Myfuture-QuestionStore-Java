@@ -2,6 +2,8 @@ HELP.md
 .gradle
 .log
 build/
+backups/
+cmdcommands/
 src/main/resources/
 !src/main/resources/columnmappings
 !src/main/resources/executiongroups

@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.Studentaccount;
 
+import ke.co.myfuture.Myfuture.UserManagement.ScoreAnalysis.Cronjobs;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import java.util.Optional;
 public class StudentAccountController {
     @Autowired
     StudentAccountRepository repository;
+    @Autowired
+    Cronjobs cronjobs;
 
     @PostMapping("add")
     public ResponseEntity<?> newStudentAccount(@RequestBody IbukaStudentAccount student) {
@@ -36,8 +39,13 @@ public class StudentAccountController {
         Optional<IbukaStudentAccount> studentAccountFromDb = repository.findById(student.id);
         if (studentAccountFromDb.isEmpty()) return null;
         studentAccountFromDb.get().update(student);
+        Long initialScore = studentAccountFromDb.get().totalScore;
         IbukaStudentAccount updatedStudentAccount = repository.save(studentAccountFromDb.get());
 
+        if (updatedStudentAccount.totalScore > initialScore) {
+            System.out.println("Score is higher from initial");
+            cronjobs.analyzeScoresDeep();
+        }
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Updated Successfully");

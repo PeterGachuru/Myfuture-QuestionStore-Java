@@ -40,6 +40,9 @@ public class CurriQuestionController {
     CgroupService cgroupService;
 
     @Autowired
+    CurriQuestionService curriQuestionService;
+
+    @Autowired
     CurriNormalChoiceRepository curriNormalChoiceRepository;
 
     @PostMapping("add/{subtopic}")
@@ -128,6 +131,16 @@ public class CurriQuestionController {
         response.setStatus("Success");
         response.setMessage("CurriQuestion retrieved Successfully");
         response.setEntity(repository.findById(id));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("forContestQuestionDownload")
+    public ResponseEntity<?> forContestQuestionDownload(@RequestParam("contestId") Long contestId) {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("CurriQuestion retrieved Successfully");
+        response.setEntity(curriQuestionService.forContestQuestionDownload(contestId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -6,10 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
@@ -20,12 +17,14 @@ import static ke.co.myfuture.Myfuture.Utils.Response.OnlineUtils.getArrayFromOnl
 public class DownloadFromOnline {
 
     String[] sourceFolders = new String[] {
-            "C:\\Users\\USER\\personal\\data",
+            "/home/ubuntu",
     };
-    String saveRootFolder = "C:\\Users\\USER\\personal\\testbackup";
-    String baseUrlFolders = "http://localhost:2024/files/listfolders";
-    String baseUrlReadFiles = "http://localhost:2024/files/listfiles";
-    String baseUrlDownloadFiles = "http://localhost:2024/files/download/base2";
+    String saveRootFolder = "C:\\Users\\USER\\personal\\Myfuture-QuestionStore-Java\\backups";
+
+//    /treasury
+    String baseUrlFolders = "https://questionsbackend.myfuture.co.ke/files/listfolders";
+    String baseUrlReadFiles = "https://questionsbackend.myfuture.co.ke/files/listfiles";
+    String baseUrlDownloadFiles = "https://questionsbackend.myfuture.co.ke/files/download/base2";
 
 //    @Bean
     public void downloadRecussively() throws JSONException, IOException {
@@ -50,9 +49,20 @@ public class DownloadFromOnline {
                 .queryParam("filePath", encodeStringToBase64(filePath))
                 .build().encode().toUriString();
 
-        System.out.println(encodeStringToBase64(filePath));
+//        System.out.println(encodeStringToBase64(filePath));
 
         return baseUrl+encodedSearchString;
+    }
+
+    private void saveCommand(String command) {
+        String filePath = "C:\\Users\\USER\\personal\\Myfuture-QuestionStore-Java\\cmdcommands\\thecommands";
+
+        try (FileWriter writer = new FileWriter(filePath, true)) {
+            writer.write(command);
+            writer.write(System.lineSeparator());  // Adds a new line after the appended text
+        } catch (IOException e) {
+            System.err.println("An IOException was caught: " + e.getMessage());
+        }
     }
 
     public void downloadFilesFromFolder(String folder) throws JSONException, IOException {
@@ -61,6 +71,12 @@ public class DownloadFromOnline {
         JSONArray files = getArrayFromOnline(url);
         if (files == null)
             return;
+        String saveAs = saveRootFolder+folder;
+        String createFolder = "mkdir \""+saveAs+"\"";
+        saveCommand(createFolder);
+
+//        System.out.println(createFolder);
+
         int s = files.length();
         for (int i = 0; i < s; i++) {
 
@@ -68,7 +84,14 @@ public class DownloadFromOnline {
 
             String downloadUrl = makeUrl(baseUrlDownloadFiles, file);
 
-            downloadFile(downloadUrl, saveRootFolder);
+            saveAs = saveRootFolder+file;
+
+            String downloadCommand = "curl -o \""+saveAs+"\" \""+downloadUrl+"\"";
+
+//            System.out.println(downloadCommand);
+            saveCommand(downloadCommand);
+
+//            downloadFile(downloadUrl, saveRootFolder);
         }
     }
 
@@ -84,12 +107,18 @@ public class DownloadFromOnline {
         // Check the HTTP response code
         int responseCode = httpConn.getResponseCode();
 
+        String user = System.getProperty("user.name");
+        // Print the current user
+        System.out.println("Current user: " + user);
+
         // If the response code is HTTP OK (200)
         if (responseCode == HttpURLConnection.HTTP_OK) {
             // Open input stream from the HTTP connection
             InputStream inputStream = httpConn.getInputStream();
             // Create a buffered input stream for efficiency
             BufferedInputStream bis = new BufferedInputStream(inputStream);
+
+            System.out.println("savePath: "+savePath);
             // Open output stream to save the file
             FileOutputStream fos = new FileOutputStream(savePath);
 
