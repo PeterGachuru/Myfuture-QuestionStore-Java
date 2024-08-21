@@ -22,6 +22,11 @@ public interface PeriodicContributionAnalysisRepository extends JpaRepository<Pe
             """)
     List<SummaryPeriod> getAllForPlan(@Param("planId") Long planId);
 
+    @Query(nativeQuery = true, value = """
+            select id from account where ownership_type = 'INCOME' AND contributions_plan_id = :planId        
+            """)
+    List<Long> getAccountIdsForPlan(@Param("planId") Long planId);
+
     interface SummaryPeriod {
         String getName();
         String getPeriod();

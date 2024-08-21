@@ -72,7 +72,7 @@ public class TransactionController {
                                                   @RequestParam("groupId") Long groupId) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
-        response.setMessage("ProductCategory retrieved Successfully");
+        response.setMessage("Transactions retrieved Successfully");
         List<Transaction> accountList = repository.findAllByAuditTrails_DeletedFlagOrderByAuditTrails_CreatedAtDesc(false, startDate, endDate, category, planId, groupId);
 //        for (Transaction account: accountList)
 //            account.setAudits(repository.getAudits(account.getId()));

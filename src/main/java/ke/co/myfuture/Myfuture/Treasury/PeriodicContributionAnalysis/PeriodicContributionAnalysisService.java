@@ -42,6 +42,7 @@ public class PeriodicContributionAnalysisService {
     }
 
     UniversalResponse calculate(Long accountId) {
+        System.out.println("Account Id "+accountId);
         Optional<Account> account = accountRepository.findById(accountId);
         if (account.isPresent())
             return calculate(account.get());
@@ -63,14 +64,16 @@ public class PeriodicContributionAnalysisService {
             Double totalUnaccountedContributions = tranEntryRepository.netCreditsForAccountAfterDate(account.getId(), "1970-01-01 00:20:13.559000");
 
             Date currentDate = account.getStartDate();
+            System.out.println("account.getStartDate(): "+account.getStartDate());
             return calculateMonthly(account, currentDate, totalUnaccountedContributions,  "MONTHS");
         }
     }
 
     UniversalResponse calculateMonthly(Account account, Date currentDate,  Double totalUnaccountedContributions, String durationId) {
         UniversalResponse universalResponse = new UniversalResponse();
+        System.out.println("totalUnaccountedContributions: "+totalUnaccountedContributions);
         if (totalUnaccountedContributions == null) {
-            System.out.println("Date is null");
+            System.out.println("totalUnaccountedContributions is null");
             universalResponse.setStatusCode(HttpStatus.NOT_ACCEPTABLE.value());
             universalResponse.setMessage("Already calculated");
             return universalResponse;
@@ -103,11 +106,12 @@ public class PeriodicContributionAnalysisService {
     }
 
     public String toHtmlReport(Long planId) {
+        System.out.println("Plan Id: "+planId);
         System.out.println("TO html");
         Optional<ContributionsPlan> contributionsPlan = contributionsPlanRepository.findById(planId);
         if (contributionsPlan.isEmpty())
             return "";
-        String titling = "<h1>"+contributionsPlan.get().getName()+"</h1><h2>"+contributionsPlan.get().getPeopleGroup().getName()+"</h2>";
+        String titling = "<h1>"+contributionsPlan.get().getName()+"</h1><h2>Group Name Withheld</h2>";
         List<String> months = periodicContributionAnalysisRepository.allRelevantMonths(planId);
         System.out.println(Arrays.deepToString(months.toArray()));
 
@@ -125,6 +129,7 @@ public class PeriodicContributionAnalysisService {
 
         String value;
         StringBuilder rows = new StringBuilder();
+        System.out.println("Count of accountPeriodsMapping: "+accountPeriodsMappings.size());
         for (AccountPeriodsMapping accountPeriodsMapping: accountPeriodsMappings) {
             System.out.println(accountPeriodsMapping);
             no++;
@@ -152,11 +157,15 @@ public class PeriodicContributionAnalysisService {
         AccountPeriodsMapping accountPeriodsMapping = null;
 
         for (PeriodicContributionAnalysisRepository.SummaryPeriod summaryPeriod: summaryPeriodList) {
-            if (accountPeriodsMapping == null || accountPeriodsMapping.miniAccount.id != summaryPeriod.getAccountId()) {
+            System.out.println("Id: "+summaryPeriod.getAccountId());
+            if (accountPeriodsMapping == null
+                    || !Objects.equals(accountPeriodsMapping.miniAccount.id, summaryPeriod.getAccountId())) {
+                System.out.println("Next record");
                 if (accountPeriodsMapping != null) {
                     System.out.println("is not null");
                     System.out.println(accountPeriodsMapping);
                     accountPeriodsMappings.add(accountPeriodsMapping);
+
                 }else {
 
                 }
@@ -166,6 +175,8 @@ public class PeriodicContributionAnalysisService {
                 miniAccount.name = summaryPeriod.getName();
                 accountPeriodsMapping.miniAccount = miniAccount;
                 accountPeriodsMapping.periodAmounts = new HashMap<>();
+            }else {
+                System.out.println("Same record");
             }
             accountPeriodsMapping.periodAmounts.put(summaryPeriod.getPeriod(), summaryPeriod.getAmount());
         }

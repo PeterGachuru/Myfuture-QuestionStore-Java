@@ -14,5 +14,4 @@ SELECT SUM(IF(tran_type='CREDIT', amount, amount*-1)) summed FROM tran_entry WHE
 tran_id IN(SELECT id FROM (SELECT * FROM transaction WHERE id IN(SELECT tran_id FROM tran_entry WHERE account_id = :accountId)) AS k WHERE created_at > :fromDate)
 """)
     Double netCreditsForAccountAfterDate(@Param("accountId") Long accountId, @Param("fromDate") String fromDate);
-
 }

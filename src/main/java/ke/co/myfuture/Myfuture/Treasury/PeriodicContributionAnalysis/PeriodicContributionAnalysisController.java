@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -36,11 +37,14 @@ public class PeriodicContributionAnalysisController {
 
     @GetMapping("generatepdf")
     public ResponseEntity<byte[]>  generatePdfFile(@RequestParam("planId") Long planId) throws IOException, DocumentException {
+        List<Long> incomeAccountsForPlan = repository.getAccountIdsForPlan(planId);
+        for (Long id: incomeAccountsForPlan)
+            service.calculate(id);
         String contentToGenerate = service.toHtmlReport(planId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("application/pdf"));
-        headers.setContentDispositionFormData("inline", "PrivacyPolicy.pdf");
+        headers.setContentDispositionFormData("inline", "Contributions.pdf");
         headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
         ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(pdfService.convertHtmlToPdf("<div>"+
                 contentToGenerate+"</div>"),

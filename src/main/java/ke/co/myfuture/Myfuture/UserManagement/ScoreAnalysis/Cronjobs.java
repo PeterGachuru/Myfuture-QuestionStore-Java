@@ -22,7 +22,7 @@ public class Cronjobs {
 
     @Autowired
     AllTimeScoreRepository allTimeScoreRepository;
-//    @Scheduled(fixedDelay = 3600000, initialDelay = 10)
+    @Scheduled(fixedDelay = 3600000, initialDelay = 10)
     void analyzeScores() {
         analyzeScoresDeep();
     }
