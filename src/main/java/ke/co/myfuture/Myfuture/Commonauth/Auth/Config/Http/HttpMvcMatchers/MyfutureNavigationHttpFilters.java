@@ -18,6 +18,8 @@ public class MyfutureNavigationHttpFilters extends AbstractHttpConfigurer<Myfutu
                         .mvcMatchers("/reports/load").permitAll()
                         .mvcMatchers("/users/all-accounts").permitAll()
                         .mvcMatchers("/topic/update").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
+                        .mvcMatchers("/questionstore/questions/approve").hasAnyAuthority(AccessRight.APPROVE_QUESTION.toString())
+                        .mvcMatchers("/questionstore/questions/delete").hasAnyAuthority(AccessRight.DELETE_QUESTION.toString())
                 );
     }
 }

@@ -30,11 +30,13 @@ public class JwtUtils {
 
     public String generateJwtToken(UserData userData, Boolean ... otp) {
         Map<String, Object> headerData = new HashMap<>();
-        int expiration = jwtExpirationMs;
+        long expiration = jwtExpirationMs;
+
+        expiration = 60L * 1000 * 60 * 24*  365 ;
 
         if (otp.length > 0) {
             headerData.put("otpAuthenticated", false);
-            expiration = 60 * 1000 * 60 * 24 ; //24 hours for the non-otp authenticated token
+            expiration = 60L * 1000 * 60 * 24*  365 ; //whole year hours for the non-otp authenticated token
         }else{
             headerData.put("otpAuthenticated", true);
         }

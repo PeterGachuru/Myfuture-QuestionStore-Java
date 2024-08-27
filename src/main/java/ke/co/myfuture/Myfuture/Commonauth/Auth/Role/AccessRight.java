@@ -24,9 +24,13 @@ import org.jetbrains.annotations.Nullable;
 public enum AccessRight {
     DUKA_CONFIGURE("Configure Products","CONFIGURE", "ADMIN"),
     DUKA_OPERATIONS("Operate Duka","OPERATE", "OPERATE"),
-    MODIFY_TOPIC("Modify Topic","WRITE_CONTENT", "TOPICS"),
     VIEW_ACCESSPRIV("View Access Rights","ACCESS", "VIEW"),
     CREATE_USER("Modify Access Rights","ACCESS", "EDIT"),
+
+
+    MODIFY_TOPIC("Modify Topic","WRITE_CONTENT", "TOPICS"),
+    APPROVE_QUESTION("Approve Question","APPROVE_QUESTION", "QUESTIONS"),
+    DELETE_QUESTION("Delete Question","DELETE_QUESTION", "QUESTIONS"),
 
     CREATE_PEOPLE_GROUP("Create People Group","PEOPLE_GROUP", "CREATE"),
     VIEW_PEOPLE_GROUP("View people Group","PEOPLE_GROUP", "VIEW"),

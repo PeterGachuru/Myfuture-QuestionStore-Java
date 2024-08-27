@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion;
 
+import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoice;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
 import ke.co.myfuture.Myfuture.Utils.Response.StaticFunctionUtils;
@@ -77,6 +78,8 @@ public class CurriQuestion {
     Boolean deleted = false;
     Date approvalDate;
     Date deletionDate;
+    String approvedBy;
+    String deletedBy;
 //    public String getApprovalDate() {
 //        return StaticFunctionUtils.simpleDateFormat(approvalDate);
 //    }
@@ -91,11 +94,13 @@ public class CurriQuestion {
         sharable = false;
         deletionDate = new Date();
         reviewed = true;
+        deletedBy =  UserRequestContext.getCurrentUserName();
     }
     public void approve() {
         sharable = true;
         approvalDate = new Date();
         deleted = false;
         reviewed = true;
+        approvedBy = UserRequestContext.getCurrentUserName();
     }
 }
