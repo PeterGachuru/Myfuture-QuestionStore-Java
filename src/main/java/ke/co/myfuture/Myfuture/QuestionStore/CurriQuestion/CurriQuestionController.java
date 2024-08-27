@@ -135,6 +135,33 @@ public class CurriQuestionController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PutMapping("approve")
+    public ResponseEntity<?> approveCurriQuestion(@RequestParam("id") Long id) {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Question approved Successfully");
+        Optional<CurriQuestion> curriQuestion = repository.findById(id);
+        curriQuestion.get().approve();
+        curriQuestion.get().setUpdateId(curriQuestionService.getNewUpdateId());
+        repository.save(curriQuestion.get());
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    @DeleteMapping("delete")
+    public ResponseEntity<?> deleteCurriQuestion(@RequestParam("id") Long id) {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Question deleted");
+        Optional<CurriQuestion> curriQuestion = repository.findById(id);
+        curriQuestion.get().delete();
+        curriQuestion.get().setUpdateId(curriQuestionService.getNewUpdateId());
+        repository.save(curriQuestion.get());
+        response.setEntity(null);
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
     @GetMapping("forContestQuestionDownload")
     public ResponseEntity<?> forContestQuestionDownload(@RequestParam("contestId") Long contestId) {
         UniversalResponse response = new UniversalResponse();
@@ -203,6 +230,16 @@ public class CurriQuestionController {
         response.setStatus("Success");
         response.setMessage("CurriQuestion retrieved Successfully");
         response.setEntity(repository.findBySubtopicId(subtopicId));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("all/withunapprovedquestions")
+    public ResponseEntity<?> fetchCurriQuestionByParentUnapproved(@RequestParam("subtopicId") Long subtopicId) {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("CurriQuestion retrieved Successfully");
+        response.setEntity(repository.findBySubtopicIdUnapproved(subtopicId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

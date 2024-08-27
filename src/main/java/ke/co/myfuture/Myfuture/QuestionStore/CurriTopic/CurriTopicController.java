@@ -1,11 +1,13 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriTopic;
 
+import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -90,5 +92,21 @@ public class CurriTopicController {
         response.setEntity(repository.findByParent(parentId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("all/withunapprovedquestions")
+    public ResponseEntity<UniversalResponse<List<CurriLevel>>> getCurriLevelnsMinimalWithUnapprovedQuestions(@RequestParam(value = "parent", required = false) Long parent, @RequestParam("subject") Long subject, @RequestParam("class") Long classLevel) {
+        List<CurriTopic> classLevelList;
+        if (parent == null){
+            classLevelList = repository.getAllWithUnapprovedQuestions(subject, classLevel);
+        }else {
+            classLevelList = repository.getAllWithUnapprovedQuestions(parent, subject, classLevel);
+        }
+
+        UniversalResponse universalResponse = new UniversalResponse();
+        universalResponse.setEntity(classLevelList);
+        universalResponse.setMessage("Retrieved");
+        universalResponse.setStatusCode(HttpStatus.FOUND.value());
+        return ResponseEntity.ok().body(universalResponse);
     }
 }

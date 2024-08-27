@@ -15,6 +15,8 @@ public interface CurriQuestionRepository extends JpaRepository<CurriQuestion, Lo
 
     @Query(value = "SELECT * FROM curri_question WHERE subtopic = :subtopicId ", nativeQuery = true)
     List<CurriQuestion> findBySubtopicId(@Param("subtopicId") Long subtopicId);
+    @Query(value = "SELECT * FROM curri_question WHERE subtopic = :subtopicId AND  reviewed = '0'", nativeQuery = true)
+    List<CurriQuestion> findBySubtopicIdUnapproved(@Param("subtopicId") Long subtopicId);
 
     @Modifying
     @Transactional

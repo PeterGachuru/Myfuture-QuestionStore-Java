@@ -44,4 +44,15 @@ public class CurriculumController {
         universalResponse.setStatusCode(HttpStatus.FOUND.value());
         return ResponseEntity.ok().body(universalResponse);
     }
+
+    @GetMapping("all/withunapprovedquestions")
+    public ResponseEntity<UniversalResponse<List<Curriculum>>> getCurriculumnsWithUnapprovedQuestions() {
+        List<Curriculum> curriculumList = curriculumRepository.getAllCurriculumsWithUnapprovedQuestions();
+
+        UniversalResponse universalResponse = new UniversalResponse();
+        universalResponse.setEntity(curriculumList);
+        universalResponse.setMessage("Retrieved");
+        universalResponse.setStatusCode(HttpStatus.FOUND.value());
+        return ResponseEntity.ok().body(universalResponse);
+    }
 }

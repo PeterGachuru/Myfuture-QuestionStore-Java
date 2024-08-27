@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.Subject;
 
+import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,4 +13,11 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     @Query(value = "select * from subject where id in (select subject from curri_topic where curri_level = :level)", nativeQuery = true)
     List<Subject> subjectsByClassLevel(@Param("level") Long classLevel);
+
+    @Query(value = """
+            select * from subject where id in (SELECT subject FROM curri_topic 
+                                WHERE id IN(SELECT subtopic FROM curri_question 
+                                WHERE reviewed = '0')) ORDER BY id 
+            """, nativeQuery = true)
+    List<Subject> getAllWithUnapprovedQuestions(@Param("level") Long level);
 }

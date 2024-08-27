@@ -57,4 +57,15 @@ public class CurriLevelController {
         universalResponse.setStatusCode(HttpStatus.FOUND.value());
         return ResponseEntity.ok().body(universalResponse);
     }
+
+    @GetMapping("all/withunapprovedquestions")
+    public ResponseEntity<UniversalResponse<List<CurriLevel>>> getCurriLevelnsMinimalWithUnapprovedQuestions(@RequestParam("curriculum") Long curriculum) {
+        List<CurriLevel> classLevelList = classLevelRepository.getAllWithUnapprovedQuestions(curriculum);
+
+        UniversalResponse universalResponse = new UniversalResponse();
+        universalResponse.setEntity(classLevelList);
+        universalResponse.setMessage("Retrieved");
+        universalResponse.setStatusCode(HttpStatus.FOUND.value());
+        return ResponseEntity.ok().body(universalResponse);
+    }
 }

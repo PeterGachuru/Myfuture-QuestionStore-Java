@@ -2,6 +2,7 @@ package ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion;
 
 import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoice;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
+import ke.co.myfuture.Myfuture.Utils.Response.StaticFunctionUtils;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -34,10 +35,6 @@ public class CurriQuestion {
     @ManyToOne
     @JoinColumn(name = "subtopic")
     CurriTopic subtopic;
-    @Column(nullable = false)
-    Boolean sharable = false;
-    @Column(nullable = false)
-    Boolean reviewed = false;
 
     @CreationTimestamp
     Date createdAt;
@@ -47,10 +44,6 @@ public class CurriQuestion {
     Date approverRequestDate;
 //    public String getApproverRequestDate() {
 //        return StaticFunctionUtils.simpleDateFormat(approverRequestDate);
-//    }
-    Date approvalDate;
-//    public String getApprovalDate() {
-//        return StaticFunctionUtils.simpleDateFormat(approvalDate);
 //    }
     @UpdateTimestamp
     Date updatedAt;
@@ -77,10 +70,32 @@ public class CurriQuestion {
 //    @Transient
     List<CurriNormalChoice> choices;
 
+    @Column(nullable = false)
+    Boolean sharable = false;
+    @Column(nullable = false)
+    Boolean reviewed = false;
     Boolean deleted = false;
+    Date approvalDate;
+    Date deletionDate;
+//    public String getApprovalDate() {
+//        return StaticFunctionUtils.simpleDateFormat(approvalDate);
+//    }
 
     @PrePersist
     void init() {
         deleted = false;
+    }
+
+    public void delete() {
+        deleted = true;
+        sharable = false;
+        deletionDate = new Date();
+        reviewed = true;
+    }
+    public void approve() {
+        sharable = true;
+        approvalDate = new Date();
+        deleted = false;
+        reviewed = true;
     }
 }

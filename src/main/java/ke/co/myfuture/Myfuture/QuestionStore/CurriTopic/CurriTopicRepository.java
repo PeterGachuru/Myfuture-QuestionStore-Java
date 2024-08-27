@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriTopic;
 
+import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,4 +30,18 @@ public interface CurriTopicRepository extends JpaRepository<CurriTopic, Long> {
 
     @Query(value = "SELECT * FROM curri_topic  WHERE parent IS NOT NULL AND id IN (select subtopic from (select count(subtopic) as count, subtopic from curri_question where book_model = 'gpt-3.5-turbo-0125' group by subtopic) k where count < 13) ORDER BY numbering ASC", nativeQuery = true)
     List<CurriTopic> findSubtopicsWithLessAIQuestions();
+
+    @Query(value = """
+            SELECT * FROM curri_topic  WHERE parent is null AND subject = :subject AND curri_level = :classLevel 
+            AND deleted = 0 AND id IN (SELECT parent FROM curri_topic WHERE id IN(SELECT subtopic FROM curri_question 
+            WHERE reviewed = '0')) ORDER BY numbering ASC, id ASC
+            """, nativeQuery = true)
+    List<CurriTopic> getAllWithUnapprovedQuestions(@Param("subject") Long subject, @Param("classLevel")  Long classLevel);
+
+    @Query(value = """
+            SELECT * FROM curri_topic  WHERE parent = :parent AND subject = :subject AND curri_level = :classLevel 
+            AND deleted = 0 AND id IN(SELECT subtopic FROM curri_question 
+            WHERE reviewed = '0') ORDER BY numbering ASC, id ASC
+            """, nativeQuery = true)
+    List<CurriTopic> getAllWithUnapprovedQuestions(@Param("parent") Long parent, @Param("subject") Long subject, @Param("classLevel")  Long classLevel);
 }
