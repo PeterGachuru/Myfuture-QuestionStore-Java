@@ -53,6 +53,9 @@ public class User implements Serializable {
     @Column(name = "status")
     private String status;
 
+    @Lob
+    private String pictureUrl;
+
     @Column(name = "first_login")
     private Integer firstLogin;
 

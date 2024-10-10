@@ -1,8 +1,10 @@
 package ke.co.myfuture.Myfuture.Tuabudu.Singer;
 
+import ke.co.myfuture.Myfuture.Tuabudu.Song.Song;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -15,4 +17,7 @@ public class Singer {
     public String name;
     public String countryCode;
     public String alias;
+
+    @OneToMany
+    List<Song> songList;
 }

@@ -1,8 +1,12 @@
 package ke.co.myfuture.Myfuture.Tuabudu.Song;
 
+import ke.co.myfuture.Myfuture.Tuabudu.MusicGenre.MusicGenre;
+import ke.co.myfuture.Myfuture.Tuabudu.Language.Language;
+import ke.co.myfuture.Myfuture.Tuabudu.Singer.Singer;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -12,9 +16,18 @@ public class Song {
     @Column(name = "id", nullable = false)
     public Long id;
 
-    public String singer;
+    @ManyToOne
+    public Singer singer;
+    @Column(nullable = false)
     public String title;
+    @Lob
     public String content;
     public String youtubeLink;
     public String audioLink;
+
+    @OneToMany
+    List<MusicGenre> categories;
+
+    @ManyToOne
+    Language language;
 }

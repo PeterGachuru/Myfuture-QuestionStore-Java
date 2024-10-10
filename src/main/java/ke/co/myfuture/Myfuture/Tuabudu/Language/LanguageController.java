@@ -1,22 +1,26 @@
-package ke.co.myfuture.Myfuture.Tuabudu.Singer;
+package ke.co.myfuture.Myfuture.Tuabudu.Language;
 
+import ke.co.myfuture.Myfuture.Tuabudu.Singer.Singer;
+import ke.co.myfuture.Myfuture.Tuabudu.Singer.SingerRepository;
+import ke.co.myfuture.Myfuture.Tuabudu.Singer.LanguageService;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
+import org.apache.commons.codec.language.bm.Lang;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("singer")
-public class SingerController {
+@RequestMapping("tuabudu/language")
+public class LanguageController {
     @Autowired
-    SingerRepository repository;
+    LanguageRepository repository;
     @Autowired
-    LanguageService singerService;
+    LanguageService languageService;
 
     @PostMapping("add")
-    public ResponseEntity<?> newSingerAccount(@RequestBody Singer user) {
-        Singer savedSinger = repository.save(user);
+    public ResponseEntity<?> newSingerAccount(@RequestBody Language user) {
+        Language savedSinger = repository.save(user);
         System.out.println(savedSinger);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
@@ -27,8 +31,8 @@ public class SingerController {
     }
 
     @PutMapping("update")
-    public ResponseEntity<?> updateSinger(@RequestBody Singer user) {
-        Singer updatedSinger = repository.save(user);
+    public ResponseEntity<?> updateSinger(@RequestBody Language user) {
+        Language updatedSinger = repository.save(user);
 
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");

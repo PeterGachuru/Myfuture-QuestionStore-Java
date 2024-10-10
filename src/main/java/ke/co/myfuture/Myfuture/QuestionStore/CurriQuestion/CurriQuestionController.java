@@ -143,6 +143,7 @@ public class CurriQuestionController {
         Optional<CurriQuestion> curriQuestion = repository.findById(id);
         curriQuestion.get().approve();
         curriQuestion.get().setUpdateId(curriQuestionService.getNewUpdateId());
+        curriQuestion.get().setApprovalDate(new Date());
         repository.save(curriQuestion.get());
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);

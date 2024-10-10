@@ -73,7 +73,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             clientinformation.getClientInformation(request);
             System.out.println("jwt: "+jwt);
 
-            if (jwt != null ) {
+            if (jwt != null && !jwt.equals("jcbnvdsgcvsdggvgvcvsdhghdsdwodweidwebdfhbvweh326432fdwbhgcdf4736bvcghf36vgvdgy4r76t37t")) {
             if (jwtUtils.validateJwtToken(jwt)) {
                 System.out.println("Jwt is not null");
                 String email = jwtUtils.getUserNameFromJwtToken(jwt);

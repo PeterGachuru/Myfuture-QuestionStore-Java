@@ -1,6 +1,7 @@
 package ke.co.myfuture.Myfuture.Commonauth.Auth.User;
 
 //import co.ke.emtechhousee.emtr.Auditing.AuditTrail.AuditTrailProvider;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UpdateUserRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UserCreateRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.AuthEntityResponse;
@@ -23,11 +24,13 @@ import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.JwtU
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MailServiceException;
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MakerCheckerFailException;
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MaximumRetriesException;
+import ke.co.myfuture.Myfuture.Commonauth.GoogleSignin.GoogleTokenVerifierService;
 import ke.co.myfuture.Myfuture.Commonauth.MailComponent.MailService2;
 import ke.co.myfuture.Myfuture.Commonauth.Utils.CustomMailSender;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -58,6 +61,9 @@ public class UserService {
 
     private final MailService2 mailService2;
 
+    @Autowired
+    private GoogleTokenVerifierService googleTokenVerifierService;
+
     private CustomMailSender customMailSender;
     @Value("${production}")
     private boolean inProd;
@@ -72,6 +78,42 @@ public class UserService {
         });
 
         return roles;
+    }
+
+    public LoginResponse loginByGoogle(String idTokenString, Long installId) throws Exception {
+        GoogleIdToken.Payload payload = googleTokenVerifierService.validateGoogleIdToken(idTokenString);
+
+        // Extract user information from the payload
+        String userId = payload.getSubject();  // Google's unique user ID
+        String email = payload.getEmail();
+        boolean emailVerified = payload.getEmailVerified();
+        String name = (String) payload.get("name");
+        String firstName = (String) payload.get("given_name");  // Extract first name
+        String lastName = (String) payload.get("family_name");  // Extract last name
+        String pictureUrl = (String) payload.get("picture");
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            return loginResponse(user.get().getEmail()).get();
+        }
+        User userCreate = new User();
+        userCreate.setEmail(email);
+        userCreate.setFirstName(firstName);
+        userCreate.setLastName(lastName);
+        userCreate.setInstallId(installId);
+        userCreate.setStatus("Active");
+        userCreate.setFirstLogin(1);
+
+        User createdUser = userRepository.save(userCreate);
+//        userCreate.
+        return loginResponse(createdUser.getEmail()).get();
+    }
+
+    private  AtomicReference<LoginResponse> loginResponse(String email) {
+        UserData userData = getUserDetails(email).getUser();
+        LoginData authResponse = loginBuilder(userData);
+        AtomicReference<LoginResponse> response = new AtomicReference<>();
+        response.set(LoginResponse.builder().statusCode(HttpStatus.OK.value()).message("Login successful").user(authResponse).build());
+        return response;
     }
 
     private CustomMailSender getCustomMailSender() {
@@ -90,6 +132,24 @@ public class UserService {
         } else {
             return this.userRoleRepository.findAllByUserAndStatus(user, 1).stream().map(UserRole::getRole).collect(Collectors.toList());
         }
+    }
+
+    public LoginData loginBuilder(UserData userData) {
+        System.out.println("About to generate jwt token");
+        String token = jwtUtils.generateJwtToken(userData, true);
+        String otp = this.otpService.generateOTP(userData.getEmail(), token);
+        log.info("Otp is: {}", otp);
+        return LoginData.builder()
+                .token(token)
+                .id(userData.getId())
+                .firstName(userData.getFirstName())
+                .phoneNumber(userData.getPhoneNumber())
+                .lastName(userData.getLastName())
+                .email(userData.getEmail())
+                .firstLogin(userData.getFirstLogin())
+                .hasAcceptedTerms(userData.getHasAcceptedTerms())
+                .roles(userData.getRoles())
+                .build();
     }
 
     public LoginResponse authenticateUser(@NonNull String email, @NonNull String password) {
@@ -142,24 +202,10 @@ public class UserService {
                                 " Is Deactivated").build());
                         return;
                     }
-                    System.out.println("About to generate jwt token");
-                    String token = jwtUtils.generateJwtToken(userData, true);
-                    String otp = this.otpService.generateOTP(userData.getEmail(), token);
-                    log.info("Otp is: {}", otp);
-                    LoginData authResponse = LoginData.builder()
-                            .token(token)
-                            .id(userData.getId())
-                            .firstName(userData.getFirstName())
-                            .phoneNumber(userData.getPhoneNumber())
-                            .lastName(userData.getLastName())
-                            .email(userData.getEmail())
-                            .firstLogin(userData.getFirstLogin())
-                            .hasAcceptedTerms(userData.getHasAcceptedTerms())
-                            .roles(userData.getRoles())
-                            .build();
+                    LoginData authResponse = loginBuilder(userData);
                     otpService.resetAllRetries(email);
                     try {
-                        log.info("otp is {}",otp);
+//                        log.info("otp is {}",otp);
                         System.out.println("About to send email");
                         System.out.println("inProd: "+inProd);
                         if (inProd) {

@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.Tuabudu.Playlist;
+package ke.co.myfuture.Myfuture.Tuabudu.Singlist;
 
 import ke.co.myfuture.Myfuture.Tuabudu.Song.Song;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Data
-public class Playlist {
+public class Singlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

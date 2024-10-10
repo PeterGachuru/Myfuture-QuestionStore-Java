@@ -11,7 +11,7 @@ public class FileService {
 
     public String uploadFile(MultipartFile file) {
         String fileName = FileStorageUtil.storeFile(file);
-        return  fileName + "uploaded";
+        return  fileName + " uploaded";
     }
 
 

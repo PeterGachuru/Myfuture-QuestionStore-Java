@@ -2,6 +2,7 @@ package ke.co.myfuture.Myfuture.Commonauth.Auth.User;
 
 
 //import co.ke.emtechhousee.emtr.Auditing.AuditTrail.AuditTrailProvider;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import ke.co.myfuture.Myfuture.Commonauth.Auditing.ExceptionHandling.ExceptionLogger;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.LoginUserRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UpdatePasswordRequest;
@@ -12,6 +13,8 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.User.Request.OtpRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.Response.OtpResponse;
 import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.JwtStatusContext;
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MailServiceException;
+import ke.co.myfuture.Myfuture.Commonauth.DTO.EntityResponse;
+import ke.co.myfuture.Myfuture.Commonauth.GoogleSignin.GoogleTokenVerifierService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +35,20 @@ public class AuthHandler {
     UserService userService;
     private final OtpService otpService;
 //    private final AuditTrailProvider audit;
+
+
     private final ExceptionLogger exceptionLogger;
     private final Pattern passwordPattern = Pattern.compile("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{12,60}$");
 
+    @PostMapping("/google-signin")
+    public ResponseEntity<?> googleSignIn(@RequestParam("idToken") String idTokenString,
+                                          @RequestParam("installId") Long installId) {
+        try {
+            return ResponseEntity.ok( userService.loginByGoogle(idTokenString, installId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid ID Token");
+        }
+    }
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginUserRequest body) {
         System.out.println("Login request received");

@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.Tuabudu.Playlist;
+package ke.co.myfuture.Myfuture.Tuabudu.Singlist;
 
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,34 +7,34 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("playlist")
+@RequestMapping("singlist")
 
-public class PlaylistController {
+public class SinglistController {
     @Autowired
-    PlaylistRepository repository;
+    SinglistRepository repository;
     @Autowired
-    PlaylistService playlistService;
+    SinglistService singlistService;
 
     @PostMapping("add/")
-    public ResponseEntity<?> newPlaylistAccount(@RequestBody Playlist user) {
-        Playlist savedPlaylist = repository.save(user);
-        System.out.println(savedPlaylist);
+    public ResponseEntity<?> newPlaylistAccount(@RequestBody Singlist user) {
+        Singlist savedSinglist = repository.save(user);
+        System.out.println(savedSinglist);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Saved successfully");
-        response.setEntity(savedPlaylist);
+        response.setEntity(savedSinglist);
         response.setStatusCode(201);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("update/")
-    public ResponseEntity<?> updatePlaylist(@RequestBody Playlist user) {
-        Playlist updatedPlaylist = repository.save(user);
+    public ResponseEntity<?> updatePlaylist(@RequestBody Singlist user) {
+        Singlist updatedSinglist = repository.save(user);
 
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Updated Successfully");
-        response.setEntity(updatedPlaylist);
+        response.setEntity(updatedSinglist);
         response.setStatusCode(201);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
