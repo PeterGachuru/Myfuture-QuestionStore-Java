@@ -52,6 +52,7 @@ public class User implements Serializable {
 
     @Column(name = "status")
     private String status;
+    private String fullName;
 
     @Lob
     private String pictureUrl;
@@ -88,4 +89,5 @@ public class User implements Serializable {
 
     @Column(name = "reset_password_token_expire")
     private Timestamp resetPasswordTokenExpire;
+
 }

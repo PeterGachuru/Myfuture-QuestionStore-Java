@@ -49,6 +49,15 @@ public class AuthHandler {
             return ResponseEntity.badRequest().body("Invalid ID Token");
         }
     }
+
+    @PostMapping("/firebase-signin")
+    public ResponseEntity<?> firebaseGoogleSignIn(@RequestBody GoogleSignInData googleSignInData) {
+        try {
+            return ResponseEntity.ok( userService.loginByGoogle(googleSignInData));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Invalid ID Token");
+        }
+    }
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginUserRequest body) {
         System.out.println("Login request received");

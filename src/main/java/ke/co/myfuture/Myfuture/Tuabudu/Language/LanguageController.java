@@ -1,10 +1,6 @@
 package ke.co.myfuture.Myfuture.Tuabudu.Language;
 
-import ke.co.myfuture.Myfuture.Tuabudu.Singer.Singer;
-import ke.co.myfuture.Myfuture.Tuabudu.Singer.SingerRepository;
-import ke.co.myfuture.Myfuture.Tuabudu.Singer.LanguageService;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
-import org.apache.commons.codec.language.bm.Lang;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

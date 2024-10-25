@@ -12,4 +12,7 @@ public class UpdateUserRequest implements Serializable {
     private Long id;
     private String firstName;
     private String lastName;
+    private String email;
+    private String county;
+    private String phoneNumber;
 }

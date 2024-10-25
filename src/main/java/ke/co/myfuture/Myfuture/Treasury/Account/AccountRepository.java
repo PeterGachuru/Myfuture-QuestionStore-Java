@@ -38,8 +38,11 @@ AND ownership_type = :ownershipType
 
 //    @Query(nativeQuery = true, value = "select * from account where owner_id = :id AND people_group_id = :groupId LIMIT 1")
 //    Optional<Account> findAccountForPersonByType(@Param("id") Long id, @Param("groupId") Long groupId);
-    @Query(nativeQuery = true, value = "select * from account where owner_id = :id AND people_group_id = :groupId AND ownership_type = :ownershipType LIMIT 1")
-    Optional<Account> findAccountForPersonByType(@Param("id") Long id, @Param("groupId") Long groupId, @Param("ownershipType") String ownershipType);
+    @Query(nativeQuery = true, value = "select * from account where owner_id = :personId AND people_group_id = :groupId AND ownership_type = :ownershipType LIMIT 1")
+    Optional<Account> findAccountForPersonByType(@Param("personId") Long personId, @Param("groupId") Long groupId, @Param("ownershipType") String ownershipType);
+
+    @Query(nativeQuery = true, value = "select * from account where owner_id = :personId AND contributions_plan_id = :planId AND people_group_id = :groupId AND ownership_type = :ownershipType LIMIT 1")
+    Optional<Account> findAccountForPersonByTypeAndPlanId(@Param("personId") Long personId, @Param("planId") Long planId, @Param("groupId") Long groupId, @Param("ownershipType") String ownershipType);
 
     @Query(nativeQuery = true, value = "select * from account where owner_id = :personId AND contributions_plan_id = :planId")
     Optional<Account> findByPersonAndPlan(@Param("personId") Long personId, @Param("planId") Long planId);

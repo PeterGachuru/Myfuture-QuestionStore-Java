@@ -228,7 +228,7 @@ public class TransactionService {
 
     private void addCashAccount(Double amount, TranType tranType, Transaction transaction, String particulars) {
         System.out.println("----addCashAccount----");
-        Account cashAccount = getCashAccount(transaction.getContributionsPlan().getPeopleGroup());
+        Account cashAccount = getCashAccount(transaction.getContributionsPlan().getId(), transaction.getContributionsPlan().getPeopleGroup());
         if (cashAccount == null) {
             System.out.println("Did not get cash account");
             return;
@@ -241,7 +241,7 @@ public class TransactionService {
         transaction.getTranEntries().add(tranEntry);
     }
 
-    private Account getCashAccount(PeopleGroup peopleGroup) {
+    private Account getCashAccount(Long planId, PeopleGroup peopleGroup) {
         System.out.println("----getCashAccount----");
         User user = UserRequestContext.getcurrentUser();
 
@@ -258,22 +258,24 @@ public class TransactionService {
             return null;
         }
 
-        Optional<Account> account = accountRepository.findAccountForPersonByType(groupAccess.get().getPerson().getId(), peopleGroup.getId(), AccountOwnershipType.CASH.name());
+        Optional<Account> account = accountRepository.findAccountForPersonByTypeAndPlanId(groupAccess.get().getPerson().getId(), planId,  peopleGroup.getId(),AccountOwnershipType.CASH.name());
 
         if (account.isEmpty()) {
             System.out.println("cash account is empty, will need to create");
         }
 
         //create cash account for this user
-        return account.orElseGet(() -> createCashAccount(groupAccess.get(), peopleGroup));
+        return account.orElseGet(() -> createCashAccount(groupAccess.get(), peopleGroup, planId));
     }
 
-    private Account createCashAccount(GroupAccess groupAccess, PeopleGroup peopleGroup) {
+    private Account createCashAccount(GroupAccess groupAccess, PeopleGroup peopleGroup, Long planId) {
         Account account = new Account();
         account.setOwner(groupAccess.getPerson());
         account.setPeopleGroup(peopleGroup);
         account.setName(groupAccess.getPerson().getName()+" Cash");
         account.setPinPriority(1);
+        account.setPlanId(planId);
+        account.setContributionsPlan(contributionsPlanRepository.findById(planId).get());
         account.setOwnershipType(AccountOwnershipType.CASH);
 
         Account account1 = accountService.saveAutoCreatedAccount(account);

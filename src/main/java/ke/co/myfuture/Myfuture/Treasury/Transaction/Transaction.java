@@ -27,6 +27,10 @@ public class Transaction {
 
 	private String notes;
 
+	private String externalTransactionCode;
+
+	private String externalTransactionMessage;
+
 	@Column(nullable = false)
 	private String holderParticulars;
 

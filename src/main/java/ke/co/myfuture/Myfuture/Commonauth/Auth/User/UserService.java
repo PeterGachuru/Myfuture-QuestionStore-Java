@@ -91,21 +91,16 @@ public class UserService {
         String firstName = (String) payload.get("given_name");  // Extract first name
         String lastName = (String) payload.get("family_name");  // Extract last name
         String pictureUrl = (String) payload.get("picture");
-        Optional<User> user = userRepository.findByEmail(email);
-        if (user.isPresent()) {
-            return loginResponse(user.get().getEmail()).get();
-        }
-        User userCreate = new User();
-        userCreate.setEmail(email);
-        userCreate.setFirstName(firstName);
-        userCreate.setLastName(lastName);
-        userCreate.setInstallId(installId);
-        userCreate.setStatus("Active");
-        userCreate.setFirstLogin(1);
 
-        User createdUser = userRepository.save(userCreate);
-//        userCreate.
-        return loginResponse(createdUser.getEmail()).get();
+        GoogleSignInData googleSignInData = new GoogleSignInData();
+        googleSignInData.email = payload.getEmail();
+        googleSignInData.givenName =  (String) payload.get("given_name");
+        googleSignInData.familyName =  (String) payload.get("family_name");
+        googleSignInData.displayName =  (String) payload.get("name");
+        googleSignInData.photoUrl =  (String) payload.get("picture");
+        googleSignInData.installId =  installId;
+
+      return loginByGoogle(googleSignInData);
     }
 
     private  AtomicReference<LoginResponse> loginResponse(String email) {
@@ -361,6 +356,8 @@ public class UserService {
             AtomicReference<User> user = new AtomicReference<>(myUser);
             user.get().setFirstName(body.getFirstName().trim());
             user.get().setLastName(body.getLastName().trim());
+            user.get().setCounty(body.getCounty().trim());
+            user.get().setPhoneNumber(body.getPhoneNumber().trim());
 
             user.set(this.userRepository.save(user.get()));
 
@@ -564,6 +561,9 @@ public class UserService {
                     .id(user.getId())
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
+                    .fullName(user.getFullName())
+                    .county(user.getCounty())
+                    .pictureUrl(user.getPictureUrl())
                     .email(user.getEmail())
                     .phoneNumber(user.getPhoneNumber())
                     .status(user.getStatus())
@@ -798,5 +798,30 @@ public class UserService {
         } else {
             throw new RuntimeException("User could not be found");
         }
+    }
+
+    public LoginResponse loginByGoogle(GoogleSignInData googleSignInData) {
+        System.out.println(googleSignInData);
+
+        System.out.println("googleSignInData: "+googleSignInData);
+        Optional<User> user = userRepository.findByEmail(googleSignInData.email);
+        if (user.isPresent()) {
+            return loginResponse(user.get().getEmail()).get();
+        }
+        User userCreate = new User();
+        userCreate.setEmail(googleSignInData.email);
+        userCreate.setFirstName(googleSignInData.givenName);
+        userCreate.setFullName(googleSignInData.displayName);
+        userCreate.setLastName(googleSignInData.familyName);
+        userCreate.setPictureUrl(googleSignInData.photoUrl);
+        userCreate.setInstallId(googleSignInData.installId);
+        userCreate.setStatus("Active");
+        userCreate.setFirstLogin(1);
+
+        System.out.println(userCreate);
+
+        User createdUser = userRepository.save(userCreate);
+//        userCreate.
+        return loginResponse(createdUser.getEmail()).get();
     }
 }

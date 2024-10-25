@@ -22,7 +22,14 @@ public class UserData implements Serializable {
     private String phoneNumber = null;
 
     @Builder.Default
+    private String fullName = null;
+    @Builder.Default
+    private String pictureUrl = null;
+
+    @Builder.Default
     private String firstName = null;
+    @Builder.Default
+    private String county = null;
 
     @Builder.Default
     private String lastName = null;

@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 public class SingerController {
     @Autowired
     SingerRepository repository;
-    @Autowired
-    LanguageService singerService;
 
     @PostMapping("add")
     public ResponseEntity<?> newSingerAccount(@RequestBody Singer user) {

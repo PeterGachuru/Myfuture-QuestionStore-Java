@@ -12,6 +12,30 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     AuditTrails.Retriever getAudits(@Param("id") Long id);
 
 
-    @Query(nativeQuery = true, value = "select * from transaction where deleted_flag = :deletedFlag AND DATE(created_at) >= DATE(:startDate) AND DATE(created_at) <= :endDate AND category = :category AND id IN(select tran_id from tran_entry where account_id IN(SELECT id FROM account WHERE contributions_plan_id = :planId AND people_group_id = :groupId)) ORDER BY created_at ASC")
-    List<Transaction> findAllByAuditTrails_DeletedFlagOrderByAuditTrails_CreatedAtDesc(@Param("deletedFlag") boolean deletedFlag, @Param("startDate") String startDate, @Param("endDate") String endDate, @Param("category") String category, @Param("planId") Long planId,  @Param("groupId") Long groupId);
+
+    @Query(nativeQuery = true,
+    value = """
+            SELECT 
+                t.id AS id, 
+                t.amount_involved AS amountInvolved,
+                t.status AS status,
+                t.external_transaction_code AS externalTransactionCode,
+                t.external_transaction_message AS externalTransactionMessage,
+                t.holder_particulars AS holderParticulars,
+                t.one_of_the_accounts AS oneOfTheAccounts,
+                t.contributions_plan_id AS contributionsPlanId,
+                t.category AS category,
+                t.reversal AS reversal,
+                t.reversal_for AS reversalFor,
+                t.updated_at AS updatedAt,
+                t.created_at AS createdAt,
+                t.deleted_at AS deletedAt,
+                t.deleted_flag AS deletedFlag,
+                t.created_by AS createdBy
+            FROM 
+                 transaction t where deleted_flag = :deletedFlag AND DATE(created_at) >= DATE(:startDate) AND DATE(created_at) <= :endDate AND category = :category AND id IN(select tran_id from tran_entry where account_id IN(SELECT id FROM account WHERE contributions_plan_id = :planId AND people_group_id = :groupId)) ORDER BY created_at ASC;
+                  
+            """)
+//    @Query(nativeQuery = true, value = "select * from transaction where deleted_flag = :deletedFlag AND DATE(created_at) >= DATE(:startDate) AND DATE(created_at) <= :endDate AND category = :category AND id IN(select tran_id from tran_entry where account_id IN(SELECT id FROM account WHERE contributions_plan_id = :planId AND people_group_id = :groupId)) ORDER BY created_at ASC")
+    List<TransactionDTO> findAllByAuditTrails_DeletedFlagOrderByAuditTrails_CreatedAtDesc(@Param("deletedFlag") boolean deletedFlag, @Param("startDate") String startDate, @Param("endDate") String endDate, @Param("category") String category, @Param("planId") Long planId,  @Param("groupId") Long groupId);
 }

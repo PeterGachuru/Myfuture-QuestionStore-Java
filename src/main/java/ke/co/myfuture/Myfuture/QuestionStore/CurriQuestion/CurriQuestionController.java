@@ -163,6 +163,26 @@ public class CurriQuestionController {
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @DeleteMapping("deleteBySubject")
+    public ResponseEntity<?> deleteCurriQuestion(@RequestParam("subjectId") Long subjectId, @RequestParam("bookModel") String bookModel) {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Questions deleted");
+        List<CurriQuestion> curriQuestions = repository.findBySubjectAndBookModel(subjectId, bookModel);
+
+        List<CurriQuestion> updatedQuestions = new ArrayList<>();
+        for (CurriQuestion curriQuestion: curriQuestions) {
+            curriQuestion.delete();
+            curriQuestion.setUpdateId(curriQuestionService.getNewUpdateId());
+            updatedQuestions.add(curriQuestion);
+        }
+        repository.saveAll(updatedQuestions);
+        response.setEntity(null);
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping("forContestQuestionDownload")
     public ResponseEntity<?> forContestQuestionDownload(@RequestParam("contestId") Long contestId) {
         UniversalResponse response = new UniversalResponse();

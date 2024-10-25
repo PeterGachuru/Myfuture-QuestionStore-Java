@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.PersonGroup;
 
+import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
@@ -63,9 +64,9 @@ public class PeopleGroupController {
         response.setMessage("ProductCategory retrieved Successfully");
         List<PeopleGroup> accountList;
         if (parentId == null || parentId == 0)
-            accountList = repository.findAllByAuditTrails_DeletedFlag(false);
+            accountList = repository.findAllByAuditTrails_DeletedFlag(false, UserRequestContext.getCurrentUserName());
         else {
-            accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId);
+            accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId, UserRequestContext.getCurrentUserName());
         }
 //        for (PeopleGroup account: accountList)
 //            account.setAudits(repository.getAudits(account.getId()));

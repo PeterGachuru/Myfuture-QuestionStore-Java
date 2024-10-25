@@ -116,8 +116,8 @@ public class UserHandler {
         }
     }
 
-    @GetMapping("/{email}")
-    public ResponseEntity<UserResponse> getUserDetails(@PathVariable String email) {
+    @GetMapping("byemail")
+    public ResponseEntity<UserResponse> getUserDetails(@RequestParam("email") String email) {
         UserResponse user = this.userService.getUserDetails(email);
 
         if (user != null) {
