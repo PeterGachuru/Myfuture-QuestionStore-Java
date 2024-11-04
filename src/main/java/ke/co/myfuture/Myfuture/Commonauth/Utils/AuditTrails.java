@@ -48,7 +48,7 @@ public class AuditTrails {
         this.updatedAt = new Date();
     }
 
-    static public interface Retriever{
+    static public interface Retriever {
         String getUpdatedAt();
         String getCreatedAt();
 

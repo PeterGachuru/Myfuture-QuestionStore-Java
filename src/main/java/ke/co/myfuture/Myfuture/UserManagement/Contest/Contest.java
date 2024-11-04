@@ -37,7 +37,7 @@ public class Contest {
     String creatorName;
 
     @OneToOne(targetEntity = IbukaStudentAccount.class)
-    @JoinColumn(name = "creator_id", referencedColumnName = "id")
+    @JoinColumn(name = "creator_id", referencedColumnName = "id", nullable = false)
     public IbukaStudentAccount creator;
 
     @OneToMany
