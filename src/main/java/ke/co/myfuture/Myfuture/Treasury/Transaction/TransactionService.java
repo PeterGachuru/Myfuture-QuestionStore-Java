@@ -251,7 +251,7 @@ public class TransactionService {
         }
 
 //        Optional<Person> person = personRepository.findPersonByUserIdAndGroupId(user.getId(), peopleGroup.getId());
-        Optional<GroupAccess> groupAccess = groupAccessService.findGroupAccess(user.getId(), peopleGroup.getId());
+        Optional<GroupAccess> groupAccess = groupAccessService.findGroupAccess(user.getEmail(), peopleGroup.getId());
 
         if (groupAccess.isEmpty()) {
             System.out.println("User "+user.getId()+" does not have access to the group "+peopleGroup.getId());

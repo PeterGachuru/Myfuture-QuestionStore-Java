@@ -17,14 +17,14 @@ public class PeopleGroupService {
     @Autowired
     GroupAccessService groupAccessService;
 
-    public UniversalResponse savePeopleGroup(PeopleGroup account) {
-        if (account.getParentId() != null && account.getParentId() > 0) {
-            Optional<PeopleGroup> peopleGroup = repository.findById(account.getParentId());
+    public UniversalResponse savePeopleGroup(PeopleGroup createPeopleGroup) {
+        if (createPeopleGroup.getParentId() != null && createPeopleGroup.getParentId() > 0) {
+            Optional<PeopleGroup> peopleGroup = repository.findById(createPeopleGroup.getParentId());
 
-            peopleGroup.ifPresent(account::setParent);
+            peopleGroup.ifPresent(createPeopleGroup::setParent);
         }
 
-        PeopleGroup savedPeopleGroup = repository.save(account);
+        PeopleGroup savedPeopleGroup = repository.save(createPeopleGroup);
         UniversalResponse universalResponse = groupAccessService.saveGroupAccess(UserRequestContext.getCurrentUserName(), GroupAccessRole.ADMIN, savedPeopleGroup);
         System.out.println(universalResponse);
         System.out.println(savedPeopleGroup);

@@ -37,6 +37,7 @@ public class GroupAccessService {
     PeopleGroupRepository peopleGroupRepository;
     public UniversalResponse saveGroupAccess(String username, GroupAccessRole role,
                                              PeopleGroup peopleGroup) {
+        System.out.println("Username: "+username);
         Optional<User> userOptional = userRepository.findByEmail(username);
         if (userOptional.isEmpty()){
             System.out.println("There is no such user");
@@ -62,12 +63,16 @@ public class GroupAccessService {
             memberService.saveMember(person.get().getId(), peopleGroup.getId());
         }
 
+
+        System.out.println("Person to save for group: "+person.get());
         GroupAccess groupAccess = new GroupAccess();
         groupAccess.setUsername(username);
         groupAccess.setRole(role);
         groupAccess.setPerson(person.get());
         groupAccess.setPeopleGroup(peopleGroup);
         groupAccess.setLoginUserId(userOptional.get().getId());
+
+        System.out.println("Group access to save: "+groupAccess);
         GroupAccess savedGroupAccess = repository.save(groupAccess);
         System.out.println("Saved group access");
         System.out.println(savedGroupAccess);
@@ -101,9 +106,9 @@ public class GroupAccessService {
         return response;
     }
 
-    public Optional<GroupAccess> findGroupAccess(Long userId, Long groupId) {
+    public Optional<GroupAccess> findGroupAccess(String emailAddress, Long groupId) {
 //        return null;
-        return repository.findByUserIdAndGroupId(userId, groupId);
+        return repository.findByUserIdAndGroupId(emailAddress, groupId);
 //        return Optional.empty();
     }
 }

@@ -24,7 +24,7 @@ public interface GroupAccessRepository extends JpaRepository<GroupAccess, Long> 
     @Query(nativeQuery = true, value = "select * from group_access where people_group_id = :groupId")
     List<GroupAccess> findForGroup(@Param("groupId") Long groupId);
 
-    @Query(nativeQuery = true, value = "select * from group_access where people_group_id = :groupId AND person_id = :userId")
+    @Query(nativeQuery = true, value = "select * from group_access where people_group_id = :groupId AND person_id IN (SELECT id FROM person WHERE email = :emailAddress)")
 
-    Optional<GroupAccess> findByUserIdAndGroupId(@Param("userId") Long userId, @Param("groupId") Long groupId);
+    Optional<GroupAccess> findByUserIdAndGroupId(@Param("emailAddress") String emailAddress, @Param("groupId") Long groupId);
 }

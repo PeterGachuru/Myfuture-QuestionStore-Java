@@ -36,6 +36,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.security:spring-security-web'
 	implementation 'org.springframework.security:spring-security-config'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.jetbrains:annotations:24.0.0'
 	implementation 'junit:junit:4.13.1'
 	implementation 'junit:junit:4.13.1'

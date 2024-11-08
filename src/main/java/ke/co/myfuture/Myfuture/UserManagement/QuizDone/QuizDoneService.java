@@ -49,7 +49,7 @@ public class QuizDoneService {
 
         List<QuizQuestion> quizQuestionList = new ArrayList<>();
 
-        for (CreateQuizDone.CreateQuizQuestion createQuizQuestion: createQuizDone.questions){
+        for (CreateQuizDone.CreateQuizQuestion createQuizQuestion: createQuizDone.questions) {
             QuizQuestion quizQuestion = new QuizQuestion();
             quizQuestion.gotCorrect = createQuizQuestion.gotCorrect;
             quizQuestion.selectedChoice = createQuizQuestion.selectedChoice;

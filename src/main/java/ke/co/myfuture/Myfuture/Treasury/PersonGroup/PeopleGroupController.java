@@ -26,8 +26,8 @@ public class PeopleGroupController {
     PersonRepository personRepository;
 
     @PostMapping("add")
-    public ResponseEntity<?> newPeopleGroup(@RequestBody PeopleGroup account) {
-        UniversalResponse response = accountService.savePeopleGroup(account);
+    public ResponseEntity<?> newPeopleGroup(@RequestBody PeopleGroup peopleGroup) {
+        UniversalResponse response = accountService.savePeopleGroup(peopleGroup);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
