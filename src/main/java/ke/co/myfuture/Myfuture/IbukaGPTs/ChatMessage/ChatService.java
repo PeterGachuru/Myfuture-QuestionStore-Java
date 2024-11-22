@@ -2,6 +2,7 @@ package ke.co.myfuture.Myfuture.IbukaGPTs.ChatMessage;
 
 import ke.co.myfuture.Myfuture.IbukaGPTs.GptChat.GptChat;
 import ke.co.myfuture.Myfuture.IbukaGPTs.GptChat.GptChatRepository;
+import ke.co.myfuture.Myfuture.IbukaGPTs.GptChat.GptChatService;
 import ke.co.myfuture.Myfuture.IbukaGPTs.aimodels.openai.OpenAIChatRequest;
 import ke.co.myfuture.Myfuture.IbukaGPTs.aimodels.openai.OpenAIChatResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static ke.co.myfuture.Myfuture.Utils.Response.OnlineUtils.isJSONValid;
@@ -35,24 +37,32 @@ public class ChatService {
     @Autowired
     private WebClient openAIClient;
 
+    @Autowired
+    private GptChatService gptChatService;
+
     @Value("${openai.api.key}")
     private String chatGPTKey;
 
-    private static final String CHATGPT_MODEL = "gpt-3.5-turbo"; // or use gpt-4 if available
+//    private static final String CHATGPT_MODEL = "gpt-3.5-turbo"; // or use gpt-4 if available
 
     public ChatMessage addUserChatMessage(ChatMessageRequest request) {
+        System.out.println("About to do an AI query");
         // Find associated GptChat
-        Optional<GptChat> gptChatOptional = gptChatRepository.findById(request.getGptChatId());
-
-        if (gptChatOptional.isEmpty()) {
-            throw new IllegalArgumentException("GptChat with id " + request.getGptChatId() + " not found");
+        GptChat gptChat;
+        if (request.getGptChatId() == 0) {
+            gptChat = gptChatService.addGptChat(request.getModel());
+        } else {
+            Optional<GptChat> gptChatOptional = gptChatRepository.findById(request.getGptChatId());
+            if (gptChatOptional.isEmpty()) {
+                throw new IllegalArgumentException("GptChat with id " + request.getGptChatId() + " not found");
+            }
+            gptChat = gptChatOptional.get();
         }
-
-        GptChat gptChat = gptChatOptional.get();
 
         // Persist user's chat message
         ChatMessage userMessage = ChatMessage.builder()
                 .message(request.getMessage())
+                .model(request.getModel())
                 .sender(ChatMessage.Sender.USER)
                 .gptChat(gptChat)
                 .build();
@@ -63,9 +73,14 @@ public class ChatService {
         List<OpenAIChatRequest.Message> messages = getConversationHistory(gptChat);
 
         // Send request to ChatGPT API
-        OpenAIChatRequest aiRequest = new OpenAIChatRequest(CHATGPT_MODEL, messages);
+        OpenAIChatRequest aiRequest = new OpenAIChatRequest(request.getModel(), messages);
         OpenAIChatResponse aiResponse = getChatGPTResponse(aiRequest);
 
+        System.out.println("Got AI response");
+
+        System.out.println(aiResponse);
+
+        System.out.println(aiResponse.getChoices()[0].getMessage().getContent());
         // Persist AI's response
         ChatMessage aiMessage = ChatMessage.builder()
                 .message(aiResponse.getChoices()[0].getMessage().getContent())
@@ -184,4 +199,36 @@ public class ChatService {
                 .bodyToMono(OpenAIChatResponse.class)
                 .block();
     }
+
+    public List<ChatMessage> allForChatId(Long chatId) {
+        Optional<GptChat> gptChatOptional = gptChatRepository.findById(chatId);
+
+        if (gptChatOptional.isEmpty()) {
+            throw new IllegalArgumentException("GptChat with id " + chatId + " not found");
+        }
+
+
+        return allForChat(gptChatOptional.get());
+    }
+
+    public List<ChatMessage> allForChatUuid(String chatUuid) {
+        Optional<GptChat> gptChatOptional = gptChatRepository.findByUuid(chatUuid);
+
+        if (gptChatOptional.isEmpty()) {
+            throw new IllegalArgumentException("GptChat with uuid " + chatUuid + " not found");
+        }
+
+        return allForChat(gptChatOptional.get());
+    }
+    public List<ChatMessage> allForChat(GptChat gptChat) {
+        List<ChatMessage> messages = chatMessageRepository.findByGptChat(gptChat);
+        for (ChatMessage message : messages) {
+            message.setGptChat(gptChat);
+        }
+        return messages;
+    }
+
+
 }
+
+

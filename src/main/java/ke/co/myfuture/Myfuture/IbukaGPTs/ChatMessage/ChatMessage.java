@@ -4,6 +4,7 @@ import ke.co.myfuture.Myfuture.IbukaGPTs.GptChat.GptChat;
 import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Data
@@ -23,25 +24,27 @@ public class ChatMessage {
     @Column(nullable = false)
     private Sender sender;
 
+    private String model;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gpt_chat_id", nullable = false)
     private GptChat gptChat;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime creationDate;
+    private Date creationDate;
 
     @Column(nullable = false)
-    private LocalDateTime lastUpdateDate;
+    private Date lastUpdateDate;
 
     @PrePersist
     public void prePersist() {
-        this.creationDate = LocalDateTime.now();
-        this.lastUpdateDate = LocalDateTime.now();
+        this.creationDate = new Date();
+        this.lastUpdateDate = new Date();
     }
 
     @PreUpdate
     public void preUpdate() {
-        this.lastUpdateDate = LocalDateTime.now();
+        this.lastUpdateDate = new Date();
     }
 
     public enum Sender {

@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class ChatMessageRequest {
     private String message;
+    private String model;
     private ChatMessage.Sender sender;
     private Long gptChatId;
 }

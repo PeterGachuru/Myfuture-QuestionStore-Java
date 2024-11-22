@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.ContributionsPlan;
 
+import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
@@ -34,9 +35,6 @@ public class ContributionsPlan {
     @Transient
     List<Account> moneyInAccounts;
 
-    @Embedded
-    AuditTrails auditTrails = new AuditTrails();
-
     public void update(ContributionsPlan account) {
         this.name = account.name;
         this.startDate = account.startDate;
@@ -47,5 +45,52 @@ public class ContributionsPlan {
         this.closureDate = account.closureDate;
         this.targetAmount = account.targetAmount;
         this.pinPriority = account.pinPriority;
+    }
+
+    /**
+     * AuditTrails
+     */
+
+    Date updatedAt;
+
+//    @CreationTimestamp
+
+    @Column(updatable = false)
+    Date createdAt;
+
+    Date deletedAt;
+
+    Boolean deletedFlag = false;
+
+    @Column(nullable = false)
+    String createdBy;
+
+    public void delete() {
+        this.deletedAt = new Date();
+        this.deletedFlag = true;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        Date now = new Date();
+        this.createdAt = now;
+        this.updatedAt = now;
+        this.createdBy = UserRequestContext.getCurrentUserName();
+        if (UserRequestContext.getCurrentUserName() == null)
+            this.createdBy = "Internal";
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = new Date();
+    }
+
+    static public interface Retriever {
+        String getUpdatedAt();
+        String getCreatedAt();
+
+        String getCreatedBy();
+
+        Boolean getDeletedFlag();
     }
 }

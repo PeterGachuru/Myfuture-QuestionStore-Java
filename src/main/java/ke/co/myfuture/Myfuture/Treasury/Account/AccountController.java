@@ -69,7 +69,7 @@ public class AccountController {
             response.setStatusCode(HttpStatus.NOT_ACCEPTABLE.value());
             return  new ResponseEntity<>(response, HttpStatus.OK);
         }
-        account.get().getAuditTrails().delete();
+        account.get().delete();
         repository.save(account.get());
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");

@@ -41,17 +41,13 @@ public class ContributionsPlanController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("all")
-    public ResponseEntity<?> fetchProductCategory(@RequestParam(required = false, name = "parentId") Long parentId) {
+    public ResponseEntity<?> fetchProductCategory(@RequestParam(name = "parentId") Long parentId) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("ProductCategory retrieved Successfully");
 
         List<ContributionsPlan> accountList;
-        if (parentId == null || parentId == 0)
-            accountList = repository.findAllByAuditTrails_DeletedFlag(false);
-        else {
-            accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId);
-        }
+        accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId);
         response.setEntity(accountList);
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);

@@ -1,7 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.Transaction;
 
-
-import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
+import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
 
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranEntry;
@@ -11,6 +10,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -56,9 +56,6 @@ public class Transaction {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "transaction")
 	private List<TranEntry> tranEntries;
 
-	@Embedded
-	AuditTrails auditTrails = new AuditTrails();
-
 	public boolean balances() {
 		double totalDebits = 0.0;
 		double totalCredits = 0.0;
@@ -93,5 +90,52 @@ public class Transaction {
 	// Clone method
 	public Transaction clone() {
 		return new Transaction(this);
+	}
+
+	/**
+	 * AuditTrails
+	 */
+
+	Date updatedAt;
+
+//    @CreationTimestamp
+
+	@Column(updatable = false)
+	Date createdAt;
+
+	Date deletedAt;
+
+	Boolean deletedFlag = false;
+
+	@Column(nullable = false)
+	String createdBy;
+
+	public void delete() {
+		this.deletedAt = new Date();
+		this.deletedFlag = true;
+	}
+
+	@PrePersist
+	public void prePersist() {
+		Date now = new Date();
+		this.createdAt = now;
+		this.updatedAt = now;
+		this.createdBy = UserRequestContext.getCurrentUserName();
+		if (UserRequestContext.getCurrentUserName() == null)
+			this.createdBy = "Internal";
+	}
+
+	@PreUpdate
+	public void preUpdate() {
+		this.updatedAt = new Date();
+	}
+
+	static public interface Retriever {
+		String getUpdatedAt();
+		String getCreatedAt();
+
+		String getCreatedBy();
+
+		Boolean getDeletedFlag();
 	}
 }

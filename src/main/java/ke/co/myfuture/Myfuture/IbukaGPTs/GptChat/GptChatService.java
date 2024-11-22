@@ -4,6 +4,8 @@ import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.User
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class GptChatService {
 
@@ -17,5 +19,9 @@ public class GptChatService {
                 .build();
 
         return gptChatRepository.save(gptChat);
+    }
+
+    public List<GptChat> allByEmail(String email) {
+        return gptChatRepository.findByEmail(email);
     }
 }
