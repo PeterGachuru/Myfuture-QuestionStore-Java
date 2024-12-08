@@ -25,8 +25,8 @@ public class TransactionController {
     TranEntryRepository tranEntryRepository;
 
     @PostMapping("add")
-    public ResponseEntity<?> newTransaction(@RequestBody Transaction account) {
-        UniversalResponse response = transactionService.saveTransaction(account);
+    public ResponseEntity<?> newTransaction(@RequestBody Transaction transaction) {
+        UniversalResponse response = transactionService.saveTransaction(transaction);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
