@@ -1,8 +1,8 @@
 package ke.co.myfuture.Myfuture.Commonauth.Utils;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
+import org.jsoup.Jsoup;
+import org.springframework.stereotype.Service;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -14,11 +14,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+@Service
 public class CustomMailSender {
-    String propertiesFilePath = "application.properties";
-    public CustomMailSender(String propertiesFilePath) {
-        this.propertiesFilePath = propertiesFilePath;
-    }
+    String propertiesFilePath = "mailconfigs/authmail.properties";
 
     public List<String> readFile(String path) {
         if (path == null) return null;
@@ -91,24 +89,21 @@ public class CustomMailSender {
 
     public void sendEmail(String subject, String body, String[] toList, String[] ccList, String[] attachedFilePaths) {
         HashMap<String, String> properties = getProperties();
-        String from =  properties.get("spring.mail.username");
-        // Recipient's email address
-        // Sender's Gmail username
+        String from = properties.get("spring.mail.username");
         String username = properties.get("spring.mail.username");
-        // Sender's Gmail password
         String password = properties.get("spring.mail.password");
-
         // SMTP server properties
         Properties props = new Properties();
-        props.setProperty("mail.smtp.ssl.trust", "*");
+        props.setProperty("mail.smtp.ssl.trust", properties.get("spring.mail.host")); // Use specific host
         props.put("mail.smtp.auth", properties.get("spring.mail.properties.mail.smtp.auth"));
         props.put("mail.smtp.starttls.enable", properties.get("spring.mail.properties.mail.smtp.starttls.enable"));
         props.put("mail.smtp.host", properties.get("spring.mail.host"));
-        props.setProperty("mail.debug", properties.get("mail.debug"));
         props.put("mail.smtp.port", properties.get("spring.mail.port"));
+        props.put("mail.debug", "false"); // Disable debug in production
 
         // Create a Session object with authentication
         Session session = Session.getInstance(props, new Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(username, password);
             }
@@ -117,51 +112,74 @@ public class CustomMailSender {
         try {
             // Create a MimeMessage object
             Message message = new MimeMessage(session);
-            // Set the sender address
-            message.setFrom(new InternetAddress(from));
-            // Set the recipient address
-            // Set the email subject
-            message.setSubject(subject);
-            // Set the email content
-//            message.setText("This is a test email sent from JavaMail API.");
+            message.setFrom(new InternetAddress(from)); // Set sender address
+            message.setSubject(subject); // Set the email subject
+            message.setReplyTo(InternetAddress.parse(from));
+            message.setHeader("Message-ID", "<" + UUID.randomUUID() + "@" + properties.get("spring.mail.host") + ">");
+            message.setHeader("X-Mailer", "JavaMail");
 
-            if (toList !=null)
+
+            // Add recipients
+            if (toList != null) {
                 for (String email : toList) {
                     message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
                 }
-
-            if (ccList !=null)
+            }
+            if (ccList != null) {
                 for (String cc : ccList) {
                     message.addRecipient(Message.RecipientType.CC, new InternetAddress(cc));
                 }
+            }
+
+
+            Multipart multipart = new MimeMultipart();
+            MimeBodyPart plainTextPart = new MimeBodyPart();
+            plainTextPart.setText(Jsoup.parse(body).text(), "utf-8");
+
+// Create HTML content
+            MimeBodyPart htmlPart = new MimeBodyPart();
+            htmlPart.setContent(body, "text/html; charset=utf-8");
+
+// Add both parts to a multipart/alternative
+            Multipart alternativeMultipart = new MimeMultipart("alternative");
+            alternativeMultipart.addBodyPart(plainTextPart);
+            alternativeMultipart.addBodyPart(htmlPart);
+
+// Add alternative to the main multipart
+            MimeBodyPart alternativePart = new MimeBodyPart();
+            alternativePart.setContent(alternativeMultipart); // Set the multipart as content
+
+// Add the alternative part to the main multipart
+            multipart.addBodyPart(alternativePart);
 
             // Create a multipart message
-            Multipart multipart = new MimeMultipart();
 
-            // Add message text
-            BodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setText(body);
-            multipart.addBodyPart(messageBodyPart);
+            // Add email body as HTML content
+//            BodyPart messageBodyPart = new MimeBodyPart();
+//            messageBodyPart.setContent(body, "text/html; charset=utf-8");
+//            multipart.addBodyPart(messageBodyPart);
 
-            if (toList !=null)
-                for (String fileName : attachedFilePaths) {
-                    messageBodyPart = new MimeBodyPart();
-                    DataSource source = new FileDataSource(fileName);
-                    messageBodyPart.setDataHandler(new DataHandler(source));
-                    messageBodyPart.setFileName(fileName);
-                    multipart.addBodyPart(messageBodyPart);
-                }
+            // Add attachments
+//            if (attachedFilePaths != null) {
+//                for (String filePath : attachedFilePaths) {
+//                    messageBodyPart = new MimeBodyPart();
+//                    DataSource source = new FileDataSource(filePath);
+//                    messageBodyPart.setDataHandler(new DataHandler(source));
+//                    messageBodyPart.setFileName(new File(filePath).getName()); // Use file name only
+//                    multipart.addBodyPart(messageBodyPart);
+//                }
+//            }
 
             // Set the multipart object as the content of the message
             message.setContent(multipart);
 
             // Send the email
             Transport.send(message);
-
             System.out.println("Email sent successfully.");
 
         } catch (MessagingException e) {
             e.printStackTrace();
         }
     }
+
 }

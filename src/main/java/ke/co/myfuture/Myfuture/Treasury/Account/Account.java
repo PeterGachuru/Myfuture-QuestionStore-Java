@@ -2,7 +2,6 @@ package ke.co.myfuture.Myfuture.Treasury.Account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
-import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.PeriodicContributionAnalysis.PeriodicContributionAnalysis;
 import ke.co.myfuture.Myfuture.Treasury.Person.Person;

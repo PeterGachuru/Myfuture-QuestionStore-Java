@@ -29,6 +29,7 @@ public class DashboardSupport {
         Long getId();
         Double getTotalCashAndEquivalents();
         Double getTotalPledges();
+        Double getTotalUnRedeemedPledges();
         Double getTotalIncome();
         Double getTotalExpenses();
     }

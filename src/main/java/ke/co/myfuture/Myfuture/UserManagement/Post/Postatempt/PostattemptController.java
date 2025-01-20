@@ -1,5 +1,7 @@
 package ke.co.myfuture.Myfuture.UserManagement.Post.Postatempt;
 
+import ke.co.myfuture.Myfuture.UserManagement.Post.PostRepository;
+import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccountRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,10 +11,19 @@ import org.springframework.web.bind.annotation.*;
 public class PostattemptController {
     @Autowired
     PostattemptRepository repository;
+    @Autowired
+    StudentAccountRepository studentAccountRepository;
+    @Autowired
+    PostRepository postRepository;
 
 
     @PostMapping("add/")
-    public ResponseEntity<?> newPostattempt(@RequestBody Postattempt postattempt) {
+    public ResponseEntity<?> newPostattempt(@RequestBody PostattemptRequest postattemptRequest) {
+        Postattempt postattempt = new Postattempt();
+        postattempt.scored = postattemptRequest.scored;
+        postattempt.selectedChoice = postattemptRequest.selectedChoice;
+        postattempt.studentaccount = studentAccountRepository.findById(postattemptRequest.studentId).get();
+        postattempt.post = postRepository.findById(postattemptRequest.postId).get();
         Postattempt savedPostattempt = repository.save(postattempt);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");

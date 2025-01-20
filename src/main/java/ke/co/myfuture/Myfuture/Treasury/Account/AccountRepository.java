@@ -51,8 +51,24 @@ AND ownership_type = :ownershipType
     @Query(nativeQuery = true, value = """
             SELECT 
                 a.contributions_plan_id AS id,
+                SUM(CASE WHEN a.ownership_type = 'CASH' THEN a.balance ELSE 0 END) AS totalCashAndEquivalents,
+                SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' THEN a.target_amount ELSE 0 END) AS totalPledges, 
+                SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' AND  a.target_amount >  a.balance THEN (a.target_amount-a.balance) ELSE 0 END) AS totalUnRedeemedPledges, 
+                SUM(CASE WHEN a.ownership_type = 'INCOME' THEN a.balance ELSE 0 END) AS totalIncome, 
+                SUM(CASE WHEN a.ownership_type = 'EXPENSE' THEN a.balance ELSE 0 END) AS totalExpenses 
+            FROM 
+                account a 
+            WHERE 
+                a.deleted_flag = false AND a.contributions_plan_id IN (SELECT id FROM contributions_plan WHERE people_group_id = :groupId)                        
+    """)
+    Optional<DashboardSupport.Snapshot> getSnapshotForGroup(Long groupId);
+
+    @Query(nativeQuery = true, value = """
+            SELECT 
+                a.contributions_plan_id AS id,
                 SUM(CASE WHEN a.ownership_type = 'CASH' THEN a.balance ELSE 0 END) AS totalCashAndEquivalents, 
-                SUM(target_amount) AS totalPledges, 
+                                SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' THEN a.target_amount ELSE 0 END) AS totalPledges, 
+                SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' AND  a.target_amount >  a.balance THEN (a.target_amount-a.balance) ELSE 0 END) AS totalUnRedeemedPledges, 
                 SUM(CASE WHEN a.ownership_type = 'INCOME' THEN a.balance ELSE 0 END) AS totalIncome, 
                 SUM(CASE WHEN a.ownership_type = 'EXPENSE' THEN a.balance ELSE 0 END) AS totalExpenses 
             FROM 
@@ -63,13 +79,14 @@ AND ownership_type = :ownershipType
                 a.contributions_plan_id  limit 1
                         
     """)
-    Optional<DashboardSupport.Snapshot> getSnapshotForGroup(Long groupId);
+    Optional<DashboardSupport.Snapshot> getSnapshotForGroupAndGroupByPlan(Long groupId);
 
     @Query(nativeQuery = true, value = """
                             SELECT 
                                 a.contributions_plan_id AS id,
                                 SUM(CASE WHEN a.ownership_type = 'CASH' THEN a.balance ELSE 0 END) AS totalCashAndEquivalents, 
-                                SUM(target_amount) AS totalPledges, 
+                                                SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' THEN a.target_amount ELSE 0 END) AS totalPledges, 
+                SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' AND  a.target_amount >  a.balance THEN (a.target_amount-a.balance) ELSE 0 END) AS totalUnRedeemedPledges, 
                                 SUM(CASE WHEN a.ownership_type = 'INCOME' THEN a.balance ELSE 0 END) AS totalIncome, 
                                 SUM(CASE WHEN a.ownership_type = 'EXPENSE' THEN a.balance ELSE 0 END) AS totalExpenses 
                             FROM 

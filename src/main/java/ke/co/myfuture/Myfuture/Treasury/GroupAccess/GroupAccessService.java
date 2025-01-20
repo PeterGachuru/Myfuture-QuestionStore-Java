@@ -108,6 +108,9 @@ public class GroupAccessService {
 
     public Optional<GroupAccess> findGroupAccess(String emailAddress, Long groupId) {
 //        return null;
+        System.out.println("findGroupAccess");
+        System.out.println(emailAddress);
+        System.out.println(groupId);
         return repository.findByUserIdAndGroupId(emailAddress, groupId);
 //        return Optional.empty();
     }

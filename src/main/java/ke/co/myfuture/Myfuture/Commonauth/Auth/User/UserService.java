@@ -113,7 +113,7 @@ public class UserService {
 
     private CustomMailSender getCustomMailSender() {
         if (customMailSender == null)
-            customMailSender = new CustomMailSender("mailconfigs/authmail.properties");
+            customMailSender = new CustomMailSender();
         return customMailSender;
     }
 

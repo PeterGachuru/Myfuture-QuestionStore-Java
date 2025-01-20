@@ -62,7 +62,8 @@ public class ChatService {
         // Persist user's chat message
         ChatMessage userMessage = ChatMessage.builder()
                 .message(request.getMessage())
-                .model(request.getModel())
+//                .model(request.getModel())
+                .model("gpt-4")
                 .sender(ChatMessage.Sender.USER)
                 .gptChat(gptChat)
                 .build();

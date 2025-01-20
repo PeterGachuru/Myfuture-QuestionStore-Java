@@ -2,6 +2,7 @@ package ke.co.myfuture.Myfuture.QuestionStore.Reports;
 
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,9 @@ public class ReportsContoller {
     @Value("${datasource.questions.password}")
     private String password;
 
+    @Autowired
+    ReportsService reportsService;
+
 
     @GetMapping("/load")
     public ResponseEntity<?> loadPdf(HttpServletRequest request, @RequestParam Long subject,
@@ -48,7 +52,7 @@ public class ReportsContoller {
             Connection connection = DriverManager.getConnection(this.db, this.username, this.password);
             JasperReport compilereport = JasperCompileManager.compileReport(new FileInputStream(path + "/"+"question_paper.jrxml"));
 
-            Map<String, Object> parameters = setParameters(subject, classlevel);
+            Map<String, Object> parameters = reportsService.setParameters(subject, classlevel);
 
             System.out.println(parameters);
 
@@ -66,21 +70,5 @@ public class ReportsContoller {
             System.out.println(exc.getLocalizedMessage());
             return null;
         }
-    }
-    private Map<String, Object> setParameters(Long subject, Long classlevel) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("logo", logo);
-        parameters.put("app_name", appname);
-        parameters.put("query", "select *, char(row_num+64) AS num from (select ROW_NUMBER() OVER(PARTITION BY" +
-                " cq.string) AS row_num, cq.string, ct.name, cnc.value, cq.qn_num  " +
-                "from (select *, ROW_NUMBER() OVER(PARTITION BY '') AS qn_num from  " +
-                "(select * from curri_question  where subtopic in " +
-                "(select id from curri_topic where subject = "+subject+" and curri_level in " +
-                "(select cl.id from  curri_level cl join curri_level scl " +
-                "where cl.numbering > scl.numbering-3 and cl.numbering <= scl.numbering " +
-                "and scl.curriculum = cl.curriculum and scl.id = "+classlevel+" )) order by rand() limit 50) as k) cq " +
-                "join curri_topic ct on cq.subtopic = ct.id  join curri_normal_choice cnc on  cnc.question = cq.id  " +
-                "order by cq.id) As k  order by qn_num;");
-        return parameters;
     }
 }

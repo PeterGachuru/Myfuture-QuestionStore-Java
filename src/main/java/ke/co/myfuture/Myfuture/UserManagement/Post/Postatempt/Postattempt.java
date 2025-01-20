@@ -25,7 +25,7 @@ public class Postattempt {
     @JoinColumn(name = "student_id", nullable = false)
     IbukaStudentAccount studentaccount;
     @Column(nullable = false)
-    String scored;
+    Boolean scored;
     @Column(nullable = false)
     Long selectedChoice;
     @CreationTimestamp

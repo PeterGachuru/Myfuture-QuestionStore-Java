@@ -47,6 +47,9 @@ public class Transaction {
 	@Transient
 	Long planId;
 
+	@Column(nullable = false)
+	Date tranDate;
+
 	Boolean reversal = false;
 
 	Long reversalFor;
@@ -100,7 +103,7 @@ public class Transaction {
 
 //    @CreationTimestamp
 
-	@Column(updatable = false)
+	@Column(updatable = false, nullable = false)
 	Date createdAt;
 
 	Date deletedAt;
