@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -23,17 +24,24 @@ public class LearnerEmailSchedulerService {
     }
 
     // Periodically check for pending emails to send
-//    @Scheduled(fixedRate = 60000) // Runs every minute
+    @Scheduled(initialDelay = 0,fixedRate = 60000) // Runs every minute
     public void processPendingEmails() {
         LocalDateTime now = LocalDateTime.now();
         List<ScheduledLearnerEmails> pendingEmails = emailRepository.findPendingEmails(now);
 
+        System.out.println("Found "+pendingEmails.size()+" emails to send");
         for (ScheduledLearnerEmails email : pendingEmails) {
             try {
+                System.out.println(LocalDateTime.now()+": To send scheduled email");
                 email.setAttemptedSendAt( LocalDateTime.now());
                 email.setLastAttemptStatus(null);
                 emailRepository.save(email);
-//                customMailSender.sendEmail(email.getRecipient(), email.getSubject(), email.getBody()); // External service call
+                customMailSender.sendEmail(email.getSubject(),
+                        email.getBody(),
+                        new String[]{email.getRecipient()}, new String[]{}, new String[]{});
+//                customMailSender.sendEmail(email.getSubject(),
+//                        email.getBody(),
+//                        new String[]{"ngangagachuru919@gmail.com"}, new String[]{}, new String[]{});
                 email.setSent(true);
                 email.setLastAttemptStatus(LastStatus.SUCCESS);
                 email.setTimeSent(LocalDateTime.now());

@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.Studentaccount;
 
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
 import ke.co.myfuture.Myfuture.UserManagement.Useraccount.UserAccount;
 import lombok.Data;
@@ -34,6 +35,7 @@ public class IbukaStudentAccount {
 
     @Column(nullable = false)
     Long parent;
+
     @Column(nullable = false)
     String parentUsername;
 //    Long parent;
@@ -52,6 +54,7 @@ public class IbukaStudentAccount {
     public Date createdAt;
     @UpdateTimestamp
     public Date updatedAt;
+    private User authUser;
 
     public void update(IbukaStudentAccount student) {
         name = student.name;
