@@ -42,6 +42,8 @@ public class BroadcastController {
     @PutMapping("send")
     public ResponseEntity<?> updateWritersbroadcast(@RequestParam("id") Long id) {
         Broadcast updatedBroadcast = repository.findById(id).get();
+        if (updatedBroadcast.getSentBy() != null)
+            return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
         Boolean result = broadcastService.broadCastToStudents(updatedBroadcast);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
