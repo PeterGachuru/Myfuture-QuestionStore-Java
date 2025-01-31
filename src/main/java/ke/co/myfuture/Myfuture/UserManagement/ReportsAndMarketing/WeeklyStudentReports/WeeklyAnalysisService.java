@@ -5,13 +5,10 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.SubjectRepository;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizDone;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizDoneRepository;
-import ke.co.myfuture.Myfuture.UserManagement.ReportsAndMarketing.ScheduledLearnerEmails.LastStatus;
-import ke.co.myfuture.Myfuture.UserManagement.ReportsAndMarketing.ScheduledLearnerEmails.ScheduledLearnerEmails;
-import ke.co.myfuture.Myfuture.UserManagement.ReportsAndMarketing.ScheduledLearnerEmails.ScheduledLearnerEmailsRepo;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails.*;
 import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +31,7 @@ public class WeeklyAnalysisService {
     UserRepository userRepository;
 
     @Autowired
-    ScheduledLearnerEmailsRepo scheduledLearnerEmailsRepo;
+    SchedulerService schedulerService;
 
     private Map<Long, String> subjectCache = new ConcurrentHashMap<>();
 
@@ -115,7 +112,7 @@ public class WeeklyAnalysisService {
                 String emailContent = generateHtmlEmailContent(student, report, startOfWeek, endOfWeek);
                 System.out.println(emailContent);
 
-                persistScheduledEmail(parentUser.getEmail(), "Weekly Score: "+student.getName(), emailContent, LocalDateTime.now().plusMinutes(count/3));
+                schedulerService.persistScheduledEmail(parentUser.getEmail(), "Weekly Score: "+student.getName(), emailContent, LocalDateTime.now().plusMinutes(count/3), SenderService.WeeklyScore);
 //                System.out.println("Weekly Report for Student ID " + student + ": " + report);
             }else {
                 System.out.println("Ignoring, score is zero");
@@ -180,17 +177,5 @@ public class WeeklyAnalysisService {
         generateWeeklyReports();
     }
 
-    private void persistScheduledEmail(String recipient, String subject, String body, LocalDateTime scheduledTime) {
-        ScheduledLearnerEmails scheduledEmail = new ScheduledLearnerEmails();
-        scheduledEmail.setRecipient(recipient);
-        scheduledEmail.setSubject(subject);
-        scheduledEmail.setBody(body);
-        scheduledEmail.setScheduledTime(scheduledTime.plusSeconds(1)); // Schedule for the next second after the week's end
-        scheduledEmail.setExpiresAfterSeconds((long) (60*60*24*3)); // Email expires after 3 days (in seconds)
-        scheduledEmail.setSent(false);
-        scheduledEmail.setLastAttemptStatus(LastStatus.PENDING);
 
-        scheduledLearnerEmailsRepo.save(scheduledEmail);
-        System.out.println("Email scheduled for recipient: " + recipient);
-    }
 }

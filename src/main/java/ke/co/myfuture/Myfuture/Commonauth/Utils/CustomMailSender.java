@@ -61,9 +61,9 @@ public class CustomMailSender {
         List<String> propertyLines = readFile(propertiesFilePath);
         if (propertyLines != null){
             for (String propertyLine: propertyLines) {
-                System.out.println(propertyLine);
+//                System.out.println(propertyLine);
                 if (propertyLine.contains("=")) {
-                    System.out.println("contains");
+//                    System.out.println("contains");
                     String[] splits = propertyLine.split("=");
                     properties.put(splits[0].trim(), splits[1].trim());
                 }
@@ -74,11 +74,11 @@ public class CustomMailSender {
 
     public HashMap<String, String> readArguments(String[] args) {
         HashMap<String, String> argsMap= new HashMap<>();
-        if (args != null){
+        if (args != null) {
             for (String arg: args) {
                 System.out.println(arg);
                 if (arg.contains("=")) {
-                    System.out.println("contains");
+//                    System.out.println("contains");
                     String[] splits = arg.split("=");
                     argsMap.put(splits[0].trim(), splits[1].trim());
                 }
@@ -88,6 +88,7 @@ public class CustomMailSender {
     }
 
     public void sendEmail(String subject, String body, String[] toList, String[] ccList, String[] attachedFilePaths) {
+        System.out.println("Sending mail to "+toList[0]+", subject: "+subject);
         HashMap<String, String> properties = getProperties();
         String from = properties.get("spring.mail.username");
         String username = properties.get("spring.mail.username");

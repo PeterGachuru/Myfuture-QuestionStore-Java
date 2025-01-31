@@ -51,7 +51,7 @@ AND ownership_type = :ownershipType
     @Query(nativeQuery = true, value = """
             SELECT 
                 a.contributions_plan_id AS id,
-                SUM(CASE WHEN a.ownership_type = 'CASH' THEN a.balance ELSE 0 END) AS totalCashAndEquivalents,
+                SUM(CASE WHEN a.ownership_type = 'CASH' THEN (-1 * a.balance) ELSE 0 END) AS totalCashAndEquivalents,
                 SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' THEN a.target_amount ELSE 0 END) AS totalPledges, 
                 SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' AND  a.target_amount >  a.balance THEN (a.target_amount-a.balance) ELSE 0 END) AS totalUnRedeemedPledges, 
                 SUM(CASE WHEN a.ownership_type = 'INCOME' THEN a.balance ELSE 0 END) AS totalIncome, 
@@ -66,7 +66,7 @@ AND ownership_type = :ownershipType
     @Query(nativeQuery = true, value = """
             SELECT 
                 a.contributions_plan_id AS id,
-                SUM(CASE WHEN a.ownership_type = 'CASH' THEN a.balance ELSE 0 END) AS totalCashAndEquivalents, 
+                SUM(CASE WHEN a.ownership_type = 'CASH' THEN (-1 * a.balance)  ELSE 0 END) AS totalCashAndEquivalents, 
                                 SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' THEN a.target_amount ELSE 0 END) AS totalPledges, 
                 SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' AND  a.target_amount >  a.balance THEN (a.target_amount-a.balance) ELSE 0 END) AS totalUnRedeemedPledges, 
                 SUM(CASE WHEN a.ownership_type = 'INCOME' THEN a.balance ELSE 0 END) AS totalIncome, 
@@ -84,7 +84,7 @@ AND ownership_type = :ownershipType
     @Query(nativeQuery = true, value = """
                             SELECT 
                                 a.contributions_plan_id AS id,
-                                SUM(CASE WHEN a.ownership_type = 'CASH' THEN a.balance ELSE 0 END) AS totalCashAndEquivalents, 
+                                SUM(CASE WHEN a.ownership_type = 'CASH' THEN (-1 * a.balance) ELSE 0 END) AS totalCashAndEquivalents, 
                                                 SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' THEN a.target_amount ELSE 0 END) AS totalPledges, 
                 SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' AND  a.target_amount >  a.balance THEN (a.target_amount-a.balance) ELSE 0 END) AS totalUnRedeemedPledges, 
                                 SUM(CASE WHEN a.ownership_type = 'INCOME' THEN a.balance ELSE 0 END) AS totalIncome, 

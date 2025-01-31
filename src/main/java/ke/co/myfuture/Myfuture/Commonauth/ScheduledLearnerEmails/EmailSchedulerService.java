@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.UserManagement.ReportsAndMarketing.ScheduledLearnerEmails;
+package ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails;
 
 
 import ke.co.myfuture.Myfuture.Commonauth.Utils.CustomMailSender;
@@ -7,30 +7,30 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Service
-public class LearnerEmailSchedulerService {
+public class EmailSchedulerService {
     @Autowired
-    private ScheduledLearnerEmailsRepo emailRepository;
+    private ScheduledEmailsRepo emailRepository;
 
     @Autowired
     private CustomMailSender customMailSender; // External service for sending emails
 
     // Save a new scheduled email
-    public ScheduledLearnerEmails scheduleEmail(ScheduledLearnerEmails email) {
+    public ScheduledEmails scheduleEmail(ScheduledEmails email) {
         return emailRepository.save(email);
     }
 
     // Periodically check for pending emails to send
-    @Scheduled(initialDelay = 0,fixedRate = 60000) // Runs every minute
+//    @Scheduled(initialDelay = 0,fixedRate = 60000) // Runs every minute
+    @Scheduled(initialDelay = 0,fixedRate = 60000*60) // Runs every hour
     public void processPendingEmails() {
         LocalDateTime now = LocalDateTime.now();
-        List<ScheduledLearnerEmails> pendingEmails = emailRepository.findPendingEmails(now);
+        List<ScheduledEmails> pendingEmails = emailRepository.findPendingEmails(now);
 
         System.out.println("Found "+pendingEmails.size()+" emails to send");
-        for (ScheduledLearnerEmails email : pendingEmails) {
+        for (ScheduledEmails email : pendingEmails) {
             try {
                 System.out.println(LocalDateTime.now()+": To send scheduled email");
                 email.setAttemptedSendAt( LocalDateTime.now());

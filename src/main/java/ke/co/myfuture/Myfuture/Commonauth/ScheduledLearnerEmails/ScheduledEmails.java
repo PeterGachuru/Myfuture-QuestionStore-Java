@@ -1,7 +1,5 @@
-package ke.co.myfuture.Myfuture.UserManagement.ReportsAndMarketing.ScheduledLearnerEmails;
+package ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails;
 
-
-import ke.co.myfuture.Myfuture.Treasury.Account.AccountOwnershipType;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,7 +10,7 @@ import java.util.Date;
 
 @Entity
 @Data
-public class ScheduledLearnerEmails {
+public class ScheduledEmails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,7 +21,8 @@ public class ScheduledLearnerEmails {
     @Column(nullable = false)
     private String subject;
 
-    @Column(length = 5000, nullable = false)
+    @Lob
+    @Column(nullable = false)
     private String body;
 
 
@@ -34,6 +33,11 @@ public class ScheduledLearnerEmails {
 
     @Enumerated(EnumType.STRING)
     private LastStatus lastAttemptStatus;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SenderService SenderService;
 
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
