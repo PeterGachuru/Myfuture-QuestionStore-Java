@@ -70,10 +70,32 @@ public class TransactionController {
                                                   @RequestParam("category") String category,
                                                   @RequestParam("planId") Long planId,
                                                   @RequestParam("groupId") Long groupId) {
+        System.out.println("Fetching transactions");
+        System.out.println("startDate: "+startDate);
+        System.out.println("endDate: "+endDate);
+        System.out.println("category: "+category);
+        System.out.println("planId: "+planId);
+        System.out.println("groupId: "+groupId);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Transactions retrieved Successfully");
         List<TransactionDTO> accountList = repository.findAllByAuditTrails_DeletedFlagOrderByAuditTrails_CreatedAtDesc(false, startDate, endDate, category, planId, groupId);
+//        for (Transaction account: accountList)
+//            account.setAudits(repository.getAudits(account.getId()));
+        response.setEntity(accountList);
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("allforgroup")
+    public ResponseEntity<?> recentGroupTransactions(
+                                                  @RequestParam("groupId") Long groupId) {
+        System.out.println("Fetching transactions");
+        System.out.println("groupId: "+groupId);
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Transactions retrieved Successfully");
+        List<TransactionDTO> accountList = repository.findAllRecentForGroupByAuditTrails_DeletedFlagOrderByAuditTrails_CreatedAtDesc(false, groupId, 40);
 //        for (Transaction account: accountList)
 //            account.setAudits(repository.getAudits(account.getId()));
         response.setEntity(accountList);

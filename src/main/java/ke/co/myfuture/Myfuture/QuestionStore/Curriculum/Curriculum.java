@@ -23,6 +23,9 @@ public class Curriculum {
     @CreationTimestamp
     Date createdAt;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
+    private Boolean archived = false;
+
     @OneToMany(mappedBy = "curriculum")
     List<CurriLevel> curriLevels;
 }

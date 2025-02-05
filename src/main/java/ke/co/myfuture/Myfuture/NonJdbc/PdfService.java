@@ -11,10 +11,13 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 @Service
 public class PdfService {
     public byte[] convertHtmlToPdf(String htmlContent) throws DocumentException {
-
+        String xhtml ="<!DOCTYPE html>" + htmlToXhtml(htmlContent);
+        System.out.println("==================================Html to convert=================");
+        System.out.println(xhtml);
+        System.out.println("==================================================================");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ITextRenderer renderer = new ITextRenderer();
-        renderer.setDocumentFromString(htmlToXhtml(htmlContent));
+        renderer.setDocumentFromString(xhtml);
         renderer.layout();
         renderer.createPDF(outputStream, false);
         renderer.finishPDF();

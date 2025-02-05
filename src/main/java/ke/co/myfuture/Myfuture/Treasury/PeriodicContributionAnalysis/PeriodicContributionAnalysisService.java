@@ -50,6 +50,8 @@ public class PeriodicContributionAnalysisService {
     }
 
     private UniversalResponse calculateMonthly(Account account) {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("Account Name: "+account.getName());
         Optional<PeriodicContributionAnalysis> lastAnalysis = periodicContributionAnalysisRepository.findLastForAccount(account.getId());
 //        UniversalResponse universalResponse = new UniversalResponse();
         if (lastAnalysis.isPresent()) {
@@ -113,7 +115,7 @@ public class PeriodicContributionAnalysisService {
             return "";
         String titling = "<h1>"+contributionsPlan.get().getName()+"</h1><h2>Group Name Withheld</h2>";
         List<String> months = periodicContributionAnalysisRepository.allRelevantMonths(planId);
-        System.out.println(Arrays.deepToString(months.toArray()));
+//        System.out.println(Arrays.deepToString(months.toArray()));
 
         StringBuilder tableHeaders = new StringBuilder();
 
@@ -131,7 +133,7 @@ public class PeriodicContributionAnalysisService {
         StringBuilder rows = new StringBuilder();
         System.out.println("Count of accountPeriodsMapping: "+accountPeriodsMappings.size());
         for (AccountPeriodsMapping accountPeriodsMapping: accountPeriodsMappings) {
-            System.out.println(accountPeriodsMapping);
+//            System.out.println(accountPeriodsMapping);
             no++;
             StringBuilder row;
             row = new StringBuilder("<td style=\"border: 1px solid black; padding: 2px\">" + no + "</td>");
@@ -146,8 +148,8 @@ public class PeriodicContributionAnalysisService {
             rows.append("<tr style=\"border: 1px solid black; padding: 2px\">").append(row).append("</tr>").append("\n");
         }
 
-        String combined = "<table  style=\"border-collapse: collapse; border-spacing: 0;\">\n "+titling+" \n<tr>"+tableHeaders+"</tr>\n"+rows+"\n</table>";
-        System.out.println(combined);
+        String combined = titling+"\n<table  style=\"border-collapse: collapse; border-spacing: 0;\">\n <tr>"+tableHeaders+"</tr>\n"+rows+"\n</table>";
+//        System.out.println(combined);
         return combined;
     }
 

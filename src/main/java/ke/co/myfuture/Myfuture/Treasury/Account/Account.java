@@ -99,9 +99,12 @@ public class Account {
 	@Column(nullable = false)
 	String createdBy;
 
+	String deletedBy;
+
 	public void delete() {
 		this.deletedAt = new Date();
 		this.deletedFlag = true;
+		this.deletedBy =  UserRequestContext.getCurrentUserName();
 	}
 
 	@PrePersist

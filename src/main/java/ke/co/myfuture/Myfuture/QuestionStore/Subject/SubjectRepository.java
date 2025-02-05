@@ -11,6 +11,9 @@ import java.util.List;
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     @Query(value = "select * from subject where id in (select subject from curri_topic where curri_level = :level)", nativeQuery = true)
+    List<Subject> subjectsWithTopicsByClassLevel(@Param("level") Long classLevel);
+
+    @Query(value = "select * from subject where id in (select subject from subject_level where curri_level = :level AND deleted_flag = 0)", nativeQuery = true)
     List<Subject> subjectsByClassLevel(@Param("level") Long classLevel);
 
     @Query(value = """

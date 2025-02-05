@@ -24,7 +24,7 @@ public class CurriculumController {
         List<Curriculum> curriculumList = curriculumRepository.getAllCurriculums();
         for (Curriculum curriculum: curriculumList) {
             for (CurriLevel curriLevel: curriculum.curriLevels) {
-                curriLevel.setSubjects(subjectRepository.subjectsByClassLevel(curriLevel.id));
+                curriLevel.setSubjects(subjectRepository.subjectsWithTopicsByClassLevel(curriLevel.id));
             }
         }
 

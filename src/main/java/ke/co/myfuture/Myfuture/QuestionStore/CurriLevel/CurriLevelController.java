@@ -1,5 +1,8 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriLevel;
 
+import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
+import ke.co.myfuture.Myfuture.QuestionStore.SubjectLevel.SubjectLevel;
+import ke.co.myfuture.Myfuture.QuestionStore.SubjectLevel.SubjectLevelRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.SubjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,9 @@ public class CurriLevelController {
     @Autowired
     SubjectRepository subjectRepository;
 
+    @Autowired
+    SubjectLevelRepository subjectLevelRepository;
+
     @GetMapping("all")
     public ResponseEntity<UniversalResponse<List<CurriLevel>>> getCurriLevels() {
         List<CurriLevel> classLevelList = classLevelRepository.findAll();
@@ -32,6 +38,49 @@ public class CurriLevelController {
         universalResponse.setStatusCode(HttpStatus.FOUND.value());
         return ResponseEntity.ok().body(universalResponse);
     }
+
+    @PostMapping("{classlevelId}/subjects")
+    public ResponseEntity<UniversalResponse<?>> addSubject(@RequestBody IdPostDTO subjectId, @PathVariable("classlevelId") Long classlevelId) {
+        System.out.println(subjectId);
+        Optional<Subject> subject = subjectRepository.findById(subjectId.id);
+        if (subject.isEmpty()) return null;
+
+        Optional<CurriLevel> curriLevel = classLevelRepository.findById(classlevelId);
+        if (curriLevel.isEmpty()) return null;
+
+        SubjectLevel subjectLevel = new SubjectLevel();
+        subjectLevel.setSubject(subject.get());
+        subjectLevel.setCurriLevel(curriLevel.get());
+
+        curriLevel.get().getSubjects().add(subject.get());
+
+        subjectLevelRepository.save(subjectLevel);
+
+        UniversalResponse universalResponse = new UniversalResponse();
+        universalResponse.setEntity(classLevelRepository.findById(classlevelId));
+        universalResponse.setMessage("Saved");
+        universalResponse.setStatusCode(HttpStatus.FOUND.value());
+        return ResponseEntity.ok().body(universalResponse);
+    }
+
+
+    @DeleteMapping("{classlevelId}/subjects/{subjectId}")
+    public ResponseEntity<UniversalResponse<?>> deleteSubject(@PathVariable("classlevelId") Long classlevelId, @PathVariable("subjectId") Long subjectId) {
+        System.out.println(subjectId);
+        Optional<SubjectLevel> subjectLevel = subjectLevelRepository.findByLevelAndSubject(classlevelId, subjectId);
+        if (subjectLevel.isEmpty()) return null;
+
+        subjectLevel.get().delete();
+
+        subjectLevelRepository.save(subjectLevel.get());
+
+        UniversalResponse universalResponse = new UniversalResponse();
+        universalResponse.setEntity(classLevelRepository.findById(classlevelId));
+        universalResponse.setMessage("Saved");
+        universalResponse.setStatusCode(HttpStatus.FOUND.value());
+        return ResponseEntity.ok().body(universalResponse);
+    }
+
     @GetMapping("getbyid")
     public ResponseEntity<UniversalResponse<List<CurriLevel>>> getById(@RequestParam Long id) {
         Optional<CurriLevel> curriLevel = classLevelRepository.findById(id);

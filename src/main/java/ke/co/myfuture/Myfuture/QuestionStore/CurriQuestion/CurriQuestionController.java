@@ -265,7 +265,6 @@ public class CurriQuestionController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-
     @RequestMapping(path = "attach-image/{id}", method = POST,  consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> newFile(@RequestParam("image") MultipartFile fileUploaded, @PathVariable Long id) {
         ImageFile imageFile = imageFileService.save(fileUploaded);

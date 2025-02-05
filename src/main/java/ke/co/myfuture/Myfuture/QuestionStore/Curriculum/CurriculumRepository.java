@@ -8,7 +8,7 @@ import java.util.List;
 public interface CurriculumRepository extends JpaRepository<Curriculum, Long> {
 
     @Query(value = """ 
-            SELECT * FROM curriculum 
+            SELECT * FROM curriculum WHERE archived = 0 
             ORDER BY id 
             """, nativeQuery = true)
     List<Curriculum> getAllCurriculums();
