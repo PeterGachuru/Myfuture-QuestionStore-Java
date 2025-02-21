@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion;
 
+import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface CurriQuestionRepository extends JpaRepository<CurriQuestion, Long> {
+
+    int countBySubtopicAndDeleted(CurriTopic subtopic, Boolean deleted);
+
+    int countBySubtopicAndReviewedAndDeleted(CurriTopic subtopic, Boolean reviewed, Boolean deleted);
 
     @Query(value = "SELECT * FROM curri_question WHERE subtopic = :subtopicId ", nativeQuery = true)
     List<CurriQuestion> findBySubtopicId(@Param("subtopicId") Long subtopicId);

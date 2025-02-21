@@ -9,6 +9,7 @@ import ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails.*;
 import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -177,5 +178,87 @@ public class WeeklyAnalysisService {
         generateWeeklyReports();
     }
 
+
+    @Scheduled(cron = "0 0 1 ? * FRI")
+//    @Bean
+    public void rescueTheWeek() {
+        System.out.println("Starting rescue week generation at: " + LocalDateTime.now());
+
+
+        LocalDateTime endOfWeek = LocalDateTime.now().with(TemporalAdjusters.previousOrSame(java.time.DayOfWeek.SATURDAY)).withHour(23).withMinute(59).withSecond(59);
+        LocalDateTime startOfWeek = endOfWeek.minusDays(6).withHour(0).withMinute(0).withSecond(0);
+
+        System.out.println("startOfWeek: "+startOfWeek+", endOfWeek: "+endOfWeek);
+
+        // Fetch all unique student IDs
+        List<IbukaStudentAccount> studentIds = quizDoneRepository.findDistinctStudentIds();
+
+        User parentUser;
+        int count = 0;
+        for (IbukaStudentAccount student : studentIds) {
+            System.out.println("-----------------------------------------------------------");
+            // Persist or log the report
+
+            parentUser = userRepository.findById(student.getParent()).get();
+            student.setAuthUser(parentUser);
+            String emailContent = generateRescueWeekEmailContent(student, endOfWeek);
+            System.out.println(emailContent);
+
+            schedulerService.persistScheduledEmail(parentUser.getEmail(), "Weekly Score: "+student.getName(), emailContent, LocalDateTime.now().plusMinutes(count/3), SenderService.WeeklyScore);
+
+        }
+    }
+
+    private String generateRescueWeekEmailContent(IbukaStudentAccount student, LocalDateTime endOfWeek) {
+        StringBuilder emailContent = new StringBuilder();
+
+        emailContent.append("<html>");
+        emailContent.append("<body style='font-family: Arial, sans-serif; margin: 0; padding: 0;'>");
+
+        // Header Section
+        emailContent.append("<div style='background-color: #28a745; color: white; padding: 20px; text-align: center;'>");
+        emailContent.append("<h1 style='margin: 0; font-size: 24px;'>Myfuture CBC Revision</h1>");
+        emailContent.append("<p style='color: yellow; margin: 0; font-size: 16px;'>Your partner in academic excellence</p>");
+        emailContent.append("</div>");
+
+        // Main Content Wrapper
+        emailContent.append("<div style='padding: 20px;'>");
+
+        emailContent.append("<h2 style='color: #28a745; font-size: 20px; margin-bottom: 10px;'>Rescue the Week - You Can Do It!</h2>");
+
+        emailContent.append("<p style='margin: 0; font-size: 16px;'>Hello ").append(student.getName()).append(",</p>");
+
+        emailContent.append("<p style='margin: 10px 0 20px; font-size: 16px;'>Just a friendly reminder: there are still a few days left before the end of the week (<b>")
+                .append(endOfWeek.toLocalDate()).append("</b>). This is your chance to rescue the week! Give your best effort, and you can still improve your scores and make amazing progress!</p>");
+
+        // Motivational Section
+        emailContent.append("<div style='background-color: #f2f2f2; padding: 20px; margin-top: 20px; border-radius: 8px; text-align: center;'>");
+        emailContent.append("<h3 style='color: #28a745; margin: 0;'>Remember:</h3>");
+        emailContent.append("<p style='font-size: 16px; margin-top: 10px;'>");
+        emailContent.append("🌟 Every little effort counts!<br>");
+        emailContent.append("📚 Learning is your superpower!<br>");
+        emailContent.append("💪 You can do anything you set your mind to!");
+        emailContent.append("</p>");
+        emailContent.append("</div>");
+
+        // Action Call
+        emailContent.append("<p style='margin-top: 20px; font-size: 16px; text-align: center;'>");
+        emailContent.append("Complete your lessons, take on those quizzes, and show everyone how brilliant you are!");
+        emailContent.append("</p>");
+
+        // Closing Message
+        emailContent.append("<p style='margin-top: 20px; font-size: 16px;'>");
+        emailContent.append("We believe in you! Let’s finish the week strong! 🎯</p>");
+
+        emailContent.append("<p style='margin-top: 20px; font-size: 16px;'>");
+        emailContent.append("Best regards,<br><b>The Myfuture CBC Revision Team</b></p>");
+
+        emailContent.append("</div>");
+
+        emailContent.append("</body>");
+        emailContent.append("</html>");
+
+        return emailContent.toString();
+    }
 
 }

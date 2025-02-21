@@ -222,6 +222,64 @@ public class TransactionService {
                 tranEntry.setAccount(account.get());
             }
             addCashAccount(totalAmount, TranType.DEBIT, transaction, transaction.getContributionsPlan().getName()+" income ");
+        } else  if (transaction.getCategory() == TransactionCategory.LEND) {
+            Double totalAmount = 0.0;
+            for (TranEntry tranEntry: transaction.getTranEntries()) {
+                if (tranEntry.getTranType() != TranType.DEBIT || tranEntry.getAmount() <=0 ) {
+                    System.out.println("Is not debit");
+                    return false;
+                }
+                totalAmount += tranEntry.getAmount();
+                Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
+                if (account.isEmpty()) {
+                    System.out.println("Did not find account");
+                    return false;
+                }
+                tranEntry.setAccount(account.get());
+            }
+            addCashAccount(totalAmount, TranType.CREDIT, transaction, transaction.getContributionsPlan().getName()+" loan out ");
+        } else  if (transaction.getCategory() == TransactionCategory.REPAY_LEND) {
+            Double totalAmount = 0.0;
+            for (TranEntry tranEntry: transaction.getTranEntries()) {
+                if (tranEntry.getTranType() != TranType.CREDIT || tranEntry.getAmount() <=0 ) {
+                    System.out.println("Is not debit");
+                    return false;
+                }
+                totalAmount += tranEntry.getAmount();
+                Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
+                if (account.isEmpty()) {
+                    System.out.println("Did not find account");
+                    return false;
+                }
+                tranEntry.setAccount(account.get());
+            }
+            addCashAccount(totalAmount, TranType.DEBIT, transaction, transaction.getContributionsPlan().getName()+" loan out ");
+        } else if (transaction.getCategory() == TransactionCategory.BORROW) {
+            Double totalAmount = 0.0;
+            for (TranEntry tranEntry: transaction.getTranEntries()) {
+                if (tranEntry.getTranType() != TranType.CREDIT || tranEntry.getAmount() <=0 ) {
+                    return false;
+                }
+                totalAmount += tranEntry.getAmount();
+                Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
+                if (account.isEmpty())
+                    return false;
+                tranEntry.setAccount(account.get());
+            }
+            addCashAccount(totalAmount, TranType.DEBIT, transaction, transaction.getContributionsPlan().getName()+" loan in ");
+        } else if (transaction.getCategory() == TransactionCategory.REPAY_BORROW) {
+            Double totalAmount = 0.0;
+            for (TranEntry tranEntry: transaction.getTranEntries()) {
+                if (tranEntry.getTranType() != TranType.DEBIT || tranEntry.getAmount() <=0 ) {
+                    return false;
+                }
+                totalAmount += tranEntry.getAmount();
+                Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
+                if (account.isEmpty())
+                    return false;
+                tranEntry.setAccount(account.get());
+            }
+            addCashAccount(totalAmount, TranType.CREDIT, transaction, transaction.getContributionsPlan().getName()+" loan in ");
         }
         return true;
     }

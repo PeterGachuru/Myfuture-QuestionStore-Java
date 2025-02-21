@@ -181,6 +181,6 @@ public class CustomMailSender {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+        System.out.println("End of email sending");
     }
-
 }

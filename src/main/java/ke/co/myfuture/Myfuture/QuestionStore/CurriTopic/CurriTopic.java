@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriTopic;
 
+import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
@@ -33,15 +34,57 @@ public class CurriTopic {
     @JoinColumn(name = "subject")
     Subject subject;
 
+    Integer numbering;
+
 //    @OneToOne(cascade = CascadeType.PERSIST)
 //    SubtopicContent subtopicContent;
 
     @Lob
     String content;
 
+    String instructionsOnGenerationOfQuestions;
+    String instructionsOnGenerationOfNotes;
+
+    Integer percentageOfRejectedQuestions;
+    Integer totalNumberOfApprovedQuestions;
+    Integer totalNumberOfUnverifiedQuestions;
+
     Boolean deleted = false;
     Boolean required = true;
 
-    @Embedded
-    AuditTrails auditTrails = new AuditTrails();
+    //    @UpdateTimestamp
+    Date updatedAt;
+
+//    @CreationTimestamp
+
+    @Column(updatable = false)
+    Date createdAt;
+
+    Date deletedAt;
+
+
+    @Column(nullable = false)
+    String createdBy;
+    String deletedBy;
+
+    public void delete() {
+        this.deletedAt = new Date();
+        this.deleted = true;
+        this.deletedBy = UserRequestContext.getCurrentUserName();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        Date now = new Date();
+        this.createdAt = now;
+        this.updatedAt = now;
+        this.createdBy = UserRequestContext.getCurrentUserName();
+        if (UserRequestContext.getCurrentUserName() == null)
+            this.createdBy = "Internal";
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = new Date();
+    }
 }

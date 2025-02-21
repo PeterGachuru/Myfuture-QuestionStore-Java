@@ -11,29 +11,28 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query(nativeQuery = true, value = "select updated_at AS updatedAt, created_by AS createdBy, created_at AS createdAt, deleted_flag AS deletedFlag from transaction where id = :id")
     AuditTrails.Retriever getAudits(@Param("id") Long id);
 
-
-
     @Query(nativeQuery = true,
     value = """
             SELECT 
                 t.id AS id, 
-                t.amount_involved AS amountInvolved,
-                t.status AS status,
-                t.external_transaction_code AS externalTransactionCode,
-                t.external_transaction_message AS externalTransactionMessage,
-                t.holder_particulars AS holderParticulars,
-                t.one_of_the_accounts AS oneOfTheAccounts,
-                t.contributions_plan_id AS contributionsPlanId,
-                t.category AS category,
-                t.reversal AS reversal,
-                t.reversal_for AS reversalFor,
-                t.updated_at AS updatedAt,
-                t.created_at AS createdAt,
-                t.deleted_at AS deletedAt,
-                t.deleted_flag AS deletedFlag,
-                t.created_by AS createdBy
+                t.amount_involved AS amountInvolved, 
+                t.status AS status, 
+                t.external_transaction_code AS externalTransactionCode, 
+                t.external_transaction_message AS externalTransactionMessage, 
+                t.holder_particulars AS holderParticulars, 
+                t.one_of_the_accounts AS oneOfTheAccounts, 
+                t.contributions_plan_id AS contributionsPlanId, 
+                t.category AS category, 
+                t.reversal AS reversal, 
+                t.reversal_for AS reversalFor, 
+                t.updated_at AS updatedAt, 
+                t.tran_date AS tranDate, 
+                t.created_at AS createdAt, 
+                t.deleted_at AS deletedAt, 
+                t.deleted_flag AS deletedFlag, 
+                t.created_by AS createdBy 
             FROM 
-                 transaction t where deleted_flag = :deletedFlag AND DATE(created_at) >= DATE(:startDate) AND DATE(created_at) <= :endDate AND category = :category AND id IN(select tran_id from tran_entry where account_id IN(SELECT id FROM account WHERE contributions_plan_id = :planId AND people_group_id = :groupId)) ORDER BY created_at ASC;
+                 transaction t where deleted_flag = :deletedFlag AND DATE(created_at) >= DATE(:startDate) AND DATE(created_at) <= :endDate AND category = :category AND id IN(select tran_id from tran_entry where account_id IN(SELECT id FROM account WHERE contributions_plan_id = :planId AND people_group_id = :groupId)) ORDER BY tran_date ASC; 
                   
             """)
 //    @Query(nativeQuery = true, value = "select * from transaction where deleted_flag = :deletedFlag AND DATE(created_at) >= DATE(:startDate) AND DATE(created_at) <= :endDate AND category = :category AND id IN(select tran_id from tran_entry where account_id IN(SELECT id FROM account WHERE contributions_plan_id = :planId AND people_group_id = :groupId)) ORDER BY created_at ASC")
@@ -50,17 +49,19 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                 t.holder_particulars AS holderParticulars,
                 t.one_of_the_accounts AS oneOfTheAccounts,
                 t.contributions_plan_id AS contributionsPlanId,
+                p.name AS contributionsPlanName,
                 t.category AS category,
                 t.reversal AS reversal,
                 t.reversal_for AS reversalFor,
                 t.updated_at AS updatedAt,
-                t.created_at AS createdAt,
+                t.tran_date AS tranDate,
                 t.deleted_at AS deletedAt,
                 t.deleted_flag AS deletedFlag,
                 t.created_by AS createdBy
             FROM 
-                 transaction t where deleted_flag = :deletedFlag  AND id IN(select tran_id from tran_entry where account_id IN(SELECT id FROM account WHERE people_group_id = :groupId)) ORDER BY created_at DESC LIMIT :limit 
-                  
+                 (SELECT * FROM transaction t where t.reversal = 0 AND t.deleted_flag = :deletedFlag  AND t.id IN(select tran_id from tran_entry where account_id IN(SELECT id FROM account WHERE people_group_id = :groupId))) t 
+                  JOIN contributions_plan p ON p.id = t.contributions_plan_id
+                  ORDER BY t.tran_date DESC LIMIT :limit                   
             """)
     List<TransactionDTO> findAllRecentForGroupByAuditTrails_DeletedFlagOrderByAuditTrails_CreatedAtDesc(@Param("deletedFlag") boolean deletedFlag, @Param("groupId") Long groupId, @Param("limit") Integer limit);
 }

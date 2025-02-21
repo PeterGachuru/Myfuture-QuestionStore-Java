@@ -34,5 +34,18 @@ public interface ContributionsPlanRepository extends JpaRepository<Contributions
 
     @Query(nativeQuery = true, value = "select sum(balance) from account where contributions_plan_id = :planId")
     Double totalIncome(@Param("planId") Long planId);
-}
 
+    @Query(value = """ 
+        SELECT c.id AS id, c.start_date AS startDate, c.deadline_date AS deadlineDate, 
+               c.closure_date AS closureDate, c.target_type AS targetType, c.target_amount AS targetAmount, 
+               c.name AS name, c.notes AS notes, c.individual_contributor_target AS individualContributorTarget, 
+               c.pin_priority AS pinPriority,
+               c.updated_at AS updatedAt, c.created_at AS createdAt, c.deleted_at AS deletedAt, 
+               c.deleted_flag AS deletedFlag, c.created_by AS createdBy, 
+               SUM(a.balance) AS availableCash 
+        FROM (SELECT * FROM contributions_plan WHERE people_group_id = :groupId) c 
+        LEFT JOIN (SELECT * FROM account WHERE ownership_type = 'CASH' AND contributions_plan_id IN (SELECT id FROM contributions_plan WHERE people_group_id = :groupId)) a ON c.id = a.contributions_plan_id 
+        GROUP BY c.id 
+    """, nativeQuery = true)
+    List<ContributionsPlanInterface> findAllWithSumCash( @Param("groupId") Long groupId);
+}

@@ -127,7 +127,6 @@ public class Transaction {
 		if (UserRequestContext.getCurrentUserName() == null)
 			this.createdBy = "Internal";
 	}
-
 	@PreUpdate
 	public void preUpdate() {
 		this.updatedAt = new Date();

@@ -74,7 +74,7 @@ public class ChatService {
         List<OpenAIChatRequest.Message> messages = getConversationHistory(gptChat);
 
         // Send request to ChatGPT API
-        OpenAIChatRequest aiRequest = new OpenAIChatRequest(request.getModel(), messages);
+        OpenAIChatRequest aiRequest = new OpenAIChatRequest("gpt-4", messages);
         OpenAIChatResponse aiResponse = getChatGPTResponse(aiRequest);
 
         System.out.println("Got AI response");

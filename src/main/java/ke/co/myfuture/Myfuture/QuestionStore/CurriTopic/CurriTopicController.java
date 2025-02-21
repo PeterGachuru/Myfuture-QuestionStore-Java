@@ -1,13 +1,18 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriTopic;
 
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevelRepository;
+import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
+import ke.co.myfuture.Myfuture.QuestionStore.Subject.SubjectRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -15,12 +20,24 @@ import java.util.Optional;
 @RequestMapping("topic")
 public class CurriTopicController {
     @Autowired
-    CurriTopicRepository repository;
+    CurriTopicRepository curriTopicRepository;
+    @Autowired
+    CurriLevelRepository curriLevelRepository;
+    @Autowired
+    SubjectRepository subjectRepository;
 
-    @PostMapping("add/")
-    public ResponseEntity<?> newCurriTopic(@RequestBody CurriTopic topic) {
+    @PostMapping("add")
+    public ResponseEntity<?> newCurriTopic(@RequestBody TopicDto topicDto) {
+        CurriTopic topic = new CurriTopic();
+        topic.setCurriLevel(curriLevelRepository.findById(topicDto.getCurriLevel()).get());
+        topic.setSubject(subjectRepository.findById(topicDto.getSubject()).get());
+        if (topicDto.getParent() != null) {
+            topic.setParent(curriTopicRepository.findById(topicDto.getParent()).get());
+        }
+        topic.setName(topicDto.getName());
+        topic.setNumbering(topicDto.getOrder());
 //        topic.setSubtopicContent(new SubtopicContent());
-        CurriTopic savedCurriTopic = repository.save(topic);
+        CurriTopic savedCurriTopic = curriTopicRepository.save(topic);
         System.out.println(savedCurriTopic);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
@@ -32,13 +49,13 @@ public class CurriTopicController {
 
     @PutMapping("update")
     public ResponseEntity<?> updateCurriTopic(@RequestBody CurriTopic topic) {
-        Optional<CurriTopic> dbCurriTopic = repository.findById(topic.id);
+        Optional<CurriTopic> dbCurriTopic = curriTopicRepository.findById(topic.id);
         if (dbCurriTopic.isPresent()) {
             CurriTopic curriTopic = dbCurriTopic.get();
             curriTopic.setContent(topic.getContent());
 //            curriTopic.setSubtopicContent(topic.getSubtopicContent());
             curriTopic.setName(topic.getName());
-            CurriTopic savedSubtopic = repository.save(curriTopic);
+            CurriTopic savedSubtopic = curriTopicRepository.save(curriTopic);
             UniversalResponse response = new UniversalResponse();
             response.setStatus("Success");
             response.setMessage("Updated Successfully");
@@ -54,12 +71,92 @@ public class CurriTopicController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PutMapping("reorder")
+    public ResponseEntity<?> updateTopics(@RequestBody Map<String, List<Map<String, Long>>> payload) {
+        List<Map<String, Long>> topics = payload.get("topics");
+
+        if (topics == null || topics.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid payload: topics list is missing or empty");
+        }
+
+        List<CurriTopic> updatedTopics = new ArrayList<>();
+
+        for (Map<String, Long> topicData : topics) {
+            Long topicId = topicData.get("id");
+            Integer numbering = topicData.get("numbering").intValue();
+
+            if (topicId == null || numbering == null) {
+                continue; // Skip invalid entries
+            }
+
+            Optional<CurriTopic> dbCurriTopic = curriTopicRepository.findById(topicId);
+            if (dbCurriTopic.isPresent()) {
+                CurriTopic curriTopic = dbCurriTopic.get();
+                curriTopic.setNumbering(numbering);
+                CurriTopic savedTopic = curriTopicRepository.save(curriTopic);
+                updatedTopics.add(savedTopic);
+            }
+        }
+
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Topics updated successfully");
+        response.setEntity(updatedTopics);
+        response.setStatusCode(201);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("{topicId}/update-name")
+    public ResponseEntity<?> rename(@RequestBody TopicDto topicDto,
+                                    @PathVariable("topicId") Long topicId) {
+        Optional<CurriTopic> dbCurriTopic = curriTopicRepository.findById(topicId);
+        if (dbCurriTopic.isPresent()) {
+            CurriTopic curriTopic = dbCurriTopic.get();
+            curriTopic.setName(topicDto.getName());
+            CurriTopic savedSubtopic = curriTopicRepository.save(curriTopic);
+            UniversalResponse response = new UniversalResponse();
+            response.setStatus("Success");
+            response.setMessage("Updated Successfully");
+            response.setEntity(savedSubtopic);
+            response.setStatusCode(201);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Could not update");
+        response.setStatusCode(HttpStatus.NOT_ACCEPTABLE.value());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> deleteCurriTopic(@PathVariable Long id) {
+        Optional<CurriTopic> dbCurriTopic = curriTopicRepository.findById(id);
+        if (dbCurriTopic.isPresent()) {
+            dbCurriTopic.get().delete();
+            System.out.println(dbCurriTopic.get());
+            curriTopicRepository.save(dbCurriTopic.get());
+            UniversalResponse response = new UniversalResponse();
+            response.setStatus("Success");
+            response.setMessage("Deleted Successfully");
+            response.setStatusCode(HttpStatus.OK.value());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Failure");
+        response.setMessage("Topic not found");
+        response.setStatusCode(HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
     @GetMapping("get/by/id")
     public ResponseEntity<?> fetchCurriTopic(@RequestParam("id") Long id) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("CurriTopic retrieved Successfully");
-        response.setEntity(repository.findById(id));
+        response.setEntity(curriTopicRepository.findById(id));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -68,7 +165,7 @@ public class CurriTopicController {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("CurriTopic retrieved Successfully");
-        response.setEntity(repository.findBySubjectAndClass(subject, classLevel));
+        response.setEntity(curriTopicRepository.findBySubjectAndClass(subject, classLevel));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -78,7 +175,7 @@ public class CurriTopicController {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("CurriTopic retrieved Successfully");
-        response.setEntity(repository.findParentsWithContent());
+        response.setEntity(curriTopicRepository.findParentsWithContent());
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -89,7 +186,7 @@ public class CurriTopicController {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("CurriTopic retrieved Successfully");
-        response.setEntity(repository.findByParent(parentId));
+        response.setEntity(curriTopicRepository.findByParent(parentId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -98,9 +195,9 @@ public class CurriTopicController {
     public ResponseEntity<UniversalResponse<List<CurriLevel>>> getCurriLevelnsMinimalWithUnapprovedQuestions(@RequestParam(value = "parent", required = false) Long parent, @RequestParam("subject") Long subject, @RequestParam("class") Long classLevel) {
         List<CurriTopic> classLevelList;
         if (parent == null){
-            classLevelList = repository.getAllWithUnapprovedQuestions(subject, classLevel);
+            classLevelList = curriTopicRepository.getAllWithUnapprovedQuestions(subject, classLevel);
         }else {
-            classLevelList = repository.getAllWithUnapprovedQuestions(parent, subject, classLevel);
+            classLevelList = curriTopicRepository.getAllWithUnapprovedQuestions(parent, subject, classLevel);
         }
 
         UniversalResponse universalResponse = new UniversalResponse();

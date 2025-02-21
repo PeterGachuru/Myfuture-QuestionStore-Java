@@ -46,9 +46,9 @@ public class ContributionsPlanController {
         response.setStatus("Success");
         response.setMessage("ProductCategory retrieved Successfully");
 
-        List<ContributionsPlan> accountList;
-        accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId);
-        response.setEntity(accountList);
+//        List<ContributionsPlan> accountList;
+//        accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId);
+        response.setEntity(repository.findAllWithSumCash(parentId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

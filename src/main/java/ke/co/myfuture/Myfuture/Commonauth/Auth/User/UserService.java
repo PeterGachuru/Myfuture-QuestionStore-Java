@@ -267,9 +267,13 @@ public class UserService {
                 user.setPasswords(userPasswords);
 
                 try {
-                    if (inProd){
+                    if (inProd) {
+                        String emailSubject = "Ibuka: User Registration";
+                        String emailBody = "Your Ibuka password is: " + password + ".  Do not share your password with anyone";
                         CustomMailSender customMailSender1 = getCustomMailSender();
-                        customMailSender1.sendEmail("Ibuka: User Registration", "Your Ibuka password is: " + password + ".  Do not share your password with anyone", new String[]{user.getEmail()}, new String[]{}, new String[]{});
+                        customMailSender1.sendEmail(emailSubject,
+                                emailBody,
+                                new String[]{user.getEmail()}, new String[]{}, new String[]{});
                         log.info("password {}",password);
 //                        mailService2.sendEmail(user.getEmail(),
 //                                "Your Myfuture password is: " + password + "  Do not share your password with anyone",

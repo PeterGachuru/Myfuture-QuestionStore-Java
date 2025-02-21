@@ -19,6 +19,7 @@ public interface TransactionDTO {
     String getOneOfTheAccounts();
 
     Long getContributionsPlanId();
+    String getContributionsPlanName();
 
     TransactionCategory getCategory();
 
@@ -31,6 +32,7 @@ public interface TransactionDTO {
     Date getUpdatedAt();
 
     Date getCreatedAt();
+    Date getTranDate();
 
     Date getDeletedAt();
 
