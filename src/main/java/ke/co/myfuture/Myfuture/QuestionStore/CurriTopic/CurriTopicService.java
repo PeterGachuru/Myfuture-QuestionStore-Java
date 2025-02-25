@@ -67,7 +67,7 @@ public class CurriTopicService {
                 int approvedCount = topicApprovedCount.getOrDefault(topic.getId(), 0);
                 int unverifiedCount = topicUnverifiedCount.getOrDefault(topic.getId(), 0);
                 int rejectedCount = topicRejectedCount.getOrDefault(topic.getId(), 0);
-                int totalQuestions = approvedCount + unverifiedCount + rejectedCount;
+                int totalQuestions = approvedCount + rejectedCount;
 
                 int rejectedPercentage = (totalQuestions == 0) ? 0 : (rejectedCount * 100) / totalQuestions;
 

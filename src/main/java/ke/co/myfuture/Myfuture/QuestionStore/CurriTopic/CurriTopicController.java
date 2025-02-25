@@ -52,9 +52,7 @@ public class CurriTopicController {
         Optional<CurriTopic> dbCurriTopic = curriTopicRepository.findById(topic.id);
         if (dbCurriTopic.isPresent()) {
             CurriTopic curriTopic = dbCurriTopic.get();
-            curriTopic.setContent(topic.getContent());
-//            curriTopic.setSubtopicContent(topic.getSubtopicContent());
-            curriTopic.setName(topic.getName());
+            curriTopic.update(topic);
             CurriTopic savedSubtopic = curriTopicRepository.save(curriTopic);
             UniversalResponse response = new UniversalResponse();
             response.setStatus("Success");

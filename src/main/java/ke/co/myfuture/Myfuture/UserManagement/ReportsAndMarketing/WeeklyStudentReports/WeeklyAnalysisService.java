@@ -113,7 +113,7 @@ public class WeeklyAnalysisService {
                 String emailContent = generateHtmlEmailContent(student, report, startOfWeek, endOfWeek);
                 System.out.println(emailContent);
 
-                schedulerService.persistScheduledEmail(parentUser.getEmail(), "Weekly Score: "+student.getName(), emailContent, LocalDateTime.now().plusMinutes(count/3), SenderService.WeeklyScore);
+                schedulerService.persistScheduledEmail(parentUser.getEmail(), "Myfuture CBC Revision Weekly Score: "+student.getName(), emailContent, LocalDateTime.now().plusMinutes(count/3), SenderService.WeeklyScore);
 //                System.out.println("Weekly Report for Student ID " + student + ": " + report);
             }else {
                 System.out.println("Ignoring, score is zero");
@@ -187,6 +187,7 @@ public class WeeklyAnalysisService {
 
         LocalDateTime endOfWeek = LocalDateTime.now().with(TemporalAdjusters.previousOrSame(java.time.DayOfWeek.SATURDAY)).withHour(23).withMinute(59).withSecond(59);
         LocalDateTime startOfWeek = endOfWeek.minusDays(6).withHour(0).withMinute(0).withSecond(0);
+//        LocalDateTime startOfWeek = endOfWeek.minusDays(200).withHour(0).withMinute(0).withSecond(0);
 
         System.out.println("startOfWeek: "+startOfWeek+", endOfWeek: "+endOfWeek);
 
@@ -204,7 +205,7 @@ public class WeeklyAnalysisService {
             String emailContent = generateRescueWeekEmailContent(student, endOfWeek);
             System.out.println(emailContent);
 
-            schedulerService.persistScheduledEmail(parentUser.getEmail(), "Weekly Score: "+student.getName(), emailContent, LocalDateTime.now().plusMinutes(count/3), SenderService.WeeklyScore);
+            schedulerService.persistScheduledEmail(parentUser.getEmail(), "Myfuture CBC Revision: Rescue Week", emailContent, LocalDateTime.now().plusMinutes(count/3), SenderService.WeeklyScore);
 
         }
     }

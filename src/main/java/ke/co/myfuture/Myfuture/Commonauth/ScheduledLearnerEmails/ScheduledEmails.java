@@ -27,9 +27,9 @@ public class ScheduledEmails {
 
 
     @Column(nullable = false)
-    private LocalDateTime scheduledTime;
-    private LocalDateTime attemptedSendAt;
-    private LocalDateTime timeSent;
+    private Date scheduledTime;
+    private Date attemptedSendAt;
+    private Date timeSent;
 
     @Enumerated(EnumType.STRING)
     private LastStatus lastAttemptStatus;

@@ -87,4 +87,11 @@ public class CurriTopic {
     public void preUpdate() {
         this.updatedAt = new Date();
     }
+
+    public void update(CurriTopic topic) {
+        this.name = topic.name;
+        this.content = topic.content;
+        this.instructionsOnGenerationOfQuestions = topic.instructionsOnGenerationOfQuestions;
+        this.instructionsOnGenerationOfNotes = topic.instructionsOnGenerationOfNotes;
+    }
 }

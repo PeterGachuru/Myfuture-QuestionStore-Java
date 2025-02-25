@@ -1,6 +1,8 @@
 package ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.regex.Pattern;
 
@@ -10,6 +12,7 @@ import java.time.LocalDateTime;
 public class SchedulerService {
     @Autowired
     ScheduledEmailsRepo scheduledEmailsRepo;
+
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
@@ -36,5 +39,9 @@ public class SchedulerService {
 
         scheduledEmailsRepo.save(scheduledEmail);
         System.out.println("Email scheduled for recipient: " + recipient);
+    }
+
+    public Page<ScheduledEmailsRepo.ScheduledEmailsProjection> getPaginatedEmails(Pageable pageable) {
+        return scheduledEmailsRepo.findAllProjected(pageable);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -33,7 +34,7 @@ public class EmailSchedulerService {
         for (ScheduledEmails email : pendingEmails) {
             try {
                 System.out.println(LocalDateTime.now()+": To send scheduled email");
-                email.setAttemptedSendAt( LocalDateTime.now());
+                email.setAttemptedSendAt(new Date());
                 email.setLastAttemptStatus(null);
                 emailRepository.save(email);
                 customMailSender.sendEmail(email.getSubject(),
@@ -44,7 +45,7 @@ public class EmailSchedulerService {
 //                        new String[]{"ngangagachuru919@gmail.com"}, new String[]{}, new String[]{});
                 email.setSent(true);
                 email.setLastAttemptStatus(LastStatus.SUCCESS);
-                email.setTimeSent(LocalDateTime.now());
+                email.setTimeSent(new Date());
                 emailRepository.save(email);
             } catch (Exception e) {
                 // Handle email sending failure (e.g., logging)
