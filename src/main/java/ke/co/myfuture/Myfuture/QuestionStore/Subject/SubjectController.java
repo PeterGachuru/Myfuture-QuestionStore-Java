@@ -51,4 +51,14 @@ public class SubjectController {
         universalResponse.setStatusCode(HttpStatus.FOUND.value());
         return ResponseEntity.ok().body(universalResponse);
     }
+
+    @GetMapping("get/by/id")
+    public ResponseEntity<?> fetchCurriTopic(@RequestParam("id") Long id) {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("CurriTopic retrieved Successfully");
+        response.setEntity(subjectRepository.findById(id));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

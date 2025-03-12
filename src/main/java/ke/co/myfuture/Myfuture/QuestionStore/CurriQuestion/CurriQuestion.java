@@ -75,6 +75,7 @@ public class CurriQuestion {
     Boolean sharable = false;
     @Column(nullable = false)
     Boolean reviewed = false;
+    Boolean approvedByAI = false;
     Boolean deleted = false;
     Date approvalDate;
     Date deletionDate;
@@ -102,5 +103,14 @@ public class CurriQuestion {
         deleted = false;
         reviewed = true;
         approvedBy = UserRequestContext.getCurrentUserName();
+    }
+
+    public void aIApprove(String model) {
+        sharable = true;
+        approvalDate = new Date();
+        deleted = false;
+        reviewed = true;
+        approvedByAI = true;
+        approvedBy = model;
     }
 }

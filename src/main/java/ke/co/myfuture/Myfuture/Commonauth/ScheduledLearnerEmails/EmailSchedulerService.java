@@ -25,10 +25,11 @@ public class EmailSchedulerService {
 
     // Periodically check for pending emails to send
 //    @Scheduled(initialDelay = 0,fixedRate = 60000) // Runs every minute
-    @Scheduled(initialDelay = 0,fixedRate = 60000*60) // Runs every hour
+    @Scheduled(initialDelay = 0,fixedRate = 2 * 60 * 1000) // Runs every 2 minute
     public void processPendingEmails() {
+        System.out.println(" public void processPendingEmails() {");
         LocalDateTime now = LocalDateTime.now();
-        List<ScheduledEmails> pendingEmails = emailRepository.findPendingEmails(now);
+        List<ScheduledEmails> pendingEmails = emailRepository.findPendingEmails(new Date());
 
         System.out.println("Found "+pendingEmails.size()+" emails to send");
         for (ScheduledEmails email : pendingEmails) {

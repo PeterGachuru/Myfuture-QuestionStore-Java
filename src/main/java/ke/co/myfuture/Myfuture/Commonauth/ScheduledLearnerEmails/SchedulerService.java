@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 import java.time.LocalDateTime;
@@ -32,7 +35,8 @@ public class SchedulerService {
         scheduledEmail.setSubject(subject);
         scheduledEmail.setBody(body);
         scheduledEmail.setSenderService(senderService);
-        scheduledEmail.setScheduledTime(scheduledTime.plusSeconds(1)); // Schedule for the next second after the week's end
+        scheduledEmail.setScheduledTime(Date.from(scheduledTime.plusSeconds(1).atZone(ZoneId.systemDefault()).toInstant()));
+        // Schedule for the next second after the week's end
         scheduledEmail.setExpiresAfterSeconds((long) (60*60*24*3)); // Email expires after 3 days (in seconds)
         scheduledEmail.setSent(false);
         scheduledEmail.setLastAttemptStatus(LastStatus.PENDING);

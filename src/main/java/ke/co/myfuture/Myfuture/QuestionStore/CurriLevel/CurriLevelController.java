@@ -25,6 +25,22 @@ public class CurriLevelController {
     @Autowired
     SubjectLevelRepository subjectLevelRepository;
 
+    @PostMapping("add")
+    public ResponseEntity<?> newCurriLevel(@RequestBody CurriLevel curriLevel) {
+        // Save the new CurriLevel
+        CurriLevel savedCurriLevel = classLevelRepository.save(curriLevel);
+
+        // Create a response
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Saved successfully");
+        response.setEntity(savedCurriLevel);
+        response.setStatusCode(HttpStatus.CREATED.value());
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+
     @GetMapping("all")
     public ResponseEntity<UniversalResponse<List<CurriLevel>>> getCurriLevels() {
         List<CurriLevel> classLevelList = classLevelRepository.findAll();
@@ -99,6 +115,17 @@ public class CurriLevelController {
     @GetMapping("all/minimal")
     public ResponseEntity<UniversalResponse<List<CurriLevel>>> getCurriLevelnsMinimal() {
         List<CurriLevel> classLevelList = classLevelRepository.findAll();
+
+        UniversalResponse universalResponse = new UniversalResponse();
+        universalResponse.setEntity(classLevelList);
+        universalResponse.setMessage("Retrieved");
+        universalResponse.setStatusCode(HttpStatus.FOUND.value());
+        return ResponseEntity.ok().body(universalResponse);
+    }
+
+    @GetMapping("all/bycurriculum")
+    public ResponseEntity<UniversalResponse<List<CurriLevel>>> getCurriLevelnsMinimal(@RequestParam("curriculum") Long curriculum) {
+        List<CurriLevel> classLevelList = classLevelRepository.getAllByCurriculum(curriculum);
 
         UniversalResponse universalResponse = new UniversalResponse();
         universalResponse.setEntity(classLevelList);

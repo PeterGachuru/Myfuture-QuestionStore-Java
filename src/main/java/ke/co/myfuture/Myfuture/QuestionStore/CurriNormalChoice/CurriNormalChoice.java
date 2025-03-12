@@ -23,4 +23,8 @@ public class CurriNormalChoice {
 
     Integer imageHeight;
     Integer imageWidth;
+
+    public Boolean isCorrect(){
+        return type.equals("right");
+    }
 }

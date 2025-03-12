@@ -12,7 +12,7 @@ import java.util.List;
 public interface ScheduledEmailsRepo extends JpaRepository<ScheduledEmails, Long> {
 
     @Query("SELECT e FROM ScheduledEmails e WHERE e.scheduledTime <= :now AND e.sent = false")
-    List<ScheduledEmails> findPendingEmails(LocalDateTime now);
+    List<ScheduledEmails> findPendingEmails(Date now);
 
     @Query(value = "SELECT s.id AS id, s.recipient AS recipient, s.subject AS subject, " +
             "s.scheduled_time AS scheduledTime, s.attempted_send_at AS attemptedSendAt, " +
@@ -20,11 +20,10 @@ public interface ScheduledEmailsRepo extends JpaRepository<ScheduledEmails, Long
             "s.sender_service AS senderService, s.sent AS sent, " +
             "s.expires_after_seconds AS expiresAfterSeconds, " +
             "s.created_at AS createdAt, s.updated_at AS updatedAt " +
-            "FROM scheduled_emails s",
+            "FROM scheduled_emails s order by created_at DESC",
             countQuery = "SELECT COUNT(*) FROM scheduled_emails",
             nativeQuery = true)
     Page<ScheduledEmailsProjection> findAllProjected(Pageable pageable);
-
 
     public interface ScheduledEmailsProjection {
         Long getId();

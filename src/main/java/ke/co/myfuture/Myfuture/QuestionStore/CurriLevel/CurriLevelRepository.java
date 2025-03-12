@@ -17,6 +17,12 @@ public interface CurriLevelRepository extends JpaRepository<CurriLevel, Long> {
     List<CurriLevel> getAllWithUnapprovedQuestions(@Param("curriculum") Long curriculum);
 
     @Query(value = """ 
+            SELECT * FROM curri_level WHERE curriculum = :curriculum 
+            ORDER BY numbering 
+            """, nativeQuery = true)
+    List<CurriLevel> getAllByCurriculum(@Param("curriculum") Long curriculum);
+
+    @Query(value = """ 
             SELECT name FROM curri_level WHERE id = :classlevel
             """, nativeQuery = true)
     String getName(Long classlevel);

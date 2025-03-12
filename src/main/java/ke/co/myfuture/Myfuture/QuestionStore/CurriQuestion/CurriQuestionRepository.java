@@ -47,4 +47,8 @@ public interface CurriQuestionRepository extends JpaRepository<CurriQuestion, Lo
 
     @Query(value = "SELECT * FROM curri_question WHERE book_model = :bookModel AND subtopic IN(SELECT id FROM curri_topic WHERE subject = :subjectId)", nativeQuery = true)
     List<CurriQuestion> findBySubjectAndBookModel(Long subjectId, String bookModel);
+
+
+    @Query(value = "SELECT * FROM curri_question WHERE subtopic = :subtopicId AND  reviewed = '0' limit :limit", nativeQuery = true)
+    List<CurriQuestion> findUnapprovedQuestionsBySubtopic(Long subtopicId, Integer limit);
 }

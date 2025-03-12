@@ -36,7 +36,6 @@ public class CurriTopicController {
         }
         topic.setName(topicDto.getName());
         topic.setNumbering(topicDto.getOrder());
-//        topic.setSubtopicContent(new SubtopicContent());
         CurriTopic savedCurriTopic = curriTopicRepository.save(topic);
         System.out.println(savedCurriTopic);
         UniversalResponse response = new UniversalResponse();

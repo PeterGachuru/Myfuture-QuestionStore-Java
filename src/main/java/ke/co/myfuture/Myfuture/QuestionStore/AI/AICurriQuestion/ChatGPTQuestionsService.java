@@ -1,11 +1,10 @@
 package ke.co.myfuture.Myfuture.QuestionStore.AI.AICurriQuestion;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import ke.co.myfuture.Myfuture.QuestionStore.Book.BookInitialModels;
-import ke.co.myfuture.Myfuture.QuestionStore.Cgroup.Cgroup;
-import ke.co.myfuture.Myfuture.QuestionStore.Cgroup.CgroupService;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoice;
-import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoiceRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestion;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestionRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestionService;
@@ -17,17 +16,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatGPTQuestionsService {
@@ -127,6 +125,111 @@ public class ChatGPTQuestionsService {
 //            break;
         }
     }
+
+
+    public void generateForSubtopic(String model, CurriTopic curriTopic) {
+        if (curriTopic.getTotalNumberOfUnverifiedQuestions()+curriTopic.getTotalNumberOfApprovedQuestions() >= 35)
+            return;
+
+        System.out.println("IN generateForSubtopic");
+        String purpose = "curri_question";
+        System.out.println("Sutopic "+curriTopic.id);
+        AIQuery aiQuery = new AIQuery();
+        String sanitizedQuestion = getGenerationInstructions(curriTopic);
+//        String sanitizedQuestion = question.replaceAll("\\r|\\n", " ");
+
+        System.out.println("----------------------------");
+
+        System.out.println(sanitizedQuestion);
+
+//        if (1 == 1)
+//            return;
+
+        aiQuery.setSubtopicId(curriTopic.getId());
+        aiQuery.setQueryQuestion(sanitizedQuestion);
+        aiQuery.setAIModel("gpt-3.5-turbo-0125");
+        aiQuery.setQueryPurpose(purpose);
+
+        aiQuery = aiQueryRepo.save(aiQuery);
+
+        String response = gpt3_5Turbo0125Query(sanitizedQuestion);
+
+        aiQuery.setAiResponse(response);
+
+        aiQuery = aiQueryRepo.save(aiQuery);
+        if (isJSONValid(response)) {
+            aiQuery.setMigrated(true);
+            saveQuestionArray(curriTopic, response);
+        }
+    }
+
+    private String buildApprovalPrompt(List<CurriQuestion> questions, CurriTopic subtopic) {
+        StringBuilder prompt = new StringBuilder();
+
+        // Include the original instructions for generating questions
+        prompt.append("    You are reviewing AI-generated multiple-choice questions for approval. \n")
+                .append("    Each question has four choices, exactly one of which is correct. \n")
+                .append("    Approve only well-formed and accurate questions. \n")
+                .append("    If rejecting a question, provide a reason in at most 3 words. \n")
+                .append("    Return a json object with a json array(named questions) of objects in format with fields: id, approved (true/false), and reason (if rejected).\n\n")
+                .append("    The questions were generated using the following instructions:\n")
+                .append(getGenerationInstructions(subtopic)) // Append original generation instructions
+                .append("\n");
+
+        prompt.append("  <Questions>\n");
+
+        for (CurriQuestion question : questions) {
+            prompt.append("    <Question>\n")
+                    .append("      <Id>").append(question.getId()).append("</Id>\n")
+                    .append("      <Text>").append(escapeXml(question.getString())).append("</Text>\n")
+                    .append("      <Choices>\n");
+
+            for (String choice : getChoicesList(question)) {
+                prompt.append("        <Choice>").append(escapeXml(choice)).append("</Choice>\n");
+            }
+
+            prompt.append("      </Choices>\n")
+                    .append("      <CorrectChoice>").append(escapeXml(getCorrectChoice(question))).append("</CorrectChoice>\n")
+                    .append("    </Question>\n");
+        }
+
+        prompt.append("  </Questions>\n");
+        return prompt.toString();
+    }
+
+    // Helper method to get the generation instructions
+    private String getGenerationInstructions(CurriTopic curriTopic) {
+        String question = """
+        Create a list of questions for subject_replace students on subtopic_name_replace subtopic of topic_name_replace.
+        (InstructionsOnGenerationOfQuestions_subtopic)
+        (InstructionsOnGenerationOfQuestions_topic)
+        Format your response as a json array of 25 objects with a question with a list of 4 choices,
+        3 of the choices being wrong and 1 right choice and an explanation for the right answer.
+        Fit the content to Kenyan and target age as age_replace.
+        Specify which is the correct choice.
+        Use only question, choices, correct_choice, and explanation as the fields.
+        Do not add A, B, C, D or any numbering to the answer choices.
+        Just provide the choices as plain text.
+        """;
+
+        if (curriTopic.getInstructionsOnGenerationOfQuestions() == null)
+            question = question.replaceAll("\\(InstructionsOnGenerationOfQuestions_subtopic\\)", "");
+        else
+            question = question.replaceAll("InstructionsOnGenerationOfQuestions_subtopic", curriTopic.getInstructionsOnGenerationOfQuestions());
+
+        if (curriTopic.getParent().getInstructionsOnGenerationOfQuestions() == null)
+            question = question.replaceAll("\\(InstructionsOnGenerationOfQuestions_topic\\)", "");
+        else
+            question = question.replaceAll("InstructionsOnGenerationOfQuestions_topic", curriTopic.getParent().getInstructionsOnGenerationOfQuestions());
+
+        question = question.replaceAll("subtopic_name_replace", curriTopic.getName());
+        question = question.replaceAll("topic_name_replace", curriTopic.getParent().getName());
+        question = question.replaceAll("age_replace", curriTopic.getParent().getCurriLevel().getAgeEstimate().toString());
+        question = question.replaceAll("subject_replace", curriTopic.getParent().getSubject().getName());
+
+        return question.replaceAll("\\r|\\n", " ");
+    }
+
 
     private List<Question> responseToQuestionArray(String response) {
         if (response == null )
@@ -363,9 +466,9 @@ public class ChatGPTQuestionsService {
             if(isJSONValid) {
                 JSONObject jsonObject = new JSONObject(response.toString());
                 String responseString = ((JSONObject) jsonObject.getJSONArray("choices").get(0)).getJSONObject("message").getString("content");
-                System.out.println(responseString);
+//                System.out.println(responseString);
 
-                isJSONValid= isJSONValid(response.toString());
+//                isJSONValid= isJSONValid(response.toString());
                 return responseString;
             }
         } catch (IOException | JSONException e) {
@@ -415,5 +518,139 @@ public class ChatGPTQuestionsService {
 
     class Questions{
         List<Question> questions;
+    }
+
+    public void approveQuestionsWithAIByTopic(Long topicId) {
+        List<CurriTopic> subtopics = curriTopicRepository.findByParent(topicId);
+        for (CurriTopic subtopic: subtopics){
+            approveQuestionsWithAIBySubtopic(subtopic);
+        }
+    }
+
+
+    public void approveQuestionsWithAIBySubtopic(CurriTopic subtopic) {
+        String model = "gpt-3.5-turbo-0125";
+        List<CurriQuestion> unapprovedQuestions = curriQuestionRepository.findUnapprovedQuestionsBySubtopic(subtopic.getId(), 15); // Fetch questions needing approval
+
+        if (unapprovedQuestions.isEmpty()) {
+            System.out.println("No questions to approve.");
+            return;
+        }
+
+        // Build the AI request
+        String approvalPrompt = buildApprovalPrompt(unapprovedQuestions, subtopic);
+
+        String sanitizedPrompt = approvalPrompt.replaceAll("\\r|\\n", " ")
+                .replace("\"", "\\\"");;
+
+
+        // Send request to AI
+        String response = gpt3_5Turbo0125Query(sanitizedPrompt);
+
+        // Process AI response
+        if (isJSONValid(response)) {
+            System.out.println("It is valid json "+subtopic.getId());
+            List<QuestionApproval> approvals = parseApprovalResponse(response, subtopic);
+            updateQuestionApprovalStatus(approvals, model);
+        }
+    }
+//    private String buildApprovalPrompt(List<CurriQuestion> questions, CurriTopic subtopic) {
+//        StringBuilder prompt = new StringBuilder();
+//
+//        prompt.append("    You are reviewing AI-generated multiple-choice questions for approval. \n")
+//                .append("    Each question has four choices, exactly one of which is correct. \n")
+//                .append("    Approve only well-formed and accurate questions. \n")
+//                .append("    If rejecting a question, provide a reason in at most 3 words. \n")
+//                .append("    Return a json object with json array(named questions) of objects format with fields: id, approved (true/false), and reason (if rejected).\n");
+//
+//        prompt.append("  <Questions>\n");
+//
+//        for (CurriQuestion question : questions) {
+//            prompt.append("    <Question>\n")
+//                    .append("      <Id>").append(question.getId()).append("</Id>\n")
+//                    .append("      <Text>").append(escapeXml(question.getString())).append("</Text>\n")
+//                    .append("      <Choices>\n");
+//
+//            for (String choice : getChoicesList(question)) {
+//                prompt.append("        <Choice>").append(escapeXml(choice)).append("</Choice>\n");
+//            }
+//
+//            prompt.append("      </Choices>\n")
+//                    .append("      <CorrectChoice>").append(escapeXml(getCorrectChoice(question))).append("</CorrectChoice>\n")
+//                    .append("    </Question>\n");
+//        }
+//
+//        prompt.append("  </Questions>\n");
+//        return prompt.toString();
+//    }
+    private List<String> getChoicesList(CurriQuestion question) {
+        return question.getChoices().stream()
+                .map(CurriNormalChoice::getValue)
+                .collect(Collectors.toList());
+    }
+
+    private String getCorrectChoice(CurriQuestion question) {
+        return question.getChoices().stream()
+                .filter(CurriNormalChoice::isCorrect)
+                .map(CurriNormalChoice::getValue)
+                .findFirst()
+                .orElse("Unknown");
+    }
+
+    // Escape XML special characters to avoid issues
+    private String escapeXml(String input) {
+        return input.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos;");
+    }
+    private List<QuestionApproval> parseApprovalResponse(String response, CurriTopic subtopic) {
+        System.out.println(subtopic.getId() + " Response: " + response);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            ApprovalResponse approvalResponse = objectMapper.readValue(response, ApprovalResponse.class);
+            return approvalResponse.getQuestions(); // Extract the list from the object
+        } catch (IOException e) {
+            System.out.println("Error " + subtopic.getId());
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    // DTO for wrapping the response
+    @Data
+    static  class ApprovalResponse {
+        private List<QuestionApproval> questions;
+    }
+
+    // DTO for AI Approval Response
+    @Data
+    static class QuestionApproval {
+        private Long id;
+        private boolean approved;
+        private String reason;
+    }
+
+    private void updateQuestionApprovalStatus(List<QuestionApproval> approvals, String model) {
+        for (QuestionApproval approval : approvals) {
+            Optional<CurriQuestion> questionOpt = curriQuestionRepository.findById(approval.getId());
+
+            if (questionOpt.isPresent()) {
+                CurriQuestion question = questionOpt.get();
+
+                if (approval.isApproved()) {
+                    question.aIApprove(model);
+                } else {
+                    question.setReviewed(true);
+                    question.setDeleted(true); // Mark rejected questions as deleted
+                    question.setDeletionDate(new Date());
+                    question.setDeletedBy("AI");
+                }
+
+                curriQuestionRepository.save(question);
+            }
+        }
     }
 }

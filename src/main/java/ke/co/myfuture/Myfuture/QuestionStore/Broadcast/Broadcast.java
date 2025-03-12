@@ -17,6 +17,8 @@ public class Broadcast {
     @Lob
     String html;
 
+    String testEmail;
+
     @Column(nullable = false)
     String targets;
 

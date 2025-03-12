@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.Broadcast;
 
+import ke.co.myfuture.Myfuture.Commonauth.Utils.CustomMailSender;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,9 @@ public class BroadcastController {
     @Autowired
     BroadcastService broadcastService;
 
+    @Autowired
+    CustomMailSender customMailSender;
+
     @PostMapping("add")
     public ResponseEntity<?> newWritersbroadcastAccount(@RequestBody Broadcast broadcast) {
         Broadcast savedBroadcast = repository.save(broadcast);
@@ -23,6 +27,21 @@ public class BroadcastController {
         response.setStatus("Success");
         response.setMessage("Saved successfully");
         response.setEntity(savedBroadcast);
+        response.setStatusCode(201);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("test")
+    public ResponseEntity<?> testWritersbroadcast(@RequestBody Broadcast broadcast) {
+        System.out.println(broadcast);
+
+        customMailSender.sendEmail(broadcast.subject,
+                broadcast.getHtml(),
+                new String[]{broadcast.getTestEmail()}, new String[]{}, new String[]{});
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Sent successfully");
+        response.setEntity(broadcast);
         response.setStatusCode(201);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
