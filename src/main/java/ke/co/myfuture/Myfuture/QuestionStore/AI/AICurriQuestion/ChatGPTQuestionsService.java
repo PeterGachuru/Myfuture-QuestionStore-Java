@@ -1,6 +1,5 @@
 package ke.co.myfuture.Myfuture.QuestionStore.AI.AICurriQuestion;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import ke.co.myfuture.Myfuture.QuestionStore.Book.BookInitialModels;
@@ -10,6 +9,8 @@ import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestionReposito
 import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestionService;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
+import ke.co.myfuture.Myfuture.Utils.Response.ResponseType;
+import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -520,15 +522,21 @@ public class ChatGPTQuestionsService {
         List<Question> questions;
     }
 
-    public void approveQuestionsWithAIByTopic(Long topicId) {
+    public void approveQuestionsWithAIByTopic(Long topicId, SseEmitter emitter) throws IOException {
         List<CurriTopic> subtopics = curriTopicRepository.findByParent(topicId);
-        for (CurriTopic subtopic: subtopics){
-            approveQuestionsWithAIBySubtopic(subtopic);
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Processing");
+        response.setMessage("To approve "+subtopics.size()+" subtopics");
+        response.setStatusCode(100);
+        response.setResponseType(ResponseType.MESSAGE);
+        emitter.send(response);
+        for (CurriTopic subtopic: subtopics) {
+            approveQuestionsWithAIBySubtopic(subtopic, emitter);
         }
     }
 
 
-    public void approveQuestionsWithAIBySubtopic(CurriTopic subtopic) {
+    public void approveQuestionsWithAIBySubtopic(CurriTopic subtopic, SseEmitter emitter) throws IOException {
         String model = "gpt-3.5-turbo-0125";
         List<CurriQuestion> unapprovedQuestions = curriQuestionRepository.findUnapprovedQuestionsBySubtopic(subtopic.getId(), 15); // Fetch questions needing approval
 
@@ -551,38 +559,10 @@ public class ChatGPTQuestionsService {
         if (isJSONValid(response)) {
             System.out.println("It is valid json "+subtopic.getId());
             List<QuestionApproval> approvals = parseApprovalResponse(response, subtopic);
-            updateQuestionApprovalStatus(approvals, model);
+            updateQuestionApprovalStatus(subtopic, approvals, model, emitter);
         }
     }
-//    private String buildApprovalPrompt(List<CurriQuestion> questions, CurriTopic subtopic) {
-//        StringBuilder prompt = new StringBuilder();
-//
-//        prompt.append("    You are reviewing AI-generated multiple-choice questions for approval. \n")
-//                .append("    Each question has four choices, exactly one of which is correct. \n")
-//                .append("    Approve only well-formed and accurate questions. \n")
-//                .append("    If rejecting a question, provide a reason in at most 3 words. \n")
-//                .append("    Return a json object with json array(named questions) of objects format with fields: id, approved (true/false), and reason (if rejected).\n");
-//
-//        prompt.append("  <Questions>\n");
-//
-//        for (CurriQuestion question : questions) {
-//            prompt.append("    <Question>\n")
-//                    .append("      <Id>").append(question.getId()).append("</Id>\n")
-//                    .append("      <Text>").append(escapeXml(question.getString())).append("</Text>\n")
-//                    .append("      <Choices>\n");
-//
-//            for (String choice : getChoicesList(question)) {
-//                prompt.append("        <Choice>").append(escapeXml(choice)).append("</Choice>\n");
-//            }
-//
-//            prompt.append("      </Choices>\n")
-//                    .append("      <CorrectChoice>").append(escapeXml(getCorrectChoice(question))).append("</CorrectChoice>\n")
-//                    .append("    </Question>\n");
-//        }
-//
-//        prompt.append("  </Questions>\n");
-//        return prompt.toString();
-//    }
+
     private List<String> getChoicesList(CurriQuestion question) {
         return question.getChoices().stream()
                 .map(CurriNormalChoice::getValue)
@@ -633,7 +613,9 @@ public class ChatGPTQuestionsService {
         private String reason;
     }
 
-    private void updateQuestionApprovalStatus(List<QuestionApproval> approvals, String model) {
+    private void updateQuestionApprovalStatus(CurriTopic subtopic, List<QuestionApproval> approvals, String model, SseEmitter emitter) throws IOException {
+//        QuestionApprovalsResponse approvalsResponse = new QuestionApprovalsResponse();
+        int countApproved = 0, countRejected = 0;
         for (QuestionApproval approval : approvals) {
             Optional<CurriQuestion> questionOpt = curriQuestionRepository.findById(approval.getId());
 
@@ -641,16 +623,26 @@ public class ChatGPTQuestionsService {
                 CurriQuestion question = questionOpt.get();
 
                 if (approval.isApproved()) {
+                    countApproved++;
                     question.aIApprove(model);
                 } else {
+                    countRejected++;
                     question.setReviewed(true);
+                    question.setSharable(false);
                     question.setDeleted(true); // Mark rejected questions as deleted
                     question.setDeletionDate(new Date());
-                    question.setDeletedBy("AI");
+                    question.setDeletedBy(model);
                 }
 
                 curriQuestionRepository.save(question);
             }
         }
+        UniversalResponse response = new UniversalResponse();
+        String message = subtopic.getParent().getName()+" -> "+subtopic.getName()+": Total: "+approvals.size()+", Approved: "+countApproved+", Rejected: "+countRejected;
+        response.setStatus("Processing");
+        response.setStatusCode(100);
+        response.setMessage(message);
+        response.setResponseType(ResponseType.MESSAGE);
+        emitter.send(response);
     }
 }

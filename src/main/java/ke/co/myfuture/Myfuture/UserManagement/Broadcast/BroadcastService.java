@@ -1,6 +1,8 @@
-package ke.co.myfuture.Myfuture.QuestionStore.Broadcast;
+package ke.co.myfuture.Myfuture.UserManagement.Broadcast;
 
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserRepository;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails.LastStatus;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails.ScheduledEmailsRepo;
 import ke.co.myfuture.Myfuture.NonJdbc.Migration.MigratorService;
 import ke.co.myfuture.Myfuture.QuestionStore.Users.WriterUsersRepository;
 import ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails.SchedulerService;
@@ -33,6 +35,9 @@ public class BroadcastService {
     SchedulerService schedulerService;
 
     @Autowired
+    ScheduledEmailsRepo scheduledEmailsRepo;
+
+    @Autowired
     MigratorService migratorService;
 //    @Scheduled(fixedRate = 3600000L, initialDelay = 0)
 //    @Bean
@@ -50,12 +55,13 @@ public class BroadcastService {
         filterUnsent(pupilEmailList, broadcast);
         pupilEmailList.add("ngangagachuru919@gmail.com");
         pupilEmailList.add("ngangagachuru001@gmail.com");
+        Set<String> spammingAddresses =  scheduledEmailsRepo.findRecipientByLastAttemptStatus(LastStatus.FAILED);
+        pupilEmailList.removeAll(spammingAddresses);
         List<String> nonDuplicateList = new ArrayList<>(pupilEmailList);
-//            nonDuplicateList.add(0,"ngangagachuru919@gmail.com");
-//            nonDuplicateList.add(0,"ngangagachuru001@gmail.c]om");
         broadcast.setTargetCount(pupilEmailList.size());
         broadcast.setDateSent(new Date());
         broadcast.startSend();
+
         broadcastRepository.save(broadcast);
         System.out.println(broadcast);
         int successSent = 0;

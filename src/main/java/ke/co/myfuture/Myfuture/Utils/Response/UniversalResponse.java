@@ -15,6 +15,7 @@ public class UniversalResponse<T> {
     private String message; //Saved succesfully
     private T entity; //{}
 
+    private ResponseType responseType;
     private Integer currentPage;
     private Integer totalItems;
     private Integer totalPages;

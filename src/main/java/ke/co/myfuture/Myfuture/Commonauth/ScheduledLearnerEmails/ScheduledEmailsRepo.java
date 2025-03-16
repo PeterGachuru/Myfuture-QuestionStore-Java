@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface ScheduledEmailsRepo extends JpaRepository<ScheduledEmails, Long> {
 
@@ -24,6 +25,8 @@ public interface ScheduledEmailsRepo extends JpaRepository<ScheduledEmails, Long
             countQuery = "SELECT COUNT(*) FROM scheduled_emails",
             nativeQuery = true)
     Page<ScheduledEmailsProjection> findAllProjected(Pageable pageable);
+
+    Set<String> findRecipientByLastAttemptStatus(LastStatus lastAttemptStatus);
 
     public interface ScheduledEmailsProjection {
         Long getId();

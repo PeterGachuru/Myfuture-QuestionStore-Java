@@ -38,14 +38,14 @@ public class EmailSchedulerService {
                 email.setAttemptedSendAt(new Date());
                 email.setLastAttemptStatus(null);
                 emailRepository.save(email);
-                customMailSender.sendEmail(email.getSubject(),
+                Boolean status = customMailSender.sendEmail(email.getSubject(),
                         email.getBody(),
                         new String[]{email.getRecipient()}, new String[]{}, new String[]{});
 //                customMailSender.sendEmail(email.getSubject(),
 //                        email.getBody(),
 //                        new String[]{"ngangagachuru919@gmail.com"}, new String[]{}, new String[]{});
-                email.setSent(true);
-                email.setLastAttemptStatus(LastStatus.SUCCESS);
+                email.setSent(status);
+                email.setLastAttemptStatus(status? LastStatus.SUCCESS: LastStatus.FAILED);
                 email.setTimeSent(new Date());
                 emailRepository.save(email);
             } catch (Exception e) {

@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.QuestionStore.Broadcast;
+package ke.co.myfuture.Myfuture.UserManagement.Broadcast;
 
 import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
 import lombok.Data;

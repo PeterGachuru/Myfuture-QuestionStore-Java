@@ -67,7 +67,7 @@ public class CurriQuestion {
     Integer imageHeight;
     Integer imageWidth;
 
-    @OneToMany(mappedBy =  "question")
+    @OneToMany(mappedBy =  "question", fetch = FetchType.EAGER)
 //    @Transient
     List<CurriNormalChoice> choices;
 

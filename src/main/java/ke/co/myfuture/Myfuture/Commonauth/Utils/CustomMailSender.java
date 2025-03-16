@@ -87,7 +87,7 @@ public class CustomMailSender {
         return argsMap;
     }
 
-    public void sendEmail(String subject, String body, String[] toList, String[] ccList, String[] attachedFilePaths) {
+    public Boolean sendEmail(String subject, String body, String[] toList, String[] ccList, String[] attachedFilePaths) {
         System.out.println("Sending mail to "+toList[0]+", subject: "+subject);
         HashMap<String, String> properties = getProperties();
         String from = properties.get("spring.mail.username");
@@ -177,10 +177,12 @@ public class CustomMailSender {
             // Send the email
             Transport.send(message);
             System.out.println("Email sent successfully.");
+            return true;
 
         } catch (MessagingException e) {
             e.printStackTrace();
+            System.out.println("End of email sending");
+            return false;
         }
-        System.out.println("End of email sending");
     }
 }
