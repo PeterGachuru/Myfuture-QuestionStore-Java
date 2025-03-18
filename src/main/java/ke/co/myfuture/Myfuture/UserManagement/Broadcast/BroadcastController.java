@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @CrossOrigin
 @RequestMapping("learning/broadcast")
@@ -48,7 +50,10 @@ public class BroadcastController {
 
     @PutMapping("update")
     public ResponseEntity<?> updateWritersbroadcast(@RequestBody Broadcast broadcast) {
-        Broadcast updatedBroadcast = repository.save(broadcast);
+        Optional<Broadcast> broadcastFromDB = repository.findById(broadcast.getId());
+        if (broadcastFromDB.isEmpty()) return null;
+        broadcastFromDB.get().update(broadcast);
+        Broadcast updatedBroadcast = repository.save(broadcastFromDB.get());
 
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");

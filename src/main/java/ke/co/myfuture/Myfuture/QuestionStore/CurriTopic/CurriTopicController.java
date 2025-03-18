@@ -31,12 +31,18 @@ public class CurriTopicController {
         CurriTopic topic = new CurriTopic();
         topic.setCurriLevel(curriLevelRepository.findById(topicDto.getCurriLevel()).get());
         topic.setSubject(subjectRepository.findById(topicDto.getSubject()).get());
+        CurriTopic parent = null;
         if (topicDto.getParent() != null) {
-            topic.setParent(curriTopicRepository.findById(topicDto.getParent()).get());
+            parent = curriTopicRepository.findById(topicDto.getParent()).get();
+            topic.setParent(parent);
         }
         topic.setName(topicDto.getName());
         topic.setNumbering(topicDto.getOrder());
         CurriTopic savedCurriTopic = curriTopicRepository.save(topic);
+        if (parent != null) {
+            parent.setIsParent(true);
+            curriTopicRepository.save(parent);
+        }
         System.out.println(savedCurriTopic);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");

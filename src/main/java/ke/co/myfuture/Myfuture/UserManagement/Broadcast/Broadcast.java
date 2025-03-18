@@ -42,6 +42,7 @@ public class Broadcast {
 
     @Column(nullable = false)
     String createdBy;
+    String updatedBy;
     String sentBy;
 
     public void delete() {
@@ -65,5 +66,13 @@ public class Broadcast {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = new Date();
+    }
+
+    public void update(Broadcast broadcast) {
+        Date now = new Date();
+        this.updatedAt = now;
+        this.updatedBy = UserRequestContext.getCurrentUserName();
+        if (UserRequestContext.getCurrentUserName() == null)
+            this.updatedBy = "Internal";
     }
 }

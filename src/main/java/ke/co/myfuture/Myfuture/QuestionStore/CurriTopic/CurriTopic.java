@@ -49,6 +49,7 @@ public class CurriTopic {
     Integer totalNumberOfApprovedQuestions;
     Integer totalNumberOfUnverifiedQuestions;
 
+    Boolean isParent = false;
     Boolean deleted = false;
     Boolean required = true;
 
