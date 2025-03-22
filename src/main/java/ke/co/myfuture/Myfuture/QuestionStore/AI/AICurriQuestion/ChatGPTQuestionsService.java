@@ -45,6 +45,8 @@ public class ChatGPTQuestionsService {
     @Autowired
     private CurriQuestionService curriQuestionService;
 
+    private static final int MAXIMUM_NUMBER_OF_QUESTIONS_ALLOWED = 35;
+
 
     public void queryContentForAllSubtopics() {
         String purpose = "content";
@@ -87,7 +89,7 @@ public class ChatGPTQuestionsService {
 
 //    @Bean
     public void queryCurriQuestionsForAllSubtopics() {
-        System.out.println("IN queryCurriQuestionsForAllSubtopics");
+        System.out.println("In queryCurriQuestionsForAllSubtopics");
         String purpose = "curri_question";
         List<CurriTopic> curriSubTopics = curriTopicRepository.findSubtopicsWithLessAIQuestions();
         System.out.println("Count: "+curriSubTopics.size());
@@ -130,10 +132,17 @@ public class ChatGPTQuestionsService {
 
 
     public void generateForSubtopic(String model, CurriTopic curriTopic) {
-        if (curriTopic.getTotalNumberOfUnverifiedQuestions()+curriTopic.getTotalNumberOfApprovedQuestions() >= 35)
+        if (curriTopic.getIsParent()){
+            List<CurriTopic> curriTopicList  =  curriTopicRepository.findByParent(curriTopic.getId());
+            for (CurriTopic subCurriTopic: curriTopicList) {
+                generateForSubtopic(model, subCurriTopic);
+            }
             return;
-
-        System.out.println("IN generateForSubtopic");
+        }
+        if (curriTopic.getTotalNumberOfUnverifiedQuestions() != null && curriTopic.getTotalNumberOfApprovedQuestions() != null)
+            if (curriTopic.getTotalNumberOfUnverifiedQuestions()+curriTopic.getTotalNumberOfApprovedQuestions() >= MAXIMUM_NUMBER_OF_QUESTIONS_ALLOWED)
+                return;
+        System.out.println("In generateForSubtopic");
         String purpose = "curri_question";
         System.out.println("Sutopic "+curriTopic.id);
         AIQuery aiQuery = new AIQuery();
@@ -199,20 +208,39 @@ public class ChatGPTQuestionsService {
         return prompt.toString();
     }
 
+    private String promptTemplate(CurriTopic curriTopic) {
+        String question = """
+            Create a list of questions for subject_replace students on 'subtopic_name_replace' subtopic of 'topic_name_replace'.
+            (InstructionsOnGenerationOfQuestions_subtopic)
+            (InstructionsOnGenerationOfQuestions_topic)
+            Format your response as a json array of 25 objects with a question with a list of 4 choices,
+            3 of the choices being wrong and 1 right choice and an explanation for the right answer.
+            Fit the content to Kenyan and target age as age_replace.
+            Specify which is the correct choice.
+            Use only question, choices, correct_choice, and explanation as the fields.
+            Do not add A, B, C, D or any numbering to the answer choices.
+            Just provide the choices as plain text.
+            """;
+
+        if (curriTopic.getParent() != null && curriTopic.getParent().getParent() != null)
+            question = """
+            'Create a list of questions for subject_replace students on 'sub_subtopic_name_replace' sub subtopic of 'subtopic_name_replace' subtopic of 'topic_name_replace'.
+            (InstructionsOnGenerationOfQuestions_subtopic)
+            (InstructionsOnGenerationOfQuestions_topic)
+            Format your response as a json array of 25 objects with a question with a list of 4 choices,
+            3 of the choices being wrong and 1 right choice and an explanation for the right answer.
+            Fit the content to Kenyan and target age as age_replace.
+            Specify which is the correct choice.
+            Use only question, choices, correct_choice, and explanation as the fields.
+            Do not add A, B, C, D or any numbering to the answer choices.
+            Just provide the choices as plain text.'
+            """;
+        return question;
+    }
+
     // Helper method to get the generation instructions
     private String getGenerationInstructions(CurriTopic curriTopic) {
-        String question = """
-        Create a list of questions for subject_replace students on subtopic_name_replace subtopic of topic_name_replace.
-        (InstructionsOnGenerationOfQuestions_subtopic)
-        (InstructionsOnGenerationOfQuestions_topic)
-        Format your response as a json array of 25 objects with a question with a list of 4 choices,
-        3 of the choices being wrong and 1 right choice and an explanation for the right answer.
-        Fit the content to Kenyan and target age as age_replace.
-        Specify which is the correct choice.
-        Use only question, choices, correct_choice, and explanation as the fields.
-        Do not add A, B, C, D or any numbering to the answer choices.
-        Just provide the choices as plain text.
-        """;
+        String question = promptTemplate(curriTopic);
 
         if (curriTopic.getInstructionsOnGenerationOfQuestions() == null)
             question = question.replaceAll("\\(InstructionsOnGenerationOfQuestions_subtopic\\)", "");
@@ -224,6 +252,14 @@ public class ChatGPTQuestionsService {
         else
             question = question.replaceAll("InstructionsOnGenerationOfQuestions_topic", curriTopic.getParent().getInstructionsOnGenerationOfQuestions());
 
+        if (curriTopic.getParent().getParent() != null) {
+            question = question.replaceAll("sub_subtopic_name_replace", curriTopic.getName());
+            question = question.replaceAll("subtopic_name_replace", curriTopic.getParent().getName());
+            question = question.replaceAll("topic_name_replace", curriTopic.getParent().getParent().getName());
+        } else {
+            question = question.replaceAll("subtopic_name_replace", curriTopic.getName());
+            question = question.replaceAll("topic_name_replace", curriTopic.getParent().getName());
+        }
         question = question.replaceAll("subtopic_name_replace", curriTopic.getName());
         question = question.replaceAll("topic_name_replace", curriTopic.getParent().getName());
         question = question.replaceAll("age_replace", curriTopic.getParent().getCurriLevel().getAgeEstimate().toString());

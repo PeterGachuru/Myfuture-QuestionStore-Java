@@ -9,7 +9,8 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.LoginResp
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.UserResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.UsersResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Role.RoleAccessRights;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.LoginData;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.LoginSession;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.LoginSessionRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.UserData;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.UserRoleData;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Otp.OtpService;
@@ -63,6 +64,8 @@ public class UserService {
 
     @Autowired
     private GoogleTokenVerifierService googleTokenVerifierService;
+    @Autowired
+    LoginSessionRepository loginSessionRepository;
 
     private CustomMailSender customMailSender;
     @Value("${production}")
@@ -105,7 +108,7 @@ public class UserService {
 
     private  AtomicReference<LoginResponse> loginResponse(String email) {
         UserData userData = getUserDetails(email).getUser();
-        LoginData authResponse = loginBuilder(userData);
+        LoginSession authResponse = loginBuilder(userData);
         AtomicReference<LoginResponse> response = new AtomicReference<>();
         response.set(LoginResponse.builder().statusCode(HttpStatus.OK.value()).message("Login successful").user(authResponse).build());
         return response;
@@ -129,14 +132,16 @@ public class UserService {
         }
     }
 
-    public LoginData loginBuilder(UserData userData) {
+    public LoginSession loginBuilder(UserData userData) {
         System.out.println("About to generate jwt token");
         String token = jwtUtils.generateJwtToken(userData, true);
+        String refreshToken = jwtUtils.generateJwtToken(userData, true);
         String otp = this.otpService.generateOTP(userData.getEmail(), token);
         log.info("Otp is: {}", otp);
-        return LoginData.builder()
+        LoginSession authResponse =  LoginSession.builder()
                 .token(token)
-                .id(userData.getId())
+                .refreshToken(refreshToken)
+                .userId(userData.getId())
                 .firstName(userData.getFirstName())
                 .phoneNumber(userData.getPhoneNumber())
                 .lastName(userData.getLastName())
@@ -145,6 +150,8 @@ public class UserService {
                 .hasAcceptedTerms(userData.getHasAcceptedTerms())
                 .roles(userData.getRoles())
                 .build();
+
+        return  loginSessionRepository.save(authResponse);
     }
 
     public LoginResponse authenticateUser(@NonNull String email, @NonNull String password) {
@@ -197,7 +204,7 @@ public class UserService {
                                 " Is Deactivated").build());
                         return;
                     }
-                    LoginData authResponse = loginBuilder(userData);
+                    LoginSession authResponse = loginBuilder(userData);
                     otpService.resetAllRetries(email);
                     try {
 //                        log.info("otp is {}",otp);
@@ -703,7 +710,7 @@ public class UserService {
         }
     }
 
-    public String otp(String otp) throws MaximumRetriesException {
+    public String validateOtp(String otp) throws MaximumRetriesException {
         UserDetails userDetails =
                 (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserData userData = getUserDetails(userDetails.getUsername()).getUser();
@@ -827,5 +834,11 @@ public class UserService {
         User createdUser = userRepository.save(userCreate);
 //        userCreate.
         return loginResponse(createdUser.getEmail()).get();
+    }
+
+    public AtomicReference<LoginResponse> loginByRefreshToken(String refreshToken) {
+        Optional<LoginSession> authenticatedBy =  loginSessionRepository.findByRefreshToken(refreshToken);
+
+        return loginResponse(authenticatedBy.get().getEmail());
     }
 }

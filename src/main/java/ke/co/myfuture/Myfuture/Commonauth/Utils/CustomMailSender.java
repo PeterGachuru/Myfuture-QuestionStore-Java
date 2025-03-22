@@ -123,6 +123,8 @@ public class CustomMailSender {
             // Add recipients
             if (toList != null) {
                 for (String email : toList) {
+                    if (email.toLowerCase().contains("myfuture.co.ke"))
+                        return false;
                     message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
                 }
             }

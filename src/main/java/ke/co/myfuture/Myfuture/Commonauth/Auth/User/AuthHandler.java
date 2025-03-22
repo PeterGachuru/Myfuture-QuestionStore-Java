@@ -2,7 +2,6 @@ package ke.co.myfuture.Myfuture.Commonauth.Auth.User;
 
 
 //import co.ke.emtechhousee.emtr.Auditing.AuditTrail.AuditTrailProvider;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import ke.co.myfuture.Myfuture.Commonauth.Auditing.ExceptionHandling.ExceptionLogger;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.LoginUserRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UpdatePasswordRequest;
@@ -13,8 +12,6 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.User.Request.OtpRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.Response.OtpResponse;
 import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.JwtStatusContext;
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MailServiceException;
-import ke.co.myfuture.Myfuture.Commonauth.DTO.EntityResponse;
-import ke.co.myfuture.Myfuture.Commonauth.GoogleSignin.GoogleTokenVerifierService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +70,20 @@ public class AuthHandler {
         }
     }
 
+    @GetMapping("/loginByRefreshToken")
+    public ResponseEntity<?> loginByRefreshToken(@RequestParam("token") String refreshToken) {
+        System.out.println("Login request received by refreshToken");
+        try {
+            return ResponseEntity.ok().body(this.userService.loginByRefreshToken(refreshToken));
+        }catch (Exception e) {
+            System.out.println("Cannot proceed with login attempt");
+            e.printStackTrace();
+            System.out.println("Error");
+            exceptionLogger.logError(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @PostMapping("/expired")
     public ResponseEntity<?> expired() {
         System.out.println("check expired");
@@ -96,7 +107,7 @@ public class AuthHandler {
     @PostMapping("otp")
     public ResponseEntity<?> otp(@RequestBody OtpRequest otp) {
         try {
-            String jwt = userService.otp(otp.getOtp());
+            String jwt = userService.validateOtp(otp.getOtp());
             System.out.println("Still continued");
             if (Objects.isNull(jwt)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new OtpResponse(null, "Invalid OTP"));

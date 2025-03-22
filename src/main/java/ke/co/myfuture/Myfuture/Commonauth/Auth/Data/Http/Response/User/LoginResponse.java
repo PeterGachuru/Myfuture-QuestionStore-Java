@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User;
 
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.LoginData;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.LoginSession;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 
@@ -19,5 +19,5 @@ public class LoginResponse implements Serializable {
     private String message = HttpStatus.NOT_FOUND.getReasonPhrase();
 
     @Builder.Default
-    private LoginData user = null;
+    private LoginSession user = null;
 }
