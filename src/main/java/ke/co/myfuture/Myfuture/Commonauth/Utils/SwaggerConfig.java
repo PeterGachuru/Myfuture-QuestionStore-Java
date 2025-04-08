@@ -1,9 +1,6 @@
 package ke.co.myfuture.Myfuture.Commonauth.Utils;
 
 
-import org.springframework.context.annotation.Configuration;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
 
 import java.util.Collections;
 

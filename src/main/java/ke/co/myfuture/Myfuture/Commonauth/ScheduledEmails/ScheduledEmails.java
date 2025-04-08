@@ -1,11 +1,10 @@
-package ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails;
+package ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails;
 
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -24,6 +23,7 @@ public class ScheduledEmails {
     @Lob
     @Column(nullable = false)
     private String body;
+    private String fromName;
 
 
     @Column(nullable = false)

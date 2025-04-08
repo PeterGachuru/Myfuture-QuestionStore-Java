@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails;
+package ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails;
 
 
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;

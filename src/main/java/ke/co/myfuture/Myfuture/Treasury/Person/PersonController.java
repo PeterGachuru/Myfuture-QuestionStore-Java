@@ -1,8 +1,5 @@
 package ke.co.myfuture.Myfuture.Treasury.Person;
 
-import ke.co.myfuture.Myfuture.Treasury.Person.Person;
-import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;
-import ke.co.myfuture.Myfuture.Treasury.Person.PersonService;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,17 +16,19 @@ public class PersonController {
     PersonRepository repository;
 
     @Autowired
-    PersonService accountService;
+    PersonService personService;
 
     @PostMapping("add")
     public ResponseEntity<?> newPerson(@RequestBody Person account) {
-        UniversalResponse response = accountService.savePerson(account);
+        UniversalResponse response = personService.savePerson(account);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("update")
-    public ResponseEntity<?> updatePerson(@RequestBody Person account) {
-        Person updatedPerson = repository.save(account);
+    public ResponseEntity<?> updatePerson(@RequestBody Person person) {
+        Person personFromDb = repository.findById(person.getId()).get();
+        personFromDb.update(person);
+        Person updatedPerson = repository.save(personFromDb);
 
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
@@ -45,6 +44,18 @@ public class PersonController {
         response.setMessage("Person retrieved Successfully");
         response.setEntity(repository.findById(id));
         response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    @PutMapping("verifyPersonEmail")
+    public ResponseEntity<?> verifyPersonEmail(@RequestParam("personId") Long personId, @RequestParam("groupId") Long groupId) {
+        UniversalResponse response = personService.verifyPersonEmail(personId, groupId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    @PutMapping("executeVerifyPersonEmail")
+    public ResponseEntity<?> executeVerifyPersonEmail(@RequestParam("personId") Long personId, @RequestParam("groupId") Long groupId, @RequestParam("emailAddress") String emailAddress) {
+        System.out.println("executeVerifyPersonEmail");
+
+        UniversalResponse response = personService.executeVerifyPersonEmail(personId, groupId, emailAddress);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("all")

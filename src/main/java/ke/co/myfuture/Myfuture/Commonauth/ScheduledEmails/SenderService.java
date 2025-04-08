@@ -1,5 +1,5 @@
-package ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails;
+package ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails;
 
 public enum SenderService {
-    WeeklyScore, PersonalBroadcast, Broadcast
+    WeeklyScore, PersonalBroadcast, Groups, Broadcast
 }

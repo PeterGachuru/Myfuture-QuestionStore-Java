@@ -118,7 +118,7 @@ public class    OtpService {
     public void resetAllRetries(String email){
         otpRepository.updateRetries(email);
     }
-    private String generateOTP() {
+    public String generateOTP() {
         String numbers = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         Random rndm_method = new Random();
         char[] otp = new char[6];

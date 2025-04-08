@@ -1,8 +1,8 @@
 package ke.co.myfuture.Myfuture.UserManagement.Post;
 
 
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccountRepository;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class PostService {
     @Autowired
     PostRepository postRepository;
     @Autowired
-    StudentAccountRepository studentAccountRepository;
+    IbukaStudentAccountRepository ibukaStudentAccountRepository;
 
     public List<Post> save(PostsHolder postsHolder) {
         System.out.println(postsHolder);
@@ -27,7 +27,7 @@ public class PostService {
         for (PostsHolder.PostCreation postCreation: postsHolder.posts) {
             post = new Post();
             post.inid = postCreation.inid;
-            ibukaStudentAccount =  studentAccountRepository.findById(postCreation.studentId);
+            ibukaStudentAccount =  ibukaStudentAccountRepository.findById(postCreation.studentId);
             if (ibukaStudentAccount.isEmpty())
                 continue;
             if (!Objects.equals(ibukaStudentAccount.get().getParent(), postsHolder.parentId))

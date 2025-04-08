@@ -1,7 +1,7 @@
 package ke.co.myfuture.Myfuture.UserManagement.Post.Postatempt;
 
 import ke.co.myfuture.Myfuture.UserManagement.Post.PostRepository;
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccountRepository;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,7 @@ public class PostattemptController {
     @Autowired
     PostattemptRepository repository;
     @Autowired
-    StudentAccountRepository studentAccountRepository;
+    IbukaStudentAccountRepository ibukaStudentAccountRepository;
     @Autowired
     PostRepository postRepository;
 
@@ -22,7 +22,7 @@ public class PostattemptController {
         Postattempt postattempt = new Postattempt();
         postattempt.scored = postattemptRequest.scored;
         postattempt.selectedChoice = postattemptRequest.selectedChoice;
-        postattempt.studentaccount = studentAccountRepository.findById(postattemptRequest.studentId).get();
+        postattempt.studentaccount = ibukaStudentAccountRepository.findById(postattemptRequest.studentId).get();
         postattempt.post = postRepository.findById(postattemptRequest.postId).get();
         Postattempt savedPostattempt = repository.save(postattempt);
         UniversalResponse response = new UniversalResponse();

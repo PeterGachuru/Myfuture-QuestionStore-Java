@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails;
+package ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,14 +25,15 @@ public class SchedulerService {
         }
         return EMAIL_PATTERN.matcher(email).matches();
     }
-    public void persistScheduledEmail(String recipient, String subject, String body, LocalDateTime scheduledTime, SenderService senderService) {
+    public Boolean persistScheduledEmail(String recipient, String subject, String body, String fromName, LocalDateTime scheduledTime, SenderService senderService) {
         if (!isValidEmail(recipient)) {
             System.out.println("Invalid email address: " + recipient);
-            return;
+            return false;
         }
         ScheduledEmails scheduledEmail = new ScheduledEmails();
         scheduledEmail.setRecipient(recipient);
         scheduledEmail.setSubject(subject);
+        scheduledEmail.setFromName(fromName);
         scheduledEmail.setBody(body);
         scheduledEmail.setSenderService(senderService);
         scheduledEmail.setScheduledTime(Date.from(scheduledTime.plusSeconds(1).atZone(ZoneId.systemDefault()).toInstant()));
@@ -43,9 +44,14 @@ public class SchedulerService {
 
         scheduledEmailsRepo.save(scheduledEmail);
         System.out.println("Email scheduled for recipient: " + recipient);
+        return true;
     }
 
     public Page<ScheduledEmailsRepo.ScheduledEmailsProjection> getPaginatedEmails(Pageable pageable) {
         return scheduledEmailsRepo.findAllProjected(pageable);
     }
+
+//    public void persistScheduledEmail(String toEmail, String subject, String emailContent, LocalDateTime localDateTime, SenderService senderService) {
+//
+//    }
 }

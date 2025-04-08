@@ -35,4 +35,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     @Query(nativeQuery = true, value = "select * from person where deleted_flag = :deletedFlag AND id IN (SELECT person_id FROM member WHERE people_group_id = :groupId )")
 
     List<Person> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag, @Param("groupId") Long groupId);
+
+    @Query(nativeQuery = true, value = "select * from person where deleted_flag = :deletedFlag AND id IN (SELECT person_id FROM member WHERE people_group_id = :groupId AND person_id = :personId )")
+    Optional<Person> foundMemberById(@Param("deletedFlag") boolean deletedFlag, @Param("groupId") Long groupId, @Param("personId") Long personId);
 }

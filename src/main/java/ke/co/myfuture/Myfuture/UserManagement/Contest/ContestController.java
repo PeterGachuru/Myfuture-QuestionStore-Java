@@ -1,7 +1,7 @@
 package ke.co.myfuture.Myfuture.UserManagement.Contest;
 
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccountRepository;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ public class ContestController {
     ContestRepository repository;
 
     @Autowired
-    StudentAccountRepository studentAccountRepository;
+    IbukaStudentAccountRepository ibukaStudentAccountRepository;
     @Autowired
     ContestService contestService;
 
@@ -82,7 +82,7 @@ public class ContestController {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Invitees retrieved Successfully");
-        response.setEntity(studentAccountRepository.contestInvitees(search, count,  classlevel, studentId));
+        response.setEntity(ibukaStudentAccountRepository.contestInvitees(search, count,  classlevel, studentId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

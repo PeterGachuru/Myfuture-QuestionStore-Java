@@ -8,6 +8,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UpdatePass
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.AuthEntityResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.LoginResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Otp.OtpService;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordReset;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.Request.OtpRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.Response.OtpResponse;
 import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.JwtStatusContext;
@@ -102,6 +103,11 @@ public class AuthHandler {
         }
 
         return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("requestPasswordChange")
+    public ResponseEntity<?> updatePassword(@RequestBody PasswordReset passwordReset) {
+        return ResponseEntity.ok().body(this.userService.passwordResetRequest(passwordReset));
     }
 
     @PostMapping("otp")

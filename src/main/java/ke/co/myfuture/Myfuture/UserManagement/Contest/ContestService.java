@@ -6,15 +6,14 @@ import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInvi
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInviteeRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion.ContestQuestion;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion.ContestQuestionRepository;
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccountRepository;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -23,7 +22,7 @@ public class ContestService {
     ContestRepository repository;
 
     @Autowired
-    StudentAccountRepository studentAccountRepository;
+    IbukaStudentAccountRepository ibukaStudentAccountRepository;
 
     @Autowired
     ContestQuestionRepository contestQuestionRepository;
@@ -36,7 +35,7 @@ public class ContestService {
 
     public Optional<Contest> createContest(CreateContest createContest) {
         Contest contest = new Contest();
-        Optional<IbukaStudentAccount> creator = studentAccountRepository.findById(createContest.creator_id);
+        Optional<IbukaStudentAccount> creator = ibukaStudentAccountRepository.findById(createContest.creator_id);
         if (creator.isEmpty()) return null;
         contest.creator = creator.get();
         contest.creatorName = creator.get().getName();
@@ -57,7 +56,7 @@ public class ContestService {
         List<ContestInvitee> contestInvitees = new ArrayList<>();
         for (Long inviteeId: createContest.invitees) {
             ContestInvitee contestInvitee = new ContestInvitee();
-            ibukaStudentAccount = studentAccountRepository.findById(inviteeId);
+            ibukaStudentAccount = ibukaStudentAccountRepository.findById(inviteeId);
             if (ibukaStudentAccount.isEmpty()) return null;
             contestInvitee.setStudentaccount(ibukaStudentAccount.get());
 

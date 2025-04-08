@@ -1,7 +1,15 @@
 package ke.co.myfuture.Myfuture.Commonauth.Utils;
 
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SchedulerService;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SenderService;
 import org.jsoup.Jsoup;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import org.springframework.http.*;
+import java.util.*;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -9,14 +17,26 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class CustomMailSender {
     String propertiesFilePath = "mailconfigs/authmail.properties";
+
+    @Autowired
+    SchedulerService schedulerService;
+
+    @Value("${custommail.sendurl}")
+    private String sendEmailUrl;
+
+    public Boolean scheduleImmediateMail(String toEmail, String subject, String emailContent, String fromName) {
+        return schedulerService.persistScheduledEmail(toEmail, subject, emailContent, fromName, LocalDateTime.now().plusSeconds(1), SenderService.Groups);
+    }
 
     public List<String> readFile(String path) {
         if (path == null) return null;
@@ -87,8 +107,12 @@ public class CustomMailSender {
         return argsMap;
     }
 
-    public Boolean sendEmail(String subject, String body, String[] toList, String[] ccList, String[] attachedFilePaths) {
+    public Boolean sendEmail(String subject, String body, String[] toList, String[] ccList, String[] attachedFilePaths, String fromName) {
         System.out.println("Sending mail to "+toList[0]+", subject: "+subject);
+
+        if (true) {
+            return sendEmailOverRest(subject, body, toList,ccList, attachedFilePaths, fromName);
+        }
         HashMap<String, String> properties = getProperties();
         String from = properties.get("spring.mail.username");
         String username = properties.get("spring.mail.username");
@@ -113,7 +137,7 @@ public class CustomMailSender {
         try {
             // Create a MimeMessage object
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(from)); // Set sender address
+            message.setFrom(new InternetAddress(from, fromName));
             message.setSubject(subject); // Set the email subject
             message.setReplyTo(InternetAddress.parse(from));
             message.setHeader("Message-ID", "<" + UUID.randomUUID() + "@" + properties.get("spring.mail.host") + ">");
@@ -155,23 +179,7 @@ public class CustomMailSender {
 // Add the alternative part to the main multipart
             multipart.addBodyPart(alternativePart);
 
-            // Create a multipart message
 
-            // Add email body as HTML content
-//            BodyPart messageBodyPart = new MimeBodyPart();
-//            messageBodyPart.setContent(body, "text/html; charset=utf-8");
-//            multipart.addBodyPart(messageBodyPart);
-
-            // Add attachments
-//            if (attachedFilePaths != null) {
-//                for (String filePath : attachedFilePaths) {
-//                    messageBodyPart = new MimeBodyPart();
-//                    DataSource source = new FileDataSource(filePath);
-//                    messageBodyPart.setDataHandler(new DataHandler(source));
-//                    messageBodyPart.setFileName(new File(filePath).getName()); // Use file name only
-//                    multipart.addBodyPart(messageBodyPart);
-//                }
-//            }
 
             // Set the multipart object as the content of the message
             message.setContent(multipart);
@@ -184,6 +192,44 @@ public class CustomMailSender {
         } catch (MessagingException e) {
             e.printStackTrace();
             System.out.println("End of email sending");
+            return false;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Boolean sendEmailOverRest(String subject, String body, String[] toList, String[] ccList, String[] attachedFilePaths, String fromName) {
+        System.out.println("Sending mail via REST to " + toList[0] + ", subject: " + subject);
+
+        // Load your SMTP configuration
+        HashMap<String, String> properties = getProperties();
+
+        // Prepare request payload
+        EmailRequest requestPayload = new EmailRequest();
+        requestPayload.subject = subject;
+        requestPayload.body = body;
+        requestPayload.toList = toList;
+        requestPayload.ccList = ccList;
+        requestPayload.attachedFilePaths = attachedFilePaths;
+        requestPayload.fromName = fromName;
+        requestPayload.mailConfig = properties;
+
+        try {
+            // Create REST client
+            RestTemplate restTemplate = new RestTemplate();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<EmailRequest> request = new HttpEntity<>(requestPayload, headers);
+
+            // Make POST call to your local microservice
+            ResponseEntity<Boolean> response = restTemplate.postForEntity(
+                    sendEmailUrl, request, Boolean.class);
+
+            return response.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }

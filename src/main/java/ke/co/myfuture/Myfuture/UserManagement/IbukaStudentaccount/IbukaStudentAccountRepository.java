@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.UserManagement.Studentaccount;
+package ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -7,9 +7,8 @@ import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
-public interface StudentAccountRepository extends JpaRepository<IbukaStudentAccount, Long> {
+public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStudentAccount, Long> {
     @Query(value = "SELECT * FROM(SELECT * FROM ibuka_student_account WHERE name LIKE CONCAT('%',:search,'%')  AND classlevel = :classlevel " +
             "  AND id <> :studentId ORDER BY id DESC) AS m LIMIT :count", nativeQuery = true)
     List<IbukaStudentAccount> contestInvitees(@Param("search") String search, @Param("count")  Integer count,

@@ -4,8 +4,8 @@ import ke.co.myfuture.Myfuture.UserManagement.Contest.Contest;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestRepository;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizQuestion.QuizQuestion;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizQuestion.QuizQuestionRepository;
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccountRepository;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.Optional;
 @Service
 public class QuizDoneService {
     @Autowired
-    StudentAccountRepository studentAccountRepository;
+    IbukaStudentAccountRepository ibukaStudentAccountRepository;
     @Autowired
     ContestRepository contestRepository;
     @Autowired
@@ -24,7 +24,7 @@ public class QuizDoneService {
     @Autowired
     QuizQuestionRepository quizQuestionRepository;
     public Optional<QuizDone> createQuiz(CreateQuizDone createQuizDone) {
-        Optional<IbukaStudentAccount> creator = studentAccountRepository.findById(createQuizDone.studentId);
+        Optional<IbukaStudentAccount> creator = ibukaStudentAccountRepository.findById(createQuizDone.studentId);
         if (creator.isEmpty()) return Optional.empty();
 
         QuizDone quizDone = new QuizDone();

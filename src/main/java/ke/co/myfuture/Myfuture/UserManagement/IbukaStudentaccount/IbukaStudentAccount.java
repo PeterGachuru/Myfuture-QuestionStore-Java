@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.UserManagement.Studentaccount;
+package ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount;
 
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import ke.co.myfuture.Myfuture.Commonauth.Install.Install;

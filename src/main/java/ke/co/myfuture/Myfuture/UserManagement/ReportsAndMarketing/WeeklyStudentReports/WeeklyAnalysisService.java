@@ -5,11 +5,10 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.SubjectRepository;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizDone;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizDoneRepository;
-import ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails.*;
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccountRepository;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.*;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +23,7 @@ public class WeeklyAnalysisService {
     private final QuizDoneRepository quizDoneRepository;
 
     @Autowired
-    StudentAccountRepository studentAccountRepository;
+    IbukaStudentAccountRepository ibukaStudentAccountRepository;
     @Autowired
     SubjectRepository subjectRepository;
 
@@ -42,7 +41,7 @@ public class WeeklyAnalysisService {
 
     // Analysis for a single student
     public WeeklyAnalysisDto getWeeklyAnalysis(IbukaStudentAccount student, LocalDateTime startOfWeek, LocalDateTime endOfWeek) {
-        Optional<IbukaStudentAccount> studentAccount = studentAccountRepository.findById(student.getId());
+        Optional<IbukaStudentAccount> studentAccount = ibukaStudentAccountRepository.findById(student.getId());
         if (studentAccount.isEmpty()) return null;
         List<QuizDone> quizzes = quizDoneRepository.findQuizzesByStudentAndWeek(studentAccount.get(), startOfWeek, endOfWeek);
 
@@ -113,7 +112,7 @@ public class WeeklyAnalysisService {
                 String emailContent = generateHtmlEmailContent(student, report, startOfWeek, endOfWeek);
                 System.out.println(emailContent);
 
-                schedulerService.persistScheduledEmail(parentUser.getEmail(), "Myfuture CBC Revision Weekly Score: "+student.getName(), emailContent, LocalDateTime.now().plusMinutes(count/3), SenderService.WeeklyScore);
+                schedulerService.persistScheduledEmail(parentUser.getEmail(), "Myfuture CBC Revision Weekly Score: "+student.getName(), emailContent, "Ibuka Technologies", LocalDateTime.now().plusMinutes(count/3), SenderService.WeeklyScore);
 //                System.out.println("Weekly Report for Student ID " + student + ": " + report);
             }else {
                 System.out.println("Ignoring, score is zero");
@@ -205,7 +204,7 @@ public class WeeklyAnalysisService {
             String emailContent = generateRescueWeekEmailContent(student, endOfWeek);
             System.out.println(emailContent);
 
-            schedulerService.persistScheduledEmail(parentUser.getEmail(), "Myfuture CBC Revision: Rescue Week", emailContent, LocalDateTime.now().plusMinutes(count/3), SenderService.WeeklyScore);
+            schedulerService.persistScheduledEmail(parentUser.getEmail(), "Myfuture CBC Revision: Rescue Week", emailContent,"Ibuka Technologies", LocalDateTime.now().plusMinutes(count/3), SenderService.WeeklyScore);
 
         }
     }
@@ -261,5 +260,4 @@ public class WeeklyAnalysisService {
 
         return emailContent.toString();
     }
-
 }

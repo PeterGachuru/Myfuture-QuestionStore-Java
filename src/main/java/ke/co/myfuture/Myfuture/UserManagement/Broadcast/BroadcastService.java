@@ -1,12 +1,12 @@
 package ke.co.myfuture.Myfuture.UserManagement.Broadcast;
 
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserRepository;
-import ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails.LastStatus;
-import ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails.ScheduledEmailsRepo;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.LastStatus;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.ScheduledEmailsRepo;
 import ke.co.myfuture.Myfuture.NonJdbc.Migration.MigratorService;
 import ke.co.myfuture.Myfuture.QuestionStore.Users.WriterUsersRepository;
-import ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails.SchedulerService;
-import ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails.SenderService;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SchedulerService;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SenderService;
 import ke.co.myfuture.Myfuture.UserManagement.Useraccount.UserAccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +73,7 @@ public class BroadcastService {
             for (int i = 0; i < 100 && !nonDuplicateList.isEmpty(); i++) {
                 count++;
                 if (!nonDuplicateList.get(0).contains("example")) {
-                    schedulerService.persistScheduledEmail(nonDuplicateList.get(0), broadcast.getSubject(), broadcast.getHtml(), LocalDateTime.now().plusMinutes(count/5), SenderService.Broadcast);
+                    schedulerService.persistScheduledEmail(nonDuplicateList.get(0), broadcast.getSubject(), broadcast.getHtml(), "Ibuka Technologies",LocalDateTime.now().plusMinutes(count/5), SenderService.Broadcast);
                 }
                 nonDuplicateList.remove(0);
             }
@@ -136,6 +136,6 @@ public class BroadcastService {
 //        List<String> recipients = new ArrayList<>();
 //        recipients.addAll(email)
 
-        schedulerService.persistScheduledEmail(email,  subject, message,  LocalDateTime.now(), SenderService.PersonalBroadcast);
+        schedulerService.persistScheduledEmail(email,  subject, message, "Ibuka Technologies", LocalDateTime.now(), SenderService.PersonalBroadcast);
     }
 }

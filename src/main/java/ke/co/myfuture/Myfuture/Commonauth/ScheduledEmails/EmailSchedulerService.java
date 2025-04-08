@@ -1,5 +1,4 @@
-package ke.co.myfuture.Myfuture.Commonauth.ScheduledLearnerEmails;
-
+package ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails;
 
 import ke.co.myfuture.Myfuture.Commonauth.Utils.CustomMailSender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,7 @@ public class EmailSchedulerService {
                 emailRepository.save(email);
                 Boolean status = customMailSender.sendEmail(email.getSubject(),
                         email.getBody(),
-                        new String[]{email.getRecipient()}, new String[]{}, new String[]{});
+                        new String[]{email.getRecipient()}, new String[]{}, new String[]{}, email.getFromName());
 //                customMailSender.sendEmail(email.getSubject(),
 //                        email.getBody(),
 //                        new String[]{"ngangagachuru919@gmail.com"}, new String[]{}, new String[]{});

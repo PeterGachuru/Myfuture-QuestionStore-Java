@@ -21,6 +21,8 @@ public class Person {
 	private String phoneNumber;
 	private String email;
 	private String role;
+	Boolean emailVerified = false;
+	VerificationStatus emailVerificationAttemptStatus;
 
 	private boolean active=true;
 
@@ -69,6 +71,14 @@ public class Person {
 	@PreUpdate
 	public void preUpdate() {
 		this.updatedAt = new Date();
+	}
+
+	public void update(Person person) {
+		email = person.email;
+		phoneNumber = person.phoneNumber;
+		notes = person.notes;
+		role = person.role;
+		name = person.name;
 	}
 
 	static public interface Retriever {

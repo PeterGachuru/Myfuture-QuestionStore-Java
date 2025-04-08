@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee;
 
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

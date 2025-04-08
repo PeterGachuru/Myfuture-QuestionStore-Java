@@ -1,7 +1,7 @@
 package ke.co.myfuture.Myfuture.UserManagement.QuizDone;
 
 import ke.co.myfuture.Myfuture.UserManagement.Contest.Contest;
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,8 @@ import java.util.Date;
 @Entity
 @Data
 @AllArgsConstructor
-@NoArgsConstructor@Table(uniqueConstraints =
+@NoArgsConstructor
+@Table(uniqueConstraints =
         {@UniqueConstraint(columnNames = {"inid", "installId"})})
 public class QuizDone {
     @Id

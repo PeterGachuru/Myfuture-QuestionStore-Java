@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.UserManagement.Studentaccount;
+package ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount;
 
 import ke.co.myfuture.Myfuture.UserManagement.ScoreAnalysis.Cronjobs;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @RequestMapping("student")
 public class StudentAccountController {
     @Autowired
-    StudentAccountRepository repository;
+    IbukaStudentAccountRepository repository;
     @Autowired
     Cronjobs cronjobs;
 

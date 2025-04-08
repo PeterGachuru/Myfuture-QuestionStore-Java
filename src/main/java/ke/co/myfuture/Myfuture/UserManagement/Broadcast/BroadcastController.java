@@ -39,7 +39,7 @@ public class BroadcastController {
 
         customMailSender.sendEmail(broadcast.subject,
                 broadcast.getHtml(),
-                new String[]{broadcast.getTestEmail()}, new String[]{}, new String[]{});
+                new String[]{broadcast.getTestEmail()}, new String[]{}, new String[]{}, "Ibuka Technologies");
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Sent successfully");

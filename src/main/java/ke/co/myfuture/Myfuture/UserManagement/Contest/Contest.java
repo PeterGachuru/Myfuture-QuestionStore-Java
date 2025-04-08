@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.Contest;
 
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInvitee;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion.ContestQuestion;
 import lombok.AllArgsConstructor;

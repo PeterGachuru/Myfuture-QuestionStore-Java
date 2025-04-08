@@ -3,17 +3,16 @@ package ke.co.myfuture.Myfuture.UserManagement.ScoreAnalysis;
 import ke.co.myfuture.Myfuture.UserManagement.ScoreAnalysis.AllTimeScore.AllTimeScoreRepository;
 import ke.co.myfuture.Myfuture.UserManagement.ScoreAnalysis.TodayScore.TodayScoreRepository;
 import ke.co.myfuture.Myfuture.UserManagement.ScoreAnalysis.WeekScore.WeekScoreRepository;
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.StudentAccountRepository;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service
 public class Cronjobs {
     @Autowired
-    StudentAccountRepository studentAccountRepository;
+    IbukaStudentAccountRepository ibukaStudentAccountRepository;
     @Autowired
     WeekScoreRepository weekScoreRepository;
 
@@ -30,7 +29,7 @@ public class Cronjobs {
     @Async
     public void analyzeScoresDeep() {
         System.out.println("Insert new scores");
-        studentAccountRepository.analyzeScores();
+        ibukaStudentAccountRepository.analyzeScores();
 
         System.out.println("Analyze for week");
         weekScoreRepository.clearEveryThing();

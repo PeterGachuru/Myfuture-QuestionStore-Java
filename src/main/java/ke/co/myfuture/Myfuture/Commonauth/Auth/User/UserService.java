@@ -16,6 +16,8 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.UserRoleData;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Otp.OtpService;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.RoleConfig;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.RoleConfigRepository;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordReset;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordResetRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.UserPasswords.UserPassword;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.UserRole.UserRole;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.UserRole.UserRoleRepository;
@@ -28,6 +30,7 @@ import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MaximumRetriesExcep
 import ke.co.myfuture.Myfuture.Commonauth.GoogleSignin.GoogleTokenVerifierService;
 import ke.co.myfuture.Myfuture.Commonauth.MailComponent.MailService2;
 import ke.co.myfuture.Myfuture.Commonauth.Utils.CustomMailSender;
+import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +46,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import static ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SchedulerService.isValidEmail;
 
 @Service
 @Slf4j
@@ -66,6 +71,11 @@ public class UserService {
     private GoogleTokenVerifierService googleTokenVerifierService;
     @Autowired
     LoginSessionRepository loginSessionRepository;
+
+    @Autowired
+    PasswordResetRepository passwordResetRepository;
+
+    @Autowired
 
     private CustomMailSender customMailSender;
     @Value("${production}")
@@ -213,7 +223,7 @@ public class UserService {
                         if (inProd) {
                             System.out.println("Is in prod");
                             CustomMailSender customMailSender1 = getCustomMailSender();
-                            customMailSender1.sendEmail("Ibuka: User Login", "You have just logged in at "+new Date(), new String[]{user.getEmail()}, new String[]{}, new String[]{});
+                            customMailSender1.sendEmail("Ibuka: User Login", "You have just logged in at "+new Date(), new String[]{user.getEmail()}, new String[]{}, new String[]{}, "Ibuka Technologies");
                             log.info("password {}",password);
 //                        mailService2.sendEmail(user.getEmail(),
 //                                "Your Myfuture password is: " + password + "  Do not share your password with anyone",
@@ -280,7 +290,7 @@ public class UserService {
                         CustomMailSender customMailSender1 = getCustomMailSender();
                         customMailSender1.sendEmail(emailSubject,
                                 emailBody,
-                                new String[]{user.getEmail()}, new String[]{}, new String[]{});
+                                new String[]{user.getEmail()}, new String[]{}, new String[]{}, "Ibuka Technologies");
                         log.info("password {}",password);
 //                        mailService2.sendEmail(user.getEmail(),
 //                                "Your Myfuture password is: " + password + "  Do not share your password with anyone",
@@ -778,7 +788,51 @@ public class UserService {
            this.mailService2.sendEmail(userDetails.getUsername(), "Your OTP is: " + otp, "Recon Master OTP");
         }
         return jwt;
+    }
 
+    public UniversalResponse passwordResetRequest(PasswordReset passwordReset) {
+
+        if (!isValidEmail(passwordReset.getEmail())) return null;
+        String resetCode = otpService.generateOTP();
+        passwordReset.setOtp(resetCode);
+
+        String subject = "Password Reset Code - Ibuka Technologies";
+        String htmlContent = generateEmailContent(resetCode);
+
+        Boolean status = customMailSender.sendEmail(subject,
+                htmlContent,
+                new String[]{passwordReset.getEmail()}, new String[]{}, new String[]{}, "Ibuka Technologies");
+
+        if (status) {
+            passwordResetRepository.save(passwordReset);
+            return new UniversalResponse(200, "Sent password reset email");
+        }
+        return new UniversalResponse(500, "Server error");
+
+    }
+
+    private String generateEmailContent(String resetCode) {
+        return "<!DOCTYPE html>" +
+                "<html>" +
+                "<head><style>" +
+                "body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }" +
+                ".container { background: white; padding: 20px; border-radius: 5px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }" +
+                "h2 { color: #2C3E50; }" +
+                "p { font-size: 16px; }" +
+                ".code { font-size: 24px; font-weight: bold; color: #e74c3c; background: #f8d7da; padding: 10px; border-radius: 5px; display: inline-block; }" +
+                "</style></head>" +
+                "<body>" +
+                "<div class='container'>" +
+                "<h2>Password Reset Request</h2>" +
+                "<p>Hello,</p>" +
+                "<p>We received a request to reset your password for your Ibuka Technologies account. Use the following code to reset your password:</p>" +
+                "<p class='code'>" + resetCode + "</p>" +
+                "<p>If you did not request this, please ignore this email.</p>" +
+                "<p>Thank you,</p>" +
+                "<p><strong>Ibuka Technologies Team</strong></p>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
     }
 
     public void logOut() {

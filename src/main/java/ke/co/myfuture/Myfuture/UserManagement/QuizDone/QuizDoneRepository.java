@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.QuizDone;
 
-import ke.co.myfuture.Myfuture.UserManagement.Studentaccount.IbukaStudentAccount;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
