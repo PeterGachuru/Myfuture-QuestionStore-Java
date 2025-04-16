@@ -46,6 +46,16 @@ public class AIQueryController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping("fillallsubtopics")
+    public ResponseEntity<?> fillAllSubtopics(@RequestParam String model) {
+        chatGPTQuestionsService.fillAllSubtopicsWithQuestionToMeetMinimum(model);
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Started filling for all Successfully");
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping("generate/questions/for-subtopic")
     public ResponseEntity<?> generateQuestionsForSubtopic(@RequestBody AIPromptRequest request) {
         chatGPTQuestionsService.generateForSubtopic(request.model, curriTopicRepository.findById(request.subtopicId).get());
@@ -70,17 +80,6 @@ public class AIQueryController {
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-//    @PostMapping("approve/questions/for-topic")
-//    public ResponseEntity<?> approveQuestionsForTopic(@RequestBody AIPromptRequest request) {
-//        chatGPTQuestionsService.approveQuestionsWithAIByTopic(request.getTopicId());
-//        curriTopicService.updateCurriTopicStats();
-//        UniversalResponse response = new UniversalResponse();
-//        response.setStatus("Success");
-//        response.setMessage("Approved Successfully");
-//        response.setStatusCode(200);
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
 
     @PostMapping(value = "approve/questions/for-topic", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter approveQuestionsForTopic(@RequestBody AIPromptRequest request) {

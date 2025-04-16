@@ -4,6 +4,7 @@ import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestionReposito
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,11 +81,20 @@ public class CurriTopicService {
 
         log.info("CurriTopic statistics update completed.");
     }
-//    @Scheduled(cron = "0 0 2 * * ?") // Runs every day at 2 AM
-    @Bean
+    @Scheduled(cron = "0 0 2 * * ?") // Runs every day at 2 AM
     public void scheduleTopicUpdate() {
         log.info("Scheduled update for CurriTopic statistics started...");
         updateCurriTopicStats();
         log.info("Scheduled update for CurriTopic statistics completed.");
+    }
+
+    public void delete(CurriTopic curriTopic) {
+        curriTopic.delete();
+        System.out.println(curriTopic);
+        curriTopicRepository.save(curriTopic);
+        List<CurriTopic> children =  curriTopicRepository.findByParent(curriTopic.getId());
+        for (CurriTopic  child: children) {
+            delete(child);
+        }
     }
 }

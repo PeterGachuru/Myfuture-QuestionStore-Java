@@ -7,15 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("song")
+@RequestMapping("tuabudu/song")
 public class SongController {
     @Autowired
     SongRepository repository;
     @Autowired
     SongService songService;
-    @PostMapping("add/")
-    public ResponseEntity<?> newSongAccount(@RequestBody Song user) {
-        Song savedSong = repository.save(user);
+    @PostMapping("add")
+    public ResponseEntity<?> newSongAccount(@RequestBody Song song) {
+        Song savedSong = repository.save(song);
         System.out.println(savedSong);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
@@ -25,7 +25,7 @@ public class SongController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("update/")
+    @PutMapping("update")
     public ResponseEntity<?> updateSong(@RequestBody Song user) {
         Song updatedSong = repository.save(user);
 

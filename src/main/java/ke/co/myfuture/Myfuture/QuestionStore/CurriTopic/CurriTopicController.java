@@ -25,6 +25,8 @@ public class CurriTopicController {
     CurriLevelRepository curriLevelRepository;
     @Autowired
     SubjectRepository subjectRepository;
+    @Autowired
+    CurriTopicService curriTopicService;
 
     @PostMapping("add")
     public ResponseEntity<?> newCurriTopic(@RequestBody TopicDto topicDto) {
@@ -137,9 +139,7 @@ public class CurriTopicController {
     public ResponseEntity<?> deleteCurriTopic(@PathVariable Long id) {
         Optional<CurriTopic> dbCurriTopic = curriTopicRepository.findById(id);
         if (dbCurriTopic.isPresent()) {
-            dbCurriTopic.get().delete();
-            System.out.println(dbCurriTopic.get());
-            curriTopicRepository.save(dbCurriTopic.get());
+            curriTopicService.delete(dbCurriTopic.get());
             UniversalResponse response = new UniversalResponse();
             response.setStatus("Success");
             response.setMessage("Deleted Successfully");

@@ -20,6 +20,7 @@ public class PostController {
 
     @PostMapping("add")
     public ResponseEntity<?> newPost(@RequestBody Post post) {
+        if (post.id != null) return null;
         Post savedPost = repository.save(post);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");

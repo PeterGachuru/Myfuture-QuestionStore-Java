@@ -28,8 +28,13 @@ public interface CurriTopicRepository extends JpaRepository<CurriTopic, Long> {
     @Query(value = "SELECT * FROM curri_topic  WHERE parent IS NOT NULL AND id NOT IN (select subtopic from curri_question where book_model = 'chatGpt3_5') ORDER BY numbering ASC", nativeQuery = true)
     List<CurriTopic> findSubtopicsWithoutAIQuestions();
 
-    @Query(value = "SELECT * FROM curri_topic  WHERE parent IS NOT NULL AND id IN (select subtopic from (select count(subtopic) as count, subtopic from curri_question where book_model = 'gpt-3.5-turbo-0125' group by subtopic) k where count < 13) ORDER BY numbering ASC", nativeQuery = true)
-    List<CurriTopic> findSubtopicsWithLessAIQuestions();
+    @Query(value = """
+SELECT * FROM curri_topic  WHERE parent IS NOT NULL AND id IN
+ (select subtopic from (select count(subtopic) as count, subtopic 
+ from curri_question where book_model = :model group by subtopic) k where count < 30)
+  ORDER BY numbering ASC
+""", nativeQuery = true)
+    List<CurriTopic> findSubtopicsWithLessAIQuestions(String model);
 
     @Query(value = """
             SELECT * FROM curri_topic  WHERE parent is null AND subject = :subject AND curri_level = :classLevel 

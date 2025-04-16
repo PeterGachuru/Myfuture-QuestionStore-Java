@@ -1,12 +1,13 @@
 package ke.co.myfuture.Myfuture.Tuabudu.MusicGenre;
 
-import ke.co.myfuture.Myfuture.Tuabudu.Language.Language;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@RestController
+@RequestMapping("tuabudu/musicgenre")
 public class MusicGenreController {
 
     @Autowired
@@ -15,8 +16,8 @@ public class MusicGenreController {
     MusicGenreService musicGenreService;
 
     @PostMapping("add")
-    public ResponseEntity<?> newSingerAccount(@RequestBody MusicGenre user) {
-        MusicGenre savedSinger = repository.save(user);
+    public ResponseEntity<?> newSingerAccount(@RequestBody MusicGenre musicGenre) {
+        MusicGenre savedSinger = repository.save(musicGenre);
         System.out.println(savedSinger);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");

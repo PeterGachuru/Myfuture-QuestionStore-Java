@@ -2,6 +2,7 @@ package ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails;
 
 import ke.co.myfuture.Myfuture.Commonauth.Utils.CustomMailSender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,8 @@ public class EmailSchedulerService {
     @Autowired
     private ScheduledEmailsRepo emailRepository;
 
+    @Value("${production}")
+    private boolean inProd;
     @Autowired
     private CustomMailSender customMailSender; // External service for sending emails
 
@@ -27,6 +30,12 @@ public class EmailSchedulerService {
     @Scheduled(initialDelay = 0,fixedRate = 2 * 60 * 1000) // Runs every 2 minute
     public void processPendingEmails() {
         System.out.println(" public void processPendingEmails() {");
+
+        if (!inProd){
+            System.out.println("====Can't send scheduled emails because we are not in PROD=========");
+            return;
+        }
+
         LocalDateTime now = LocalDateTime.now();
         List<ScheduledEmails> pendingEmails = emailRepository.findPendingEmails(new Date());
 

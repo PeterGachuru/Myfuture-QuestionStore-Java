@@ -26,7 +26,6 @@ public class DownloadFromOnline {
     String baseUrlReadFiles = "https://questionsbackend.myfuture.co.ke/files/listfiles";
     String baseUrlDownloadFiles = "https://questionsbackend.myfuture.co.ke/files/download/base2";
 
-//    @Bean
     public void downloadRecussively() throws JSONException, IOException {
         System.out.println("downloadRecussively");
         for (String folder: sourceFolders) {

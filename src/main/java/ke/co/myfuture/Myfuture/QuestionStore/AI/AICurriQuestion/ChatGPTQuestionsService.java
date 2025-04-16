@@ -9,9 +9,11 @@ import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestionReposito
 import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestionService;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
+import ke.co.myfuture.Myfuture.QuestionStore.SubjectLevel.SubjectLevelRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.ResponseType;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.Data;
+import org.apache.xmlbeans.impl.store.Cur;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -20,6 +22,7 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -38,6 +41,8 @@ public class ChatGPTQuestionsService {
 
     @Autowired
     CurriQuestionRepository curriQuestionRepository;
+    @Autowired
+    SubjectLevelRepository subjectLevelRepository;
 
     @Value("${ai.api_key}")
     private String chatGPTKey;
@@ -91,7 +96,7 @@ public class ChatGPTQuestionsService {
     public void queryCurriQuestionsForAllSubtopics() {
         System.out.println("In queryCurriQuestionsForAllSubtopics");
         String purpose = "curri_question";
-        List<CurriTopic> curriSubTopics = curriTopicRepository.findSubtopicsWithLessAIQuestions();
+        List<CurriTopic> curriSubTopics = curriTopicRepository.findSubtopicsWithLessAIQuestions("gpt-3.5-turbo-0125");
         System.out.println("Count: "+curriSubTopics.size());
         for (CurriTopic curriTopic: curriSubTopics) {
             System.out.println("Sutopic "+curriTopic.id);
@@ -132,7 +137,15 @@ public class ChatGPTQuestionsService {
 
 
     public void generateForSubtopic(String model, CurriTopic curriTopic) {
-        if (curriTopic.getIsParent()){
+        if (curriTopic.getCurriLevel().getCurriculum() == 1) {
+            System.out.println("Cant continue because curriculum is extinct");
+            return;
+        }
+        if (subjectLevelRepository.subjectIsdeleted(curriTopic.getSubject().id, curriTopic.getCurriLevel().id) > 0) {
+            System.out.println("Cant continue because subject is deleted");
+            return;
+        }
+        if (curriTopic.getIsParent() != null && curriTopic.getIsParent()) {
             List<CurriTopic> curriTopicList  =  curriTopicRepository.findByParent(curriTopic.getId());
             for (CurriTopic subCurriTopic: curriTopicList) {
                 generateForSubtopic(model, subCurriTopic);
@@ -142,6 +155,8 @@ public class ChatGPTQuestionsService {
         if (curriTopic.getTotalNumberOfUnverifiedQuestions() != null && curriTopic.getTotalNumberOfApprovedQuestions() != null)
             if (curriTopic.getTotalNumberOfUnverifiedQuestions()+curriTopic.getTotalNumberOfApprovedQuestions() >= MAXIMUM_NUMBER_OF_QUESTIONS_ALLOWED)
                 return;
+        if (true)
+            return;
         System.out.println("In generateForSubtopic");
         String purpose = "curri_question";
         System.out.println("Sutopic "+curriTopic.id);
@@ -544,6 +559,22 @@ public class ChatGPTQuestionsService {
             }
         }
         return true;
+    }
+
+    @Async
+    public void fillAllSubtopicsWithQuestionToMeetMinimum(String model) {
+        List<CurriTopic> subtopics = curriTopicRepository.findSubtopicsWithLessAIQuestions(model);
+        for (CurriTopic subtopic: subtopics) {
+            if (subtopic.getSubject().getName().contains("swahili")) {
+                System.out.println("Ignoring because is a Kiswahili subtopic");
+            }else if ((subtopic.getDeleted() != null && subtopic.getDeleted())
+            || (subtopic.getParent().getDeleted() != null && subtopic.getParent().getDeleted())) {
+                System.out.println("Ignoring because is deleted");
+            }else {
+                System.out.println("generating for "+subtopic.getName());
+                generateForSubtopic(model,  subtopic);
+            }
+        }
     }
 
     @Data

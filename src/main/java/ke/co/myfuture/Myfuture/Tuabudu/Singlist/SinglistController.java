@@ -7,15 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("singlist")
-
+@RequestMapping("tuabudu/singlist")
 public class SinglistController {
     @Autowired
     SinglistRepository repository;
     @Autowired
     SinglistService singlistService;
 
-    @PostMapping("add/")
+    @PostMapping("add")
     public ResponseEntity<?> newPlaylistAccount(@RequestBody Singlist user) {
         Singlist savedSinglist = repository.save(user);
         System.out.println(savedSinglist);
@@ -27,7 +26,7 @@ public class SinglistController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("update/")
+    @PutMapping("update")
     public ResponseEntity<?> updatePlaylist(@RequestBody Singlist user) {
         Singlist updatedSinglist = repository.save(user);
 

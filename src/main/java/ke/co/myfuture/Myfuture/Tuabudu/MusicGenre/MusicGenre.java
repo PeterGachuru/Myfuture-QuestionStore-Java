@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.Tuabudu.MusicGenre;
 
+import ke.co.myfuture.Myfuture.Tuabudu.Language.Language;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -14,4 +15,7 @@ public class MusicGenre {
     public Long id;
     @Column(nullable = false)
     public String name;
+
+    @ManyToOne
+    Language mainLanguage;
 }

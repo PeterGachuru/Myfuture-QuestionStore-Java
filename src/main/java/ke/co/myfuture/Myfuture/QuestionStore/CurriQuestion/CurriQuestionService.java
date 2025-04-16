@@ -10,7 +10,7 @@ import ke.co.myfuture.Myfuture.QuestionStore.QuestionSettings.QuestionSettingsRe
 import ke.co.myfuture.Myfuture.UserManagement.Contest.Contest;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion.ContestQuestion;
-import org.aspectj.weaver.patterns.TypePatternQuestions;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;

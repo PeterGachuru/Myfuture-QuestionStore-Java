@@ -1,10 +1,12 @@
 package ke.co.myfuture.Myfuture.Commonauth.Utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SchedulerService;
 import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SenderService;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -223,14 +225,34 @@ public class CustomMailSender {
 
             HttpEntity<EmailRequest> request = new HttpEntity<>(requestPayload, headers);
 
-            // Make POST call to your local microservice
-            ResponseEntity<Boolean> response = restTemplate.postForEntity(
-                    sendEmailUrl, request, Boolean.class);
+            System.out.println(request);
 
-            return response.getBody();
+            toJson(requestPayload);
+
+            // Make POST call to your local microservice
+            ResponseEntity<EmailResponse> response = restTemplate.postForEntity(
+                    sendEmailUrl, request, EmailResponse.class);
+
+            EmailResponse emailResponse = response.getBody();
+            if (emailResponse != null) {
+                System.out.println("Response message: " + emailResponse.getMessage());
+                return emailResponse.isSuccess();
+            } else {
+                return false;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    private void toJson(@Nullable EmailRequest requestPayload) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String jsonPayload = mapper.writeValueAsString(requestPayload);
+//            System.out.println("JSON Payload: " + jsonPayload);
+        } catch (Exception e) {
+            System.err.println("Failed to convert request payload to JSON: " + e.getMessage());
         }
     }
 }

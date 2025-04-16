@@ -11,7 +11,13 @@ import java.util.Set;
 
 public interface ScheduledEmailsRepo extends JpaRepository<ScheduledEmails, Long> {
 
-    @Query("SELECT e FROM ScheduledEmails e WHERE e.scheduledTime <= :now AND e.sent = false")
+    @Query("""
+    SELECT e FROM ScheduledEmails e 
+    WHERE 
+        e.scheduledTime <= :now 
+        AND e.sent = false 
+        AND FUNCTION('TIMESTAMPADD', SECOND, e.expiresAfterSeconds, e.createdAt) > :now
+    """)
     List<ScheduledEmails> findPendingEmails(Date now);
 
     @Query(value = "SELECT s.id AS id, s.recipient AS recipient, s.subject AS subject, " +

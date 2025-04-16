@@ -18,6 +18,7 @@ public class CurriLevel {
     @Column(name = "id", nullable = false)
     public Long id;
 
+    @Column(nullable = false, length = 20)
     Long curriculum;
     @Column(nullable = false, length = 20)
     String name;
