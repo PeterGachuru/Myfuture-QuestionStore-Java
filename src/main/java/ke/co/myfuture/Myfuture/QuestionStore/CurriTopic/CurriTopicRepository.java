@@ -49,4 +49,34 @@ SELECT * FROM curri_topic  WHERE parent IS NOT NULL AND id IN
             WHERE reviewed = '0') ORDER BY numbering ASC, id ASC
             """, nativeQuery = true)
     List<CurriTopic> getAllWithUnapprovedQuestions(@Param("parent") Long parent, @Param("subject") Long subject, @Param("classLevel")  Long classLevel);
+
+    @Query(nativeQuery = true, value = """
+    SELECT 
+        id AS id,
+        parent AS parent,
+        name AS name,
+        curri_level AS curriLevel,
+        subject AS subject,
+        created_at AS createdAt,
+        numbering AS numbering,
+        deleted AS deleted,
+        required AS required,
+        updated_at AS updatedAt,
+        content AS content,
+        created_by AS createdBy,
+        deleted_flag AS deletedFlag,
+        deleted_at AS deletedAt,
+        deleted_by AS deletedBy,
+        instructions_on_generation_of_notes AS instructionsOnGenerationOfNotes,
+        instructions_on_generation_of_questions AS instructionsOnGenerationOfQuestions,
+        percentage_of_rejected_questions AS percentageOfRejectedQuestions,
+        total_number_of_approved_questions AS totalNumberOfApprovedQuestions,
+        total_number_of_unverified_questions AS totalNumberOfUnverifiedQuestions,
+        is_parent AS isParent
+    FROM curri_topic
+    WHERE  curri_level IN (
+               SELECT id FROM curri_level WHERE curriculum = :curriculum
+           )
+""")
+    List<CurriTopicView> findAllTopicsByCurriculum(@Param("curriculum") Long curriculum);
 }

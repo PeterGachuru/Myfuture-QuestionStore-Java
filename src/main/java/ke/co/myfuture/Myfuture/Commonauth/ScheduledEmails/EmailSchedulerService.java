@@ -31,7 +31,7 @@ public class EmailSchedulerService {
     public void processPendingEmails() {
         System.out.println(" public void processPendingEmails() {");
 
-        if (!inProd){
+        if (!inProd) {
             System.out.println("====Can't send scheduled emails because we are not in PROD=========");
             return;
         }

@@ -9,7 +9,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStudentAccount, Long> {
-    @Query(value = "SELECT * FROM(SELECT * FROM ibuka_student_account WHERE name LIKE CONCAT('%',:search,'%')  AND classlevel = :classlevel " +
+    @Query(value = "SELECT * FROM(SELECT * FROM ibuka_student_account WHERE name LIKE CONCAT('%',:search,'%')  AND classlevel BETWEEN (:classlevel - 1) AND (:classlevel + 1) " +
             "  AND id <> :studentId ORDER BY id DESC) AS m LIMIT :count", nativeQuery = true)
     List<IbukaStudentAccount> contestInvitees(@Param("search") String search, @Param("count")  Integer count,
                                               @Param("classlevel") Long classlevel, @Param("studentId")  Long studentId);

@@ -31,7 +31,7 @@ public class ContestController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("update/")
+    @PutMapping("update")
     public ResponseEntity<?> updateContest(@RequestBody Contest contest) {
         Contest updatedContest = repository.save(contest);
 

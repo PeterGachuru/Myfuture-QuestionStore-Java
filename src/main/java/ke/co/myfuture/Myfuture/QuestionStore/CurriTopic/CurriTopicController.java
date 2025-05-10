@@ -163,6 +163,7 @@ public class CurriTopicController {
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @GetMapping("get/by/subjectandclass")
     public ResponseEntity<?> fetchCurriTopic(@RequestParam("subject") Long subject, @RequestParam("class") Long classLevel) {
         UniversalResponse response = new UniversalResponse();
@@ -172,7 +173,15 @@ public class CurriTopicController {
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
+    @GetMapping("get/by/curriculum")
+    public ResponseEntity<?> fetchCurriTopicByCurriculum(@RequestParam("curriculum") Long curriculum) {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("CurriTopic retrieved Successfully");
+        response.setEntity(curriTopicRepository.findAllTopicsByCurriculum( curriculum));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
     @GetMapping("withcontent")
     public ResponseEntity<?> fetchCurriTopic() {
         UniversalResponse response = new UniversalResponse();

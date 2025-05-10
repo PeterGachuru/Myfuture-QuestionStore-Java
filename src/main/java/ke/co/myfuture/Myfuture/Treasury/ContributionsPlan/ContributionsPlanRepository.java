@@ -32,7 +32,7 @@ public interface ContributionsPlanRepository extends JpaRepository<Contributions
     @Query(nativeQuery = true, value = "select target_amount from contributions_plan where id = :planId")
     Double totalBudget(@Param("planId") Long planId);
 
-    @Query(nativeQuery = true, value = "select sum(balance) from account where contributions_plan_id = :planId")
+    @Query(nativeQuery = true, value = "select sum(balance) from account where contributions_plan_id = :planId AND ownership_type = 'INCOME'")
     Double totalIncome(@Param("planId") Long planId);
 
     @Query(value = """ 

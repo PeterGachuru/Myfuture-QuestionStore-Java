@@ -9,6 +9,7 @@ import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.*;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,9 @@ public class WeeklyAnalysisService {
 
     @Autowired
     SchedulerService schedulerService;
+
+    @Value("${production}")
+    private boolean inProd;
 
     private Map<Long, String> subjectCache = new ConcurrentHashMap<>();
 
@@ -173,6 +177,7 @@ public class WeeklyAnalysisService {
 
     @Scheduled(cron = "0 0 0 ? * SUN")
     public void generateReportsForPreviousWeek() {
+        if (!inProd) return;
         System.out.println("Starting weekly report generation at: " + LocalDateTime.now());
         generateWeeklyReports();
     }
@@ -181,6 +186,7 @@ public class WeeklyAnalysisService {
     @Scheduled(cron = "0 0 1 ? * FRI")
 //    @Bean
     public void rescueTheWeek() {
+        if (!inProd) return;
         System.out.println("Starting rescue week generation at: " + LocalDateTime.now());
 
 

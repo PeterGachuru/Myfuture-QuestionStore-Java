@@ -25,10 +25,13 @@ public class RatingController {
 
     @PostMapping("add")
     public ResponseEntity<?> newStudentAccount(@RequestBody Rating rating) {
+        System.out.println(rating);
         if (rating.id != null) return null;
 
-        Optional<IbukaStudentAccount> ibukaStudentAccount = ibukaStudentAccountRepository.findById(rating.getStudentId());
-        ibukaStudentAccount.ifPresent(rating::setIbukaStudentAccount);
+        if (rating.getStudentId() != null){
+            Optional<IbukaStudentAccount> ibukaStudentAccount = ibukaStudentAccountRepository.findById(rating.getStudentId());
+            ibukaStudentAccount.ifPresent(rating::setIbukaStudentAccount);
+        }
 
         Rating savedRating = ratingRepository.save(rating);
         UniversalResponse response = new UniversalResponse();

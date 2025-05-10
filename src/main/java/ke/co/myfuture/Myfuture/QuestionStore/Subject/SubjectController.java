@@ -37,6 +37,7 @@ public class SubjectController {
         universalResponse.setStatusCode(HttpStatus.FOUND.value());
         return ResponseEntity.ok().body(universalResponse);
     }
+
     @PostMapping("add")
     public ResponseEntity<UniversalResponse<?>> add(@RequestBody Subject subject) {
         System.out.println("Subject @PostMapping(\"add\")");

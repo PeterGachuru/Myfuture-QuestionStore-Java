@@ -50,15 +50,21 @@ public class PersonService {
     public UniversalResponse verifyPersonEmail(Long personId, Long groupId) {
         Optional<Person> person = personRepository.foundMemberById(false, groupId, personId);
         Optional<PeopleGroup> peopleGroup = peopleGroupRepository.findById(groupId);
-        if (person.isEmpty())
+        if (person.isEmpty()) {
+            System.out.println("Person is empty");
             return null;
-        if (person.get().getEmail() == null || !isValidEmail(person.get().getEmail()))
+        }
+        if (person.get().getEmail() == null || !isValidEmail(person.get().getEmail())) {
+            System.out.println("Null email or email is invalid");
             return null;
+        }
 
+        System.out.println("About to generate email");
         UniversalResponse response = new UniversalResponse();
         if (sendVerificationEmail(person.get().getEmail(), person.get().getName(), peopleGroup.get().getName(),
                 generateEmailVerificationLink(personId, groupId, person.get().getEmail()))
         ){
+            System.out.println("email generation successful");
             person.get().setEmailVerificationAttemptStatus(VerificationStatus.SENT);
             Person savedPerson = personRepository.save(person.get());
             System.out.println(savedPerson);

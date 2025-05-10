@@ -155,8 +155,8 @@ public class ChatGPTQuestionsService {
         if (curriTopic.getTotalNumberOfUnverifiedQuestions() != null && curriTopic.getTotalNumberOfApprovedQuestions() != null)
             if (curriTopic.getTotalNumberOfUnverifiedQuestions()+curriTopic.getTotalNumberOfApprovedQuestions() >= MAXIMUM_NUMBER_OF_QUESTIONS_ALLOWED)
                 return;
-        if (true)
-            return;
+//        if (true)
+//            return;
         System.out.println("In generateForSubtopic");
         String purpose = "curri_question";
         System.out.println("Sutopic "+curriTopic.id);
@@ -225,7 +225,7 @@ public class ChatGPTQuestionsService {
 
     private String promptTemplate(CurriTopic curriTopic) {
         String question = """
-            Create a list of questions for subject_replace students on 'subtopic_name_replace' subtopic of 'topic_name_replace'.
+            Create a list of questions in subject: 'subject_replace', on topic: 'topic_name_replace', subtopic: 'subtopic_name_replace'.
             (InstructionsOnGenerationOfQuestions_subtopic)
             (InstructionsOnGenerationOfQuestions_topic)
             Format your response as a json array of 25 objects with a question with a list of 4 choices,
@@ -239,7 +239,7 @@ public class ChatGPTQuestionsService {
 
         if (curriTopic.getParent() != null && curriTopic.getParent().getParent() != null)
             question = """
-            'Create a list of questions for subject_replace students on 'sub_subtopic_name_replace' sub subtopic of 'subtopic_name_replace' subtopic of 'topic_name_replace'.
+            'Create a list of questions  subject: 'subject_replace', on topic: 'topic_name_replace', subtopic: 'subtopic_name_replace', sub subtopic: 'sub_subtopic_name_replace'.
             (InstructionsOnGenerationOfQuestions_subtopic)
             (InstructionsOnGenerationOfQuestions_topic)
             Format your response as a json array of 25 objects with a question with a list of 4 choices,

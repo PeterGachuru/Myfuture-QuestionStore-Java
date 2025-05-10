@@ -90,6 +90,8 @@ public class TextReportService {
         Double totalBudget = contributionsPlanRepository.totalBudget(planId);
         Double totalIncome = contributionsPlanRepository.totalIncome(planId);
 
+        System.out.println(String.format("totalPledges: %s, totalIncome: %s, totalBudget: %s", totalPledges, totalIncome, totalBudget));
+
         return report.replaceAll("\\{\\{total_pledges}}", String.valueOf(totalPledges))
                 .replaceAll("\\{\\{total_money_in}}", String.valueOf(totalIncome))
                 .replaceAll("\\{\\{budget}}", String.valueOf(totalBudget));
