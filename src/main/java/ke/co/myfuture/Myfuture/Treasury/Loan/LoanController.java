@@ -31,7 +31,16 @@ public class LoanController {
         return ResponseEntity.ok(loans);
     }
 
-    // 🔽 NEW ENDPOINT
+    @GetMapping("get/by/id")
+    public ResponseEntity<?> fetch(@RequestParam("id") Long id) {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Person retrieved Successfully");
+        response.setEntity(loanService.findById(id));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping("/schedule")
     public ResponseEntity<List<LoanScheduleItem>> getLoanSchedule(@RequestBody @Valid CreateLoanRequest request) {
         List<LoanScheduleItem> schedule = loanScheduleGenerator.generateSchedule(request);

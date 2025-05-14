@@ -1,5 +1,5 @@
 package ke.co.myfuture.Myfuture.Treasury.Transaction;
 
 public enum TransactionCategory {
-    EXPENSE, INCOME, CASH, REVERSAL, LEND, BORROW, REPAY_LEND, REPAY_BORROW
+    EXPENSE, INCOME, CASH, REVERSAL, LEND, BORROW, REPAY_LEND, REPAY_BORROW, SAVING_DEPOSIT,  SAVING_WITHDRAWAL
 }

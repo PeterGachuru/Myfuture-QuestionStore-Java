@@ -28,6 +28,7 @@ public class AccountService {
     @Autowired
     ContributionsPlanRepository contributionsPlanRepository;
     public UniversalResponse saveAccount(Account account) {
+        System.out.println(account);
         if (account.getOwnershipType() == null) return null;
         Optional<PeopleGroup> peopleGroup = peopleGroupRepository.findById(account.getGroupId());
         if (peopleGroup.isEmpty()) return null;

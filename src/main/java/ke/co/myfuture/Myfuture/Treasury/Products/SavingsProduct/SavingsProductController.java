@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct;
+package ke.co.myfuture.Myfuture.Treasury.Products.SavingsProduct;
 
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.RequiredArgsConstructor;
@@ -7,22 +7,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/treasury/loan-products")
+@RequestMapping("/treasury/savings-products")
 @RequiredArgsConstructor
-public class LoanProductController {
+public class SavingsProductController {
 
-    private final LoanProductService loanProductService;
+    private final SavingsProductService savingsProductService;
 
     @PostMapping
-    public ResponseEntity<UniversalResponse> create(@Validated @RequestBody LoanProductRequestDTO dto) {
+    public ResponseEntity<UniversalResponse> create(@Validated @RequestBody SavingsProductRequestDTO dto) {
         try {
-            LoanProduct saved = loanProductService.createLoanProduct(dto);
+            SavingsProduct saved = savingsProductService.createSavingsProduct(dto);
 
             UniversalResponse response = new UniversalResponse();
             response.setStatus("Success");
-            response.setMessage("Loan product created successfully");
+            response.setMessage("Savings product created successfully");
             response.setEntity(saved);
             response.setStatusCode(201);
 
@@ -43,15 +44,14 @@ public class LoanProductController {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Product retrieved Successfully");
-        response.setEntity(loanProductService.findById(id));
+        response.setEntity(savingsProductService.findById(id));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/group")
-    public ResponseEntity<UniversalResponse> getLoanProductsByGroup(@RequestParam Long groupId) {
-        UniversalResponse response = loanProductService.getLoanProductsByGroup(groupId);
+    public ResponseEntity<UniversalResponse> getSavingsProductsByGroup(@RequestParam Long groupId) {
+        UniversalResponse response = savingsProductService.getSavingsProductsByGroup(groupId);
         return ResponseEntity.ok(response);
     }
-
 }

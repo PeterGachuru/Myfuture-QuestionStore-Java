@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -80,5 +81,9 @@ public class LoanProductService {
         response.setStatusCode(200);
 
         return response;
+    }
+
+    public Optional<LoanProduct> findById(Long id) {
+        return loanProductRepository.findById(id);
     }
 }

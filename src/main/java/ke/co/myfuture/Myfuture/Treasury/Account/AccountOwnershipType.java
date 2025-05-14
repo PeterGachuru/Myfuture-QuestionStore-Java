@@ -4,6 +4,7 @@ public enum AccountOwnershipType {
     INCOME,
     CASH,
     EXPENSE,
-    LOAN_RECEIVABLE,  // Money lent out (Asset)
-    LOAN_PAYABLE      // Money borrowed (Liability)
+    SAVING,
+    LOAN_RECEIVABLE,
+    LOAN_PAYABLE
 }

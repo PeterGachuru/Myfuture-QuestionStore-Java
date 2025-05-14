@@ -31,6 +31,9 @@ public class Account {
 	@Enumerated(EnumType.STRING)
 	private AccountOwnershipType ownershipType;
 
+	private String productCode;
+	private String productName;
+
 //	String ownershipType = "expense";//income or cash or personal
 
 	String notes;
