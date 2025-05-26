@@ -24,8 +24,8 @@ public class Account {
 	private Double balance = 0.0;
 
 	String name;
-
-	String status = "ACTIVE";
+	@Enumerated(EnumType.STRING)
+	AccountStatus status = AccountStatus.PENDING;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -52,10 +52,10 @@ public class Account {
 	Long planId;
 
 	@Transient
-	Long personId;
+	Long groupId;
 
 	@Transient
-	Long groupId;
+	Long personId;
 
 	@ManyToOne
 	private Person owner;

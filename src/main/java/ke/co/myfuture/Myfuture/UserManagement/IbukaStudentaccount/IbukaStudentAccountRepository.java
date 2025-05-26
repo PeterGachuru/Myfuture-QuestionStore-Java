@@ -13,7 +13,10 @@ public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStuden
             "  AND id <> :studentId ORDER BY id DESC) AS m LIMIT :count", nativeQuery = true)
     List<IbukaStudentAccount> contestInvitees(@Param("search") String search, @Param("count")  Integer count,
                                               @Param("classlevel") Long classlevel, @Param("studentId")  Long studentId);
-    List<IbukaStudentAccount> findByParent(Long parentId);//
+    List<IbukaStudentAccount> findByParent(Long parentId);
+
+    List<IbukaStudentAccount> findTop300ByOrderByCreatedAtDesc();
+
 
 //    @Query(value = """
 //            SELECT * FROM(SELECT * FROM student_account WHERE name LIKE CONCATE('%',:search,'%') AND classlevel = :classlevel

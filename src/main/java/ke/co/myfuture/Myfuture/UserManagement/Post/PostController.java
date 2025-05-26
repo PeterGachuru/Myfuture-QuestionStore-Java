@@ -74,4 +74,14 @@ public class PostController {
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("recent")
+    public ResponseEntity<?> recentratings() {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Retrieved successfully");
+        response.setEntity(postService.findAllPostSummaries());
+        response.setStatusCode(201);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

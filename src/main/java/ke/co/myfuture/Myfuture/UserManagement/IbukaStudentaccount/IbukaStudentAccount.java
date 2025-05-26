@@ -2,6 +2,8 @@ package ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount;
 
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
+import ke.co.myfuture.Myfuture.QuestionStore.Curriculum.Curriculum;
 import ke.co.myfuture.Myfuture.UserManagement.Useraccount.UserAccount;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,6 +28,12 @@ public class IbukaStudentAccount {
     Long totalScore;
     @Transient
     Long unsyncedScore;
+
+    @Transient
+    CurriLevel curriLevel;
+
+    @Transient
+    Curriculum curriculumObject;
 
 //    @Column(nullable = false)
 //    Long parent;

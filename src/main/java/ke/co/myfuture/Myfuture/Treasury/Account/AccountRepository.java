@@ -30,11 +30,15 @@ AND ownership_type = :ownershipType
                                   @Param("allowsUncleared") Integer allowsUncleared,  @Param("allowsCleared") Integer allowsCleared);
 
 
-    @Query(nativeQuery = true, value = "select * from account where deleted_flag = :deletedFlag AND people_group_id = :groupId AND ownership_type = :ownershipType")
+    @Query(nativeQuery = true, value = "select * from account where  COALESCE(deleted_flag, false) = :deletedFlag AND people_group_id = :groupId AND ownership_type = :ownershipType")
     List<Account> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag, @Param("groupId") Long groupId,  @Param("ownershipType") String ownershipType);
 
-    @Query(nativeQuery = true, value = "select * from account where deleted_flag = :deletedFlag  AND people_group_id = :groupId AND  contributions_plan_id = :planId AND ownership_type = :ownershipType order by id ASC")
-
+    @Query(nativeQuery = true, value = "SELECT * FROM account " +
+            "WHERE COALESCE(deleted_flag, false) = :deletedFlag " +
+            "AND people_group_id = :groupId " +
+            "AND contributions_plan_id = :planId " +
+            "AND ownership_type = :ownershipType " +
+            "ORDER BY id ASC")
     List<Account> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag, @Param("groupId") Long groupId, @Param("planId") Long planId, @Param("ownershipType") String ownershipType);
 
 //    @Query(nativeQuery = true, value = "select * from account where owner_id = :id AND people_group_id = :groupId LIMIT 1")

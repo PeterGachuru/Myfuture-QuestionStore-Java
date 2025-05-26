@@ -45,6 +45,9 @@ public class LoanProduct {
     @NotNull
     @Min(1)
     private Integer maxDurationMonths;
+    @NotNull
+    @Min(1)
+    private Integer numberOfApproversRequired;
 
     @NotNull
     @DecimalMin("0.0")

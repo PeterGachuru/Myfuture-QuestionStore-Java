@@ -5,12 +5,14 @@ import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAc
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -40,6 +42,13 @@ public class PostService {
             posted.add(savedPost);
         }
         return posted;
+    }
+    public List<PostSummaryDTO> findAllPostSummaries() {
+        List<Post> posts = postRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        return posts.stream()
+                .map(PostSummaryDTO::new)
+                .collect(Collectors.toList());
     }
 
 

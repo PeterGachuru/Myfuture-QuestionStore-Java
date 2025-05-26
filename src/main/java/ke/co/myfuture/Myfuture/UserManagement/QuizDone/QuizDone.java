@@ -43,12 +43,13 @@ public class QuizDone {
 
 
     @Column(nullable = false)
-    public LocalDateTime startDate;
+    public Date startDate;
 
-    public LocalDateTime endDate;
+    public Date endDate;
 
     @Column(nullable = false)
     public Long subjectId;
+    public  Integer appVersion;
     public  Integer score;
     public  Integer overall;
     @Column(nullable = false)

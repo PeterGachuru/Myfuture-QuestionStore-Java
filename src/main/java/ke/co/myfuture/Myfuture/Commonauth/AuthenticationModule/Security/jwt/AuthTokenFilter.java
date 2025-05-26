@@ -103,7 +103,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 System.out.println("JWT is null");
             }
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
             JwtStatusContext.setExpiredJWT(true);
             log.info("Could not be authenticated");
             SecurityContextHolder.clearContext();

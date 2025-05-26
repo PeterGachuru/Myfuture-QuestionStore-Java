@@ -86,4 +86,14 @@ public class ContestController {
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("recent")
+    public ResponseEntity<?> recentratings() {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Retrieved successfully");
+        response.setEntity(contestService.findAllContestSummaries());
+        response.setStatusCode(201);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

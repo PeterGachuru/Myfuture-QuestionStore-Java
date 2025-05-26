@@ -17,6 +17,7 @@ public class LoanProductService {
     private final LoanProductRepository loanProductRepository;
     private final PeopleGroupRepository peopleGroupRepository;
 
+
     @Transactional
     public LoanProduct createLoanProduct(LoanProductRequestDTO dto) {
         // Validate group exists
@@ -49,6 +50,7 @@ public class LoanProductService {
         LoanProduct product = new LoanProduct();
         product.setName(dto.getName());
         product.setProductCode(code);
+        product.setNumberOfApproversRequired(dto.getNumberOfApproversRequired());
         product.setInterestRate(dto.getInterestRate());
         product.setInterestRateType(dto.getInterestRateType());
         product.setMinDurationMonths(dto.getMinDurationMonths());
@@ -62,6 +64,63 @@ public class LoanProductService {
         product.setPeopleGroup(group);
 
         return loanProductRepository.save(product);
+    }
+    @Transactional
+    public LoanProduct updateLoanProduct(LoanProductRequestDTO dto) {
+        // Ensure the ID is provided
+        if (dto.getId() == null) {
+            throw new IllegalArgumentException("LoanProduct ID is required for update");
+        }
+
+        // Load existing loan product
+        LoanProduct existingProduct = loanProductRepository.findById(dto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("LoanProduct not found"));
+
+        // Validate group exists
+        PeopleGroup group = peopleGroupRepository.findById(dto.getPeopleGroupId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
+
+        // Duration check
+        if (dto.getMinDurationMonths() > dto.getMaxDurationMonths()) {
+            throw new IllegalArgumentException("Min duration cannot be more than max duration");
+        }
+
+        // Amount check
+        if (dto.getMinLoanAmount().compareTo(dto.getMaxLoanAmount()) > 0) {
+            throw new IllegalArgumentException("Min loan amount cannot be more than max amount");
+        }
+
+        // Determine final product code
+        String code = dto.getProductCode();
+        if (code == null || code.isBlank()) {
+            code = generateCodeFromName(dto.getName());
+        }
+
+        // Check uniqueness of product code within group if changed
+        if (!code.equals(existingProduct.getProductCode()) || !group.equals(existingProduct.getPeopleGroup())) {
+            boolean exists = loanProductRepository.existsByProductCodeAndPeopleGroup(code, group);
+            if (exists) {
+                throw new IllegalArgumentException("Product code already exists in the group");
+            }
+        }
+
+        // Update mutable fields
+        existingProduct.setName(dto.getName());
+        existingProduct.setProductCode(code);
+        existingProduct.setNumberOfApproversRequired(dto.getNumberOfApproversRequired());
+        existingProduct.setInterestRate(dto.getInterestRate());
+        existingProduct.setInterestRateType(dto.getInterestRateType());
+        existingProduct.setMinDurationMonths(dto.getMinDurationMonths());
+        existingProduct.setMaxDurationMonths(dto.getMaxDurationMonths());
+        existingProduct.setMinLoanAmount(dto.getMinLoanAmount());
+        existingProduct.setMaxLoanAmount(dto.getMaxLoanAmount());
+        existingProduct.setLoanPurpose(dto.getLoanPurpose());
+        existingProduct.setGracePeriodDays(dto.getGracePeriodDays());
+        existingProduct.setDescription(dto.getDescription());
+        existingProduct.setPeopleGroup(group);
+
+        // Save updated product
+        return loanProductRepository.save(existingProduct);
     }
 
     private String generateCodeFromName(String name) {

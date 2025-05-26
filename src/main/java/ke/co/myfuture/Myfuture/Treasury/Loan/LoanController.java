@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.Loan;
 
+import ke.co.myfuture.Myfuture.Treasury.Loan.LoanApprover.LoanApproveDTO;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,18 @@ public class LoanController {
     @PostMapping
     public ResponseEntity<UniversalResponse> createLoan(@RequestBody @Valid CreateLoanRequest request) {
         UniversalResponse response = loanService.createLoan(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping
+    public ResponseEntity<UniversalResponse> updateLoan(@RequestBody @Valid CreateLoanRequest request) {
+        UniversalResponse response = loanService.updateLoan(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping("approve")
+    public ResponseEntity<UniversalResponse> approve(@RequestBody @Valid LoanApproveDTO request) {
+        UniversalResponse response = loanService.approveLoan(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

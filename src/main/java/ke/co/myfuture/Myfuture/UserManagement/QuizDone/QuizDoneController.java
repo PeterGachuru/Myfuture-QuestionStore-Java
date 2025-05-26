@@ -6,10 +6,7 @@ import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -18,6 +15,8 @@ import java.util.Optional;
 public class QuizDoneController {
     @Autowired
     QuizDoneService quizDoneService;
+    @Autowired
+    QuizDoneRepository quizDoneRepository;
 
     @PostMapping("add")
     public ResponseEntity<?> newContest(@RequestBody CreateQuizDone createQuizDone) {
@@ -29,6 +28,16 @@ public class QuizDoneController {
         response.setStatus("Success");
         response.setMessage("Saved successfully");
         response.setEntity(savedQuizDone);
+        response.setStatusCode(201);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("recent")
+    public ResponseEntity<?> recentratings() {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Retrieved successfully");
+        response.setEntity(quizDoneService.findAll());
         response.setStatusCode(201);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -1,5 +1,12 @@
 package ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount;
 
+import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevelRepository;
+import ke.co.myfuture.Myfuture.QuestionStore.Curriculum.Curriculum;
+import ke.co.myfuture.Myfuture.QuestionStore.Curriculum.CurriculumRepository;
+import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
+import ke.co.myfuture.Myfuture.QuestionStore.Subject.SubjectRepository;
+import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizDoneDTO;
 import ke.co.myfuture.Myfuture.UserManagement.ScoreAnalysis.Cronjobs;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.Data;
@@ -9,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("student")
@@ -18,6 +27,10 @@ public class StudentAccountController {
     IbukaStudentAccountRepository repository;
     @Autowired
     Cronjobs cronjobs;
+    @Autowired
+    CurriculumRepository curriculumRepository;
+    @Autowired
+    CurriLevelRepository curriLevelRepository;
 
     @PostMapping("add")
     public ResponseEntity<?> newStudentAccount(@RequestBody IbukaStudentAccount student) {
@@ -98,8 +111,39 @@ public class StudentAccountController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("recent")
+    public ResponseEntity<?> recentratings() {
+        // Load and cache all subjects
+        Map<Long, Curriculum> curriculumMap = curriculumRepository.findAll()
+                .stream()
+                .collect(Collectors.toMap(curriculum -> curriculum.getId(), subject -> subject));
+
+        // Load and cache all curriLevels
+        Map<Long, CurriLevel> curriLevelMap = curriLevelRepository.findAll()
+                .stream()
+                .collect(Collectors.toMap(curriLevel -> curriLevel.getId(), curriLevel -> curriLevel));
+
+        List<IbukaStudentAccount> ibukaStudentAccounts = repository.findTop300ByOrderByCreatedAtDesc();
+        List<IbukaStudentAccount> dtos = ibukaStudentAccounts.stream()
+                .map(account -> {
+                    Curriculum curriculum = curriculumMap.getOrDefault(account.curriculum, null);
+                    CurriLevel curriLevel = (account.classlevel != null) ? curriLevelMap.getOrDefault(account.classlevel, null) : null;
+                    account.setCurriLevel(curriLevel);
+                    account.setCurriculumObject(curriculum);
+                    return account;
+                })
+                .collect(Collectors.toList());
+
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Retrieved successfully");
+        response.setEntity(dtos);
+        response.setStatusCode(201);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @Data
-    static class Ids{
+    static class Ids {
         List<Long> ids;
     }
 }

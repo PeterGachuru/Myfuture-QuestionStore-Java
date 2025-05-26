@@ -38,6 +38,29 @@ public class LoanProductController {
         }
     }
 
+    @PutMapping
+    public ResponseEntity<UniversalResponse> update(@Validated @RequestBody LoanProductRequestDTO dto) {
+        try {
+            LoanProduct saved = loanProductService.updateLoanProduct(dto);
+
+            UniversalResponse response = new UniversalResponse();
+            response.setStatus("Success");
+            response.setMessage("Loan product created successfully");
+            response.setEntity(saved);
+            response.setStatusCode(201);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (IllegalArgumentException e) {
+            UniversalResponse errorResponse = new UniversalResponse();
+            errorResponse.setStatus("Error");
+            errorResponse.setMessage(e.getMessage());
+            errorResponse.setEntity(null);
+            errorResponse.setStatusCode(400);
+
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
     @GetMapping("get/by/id")
     public ResponseEntity<?> fetchPerson(@RequestParam("id") Long id) {
         UniversalResponse response = new UniversalResponse();

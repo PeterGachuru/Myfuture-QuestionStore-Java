@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Enumeration;
 import java.util.UUID;
 
 @Slf4j
@@ -85,5 +86,31 @@ public class Clientinformation {
         activesession.setBrowser(browser);
         System.out.println(activesession);
         CurrentUserContext.setCurrentActiveUser(activesession);
+        printRequestDetails(request);
+    }
+
+    public void printRequestDetails(HttpServletRequest request) {
+        // Print HTTP method
+        System.out.println("HTTP Method: " + request.getMethod());
+
+        // Print full URL
+        StringBuffer requestURL = request.getRequestURL();
+        String queryString = request.getQueryString();
+        if (queryString != null) {
+            requestURL.append("?").append(queryString);
+        }
+        System.out.println("Full URL: " + requestURL.toString());
+
+        // Print parameters
+        Enumeration<String> parameterNames = request.getParameterNames();
+        System.out.println("Parameters:");
+        while (parameterNames.hasMoreElements()) {
+            String paramName = parameterNames.nextElement();
+            String[] paramValues = request.getParameterValues(paramName);
+
+            for (String value : paramValues) {
+                System.out.println("  " + paramName + " = " + value);
+            }
+        }
     }
 }

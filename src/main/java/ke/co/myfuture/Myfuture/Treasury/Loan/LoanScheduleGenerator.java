@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,11 +26,16 @@ public class LoanScheduleGenerator {
     public List<LoanScheduleItem> generateSchedule(CreateLoanRequest request, LoanProduct product) {
         List<LoanScheduleItem> schedule = new ArrayList<>();
 
-        BigDecimal loanAmount = request.getAmount();
-        int duration = request.getDurationMonths();
-        BigDecimal rate = product.getInterestRate().divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP); // convert to decimal
+        BigDecimal loanAmount = request.getRequestedAmount();
+        int duration = request.getRequestedDurationMonths();
+        BigDecimal rate = product.getInterestRate().divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
 
-        LocalDate startDate = LocalDate.now().plusDays(
+        LocalDate disbursementDate = request.getBackdate()? request.getBackdatedDisbursementDate()
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate(): LocalDate.now();
+
+        LocalDate startDate = disbursementDate.plusDays(
                 Optional.ofNullable(product.getGracePeriodDays()).orElse(0)
         );
 

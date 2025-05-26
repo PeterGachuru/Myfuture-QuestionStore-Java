@@ -15,6 +15,7 @@ import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranEntry;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranEntryRepository;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranType;
+import ke.co.myfuture.Myfuture.Treasury.Transaction.TranValidators.*;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,23 @@ public class TransactionService {
 
     @Autowired
     GroupAccessService groupAccessService;
+    @Autowired
+    IncomeValidator incomeValidator;
+
+    @Autowired
+    BorrowValidator borrowValidator;
+    @Autowired
+    ExpenseValidator expenseValidator;
+    @Autowired
+    LendValidator lendValidator;
+    @Autowired
+    RepayBorrowValidator repayBorrowValidator;
+    @Autowired
+    RepayLendValidator repayLendValidator;
+    @Autowired
+    SavingDepositValidator savingDepositValidator;
+    @Autowired
+    SavingWithdrawalValidator savingWithdrawalValidator;
 
     public UniversalResponse error(String message) {
         UniversalResponse response = new UniversalResponse();
@@ -191,209 +209,26 @@ public class TransactionService {
         return response;
     }
 
-    private boolean attachOtherTranEntriesForExpense(Transaction transaction) {
-        Double totalAmount = 0.0;
-        for (TranEntry tranEntry: transaction.getTranEntries()) {
-            if (tranEntry.getTranType() != TranType.DEBIT || tranEntry.getAmount() <=0 ) {
-                System.out.println("Is not debit");
-                return false;
-            }
-            totalAmount += tranEntry.getAmount();
-            Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
-            if (account.isEmpty()) {
-                System.out.println("Did not find account");
-                return false;
-            }
-            tranEntry.setAccount(account.get());
-        }
-        return addCashAccount(totalAmount, TranType.CREDIT, transaction, transaction.getContributionsPlan().getName()+" expenses ");
-    }
-    private boolean attachOtherTranEntriesForIncome(Transaction transaction) {
-        Double totalAmount = 0.0;
-        for (TranEntry tranEntry: transaction.getTranEntries()) {
-            if (tranEntry.getTranType() != TranType.CREDIT || tranEntry.getAmount() <=0 ) {
-                return false;
-            }
-            totalAmount += tranEntry.getAmount();
-            Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
-            if (account.isEmpty())
-                return false;
-            tranEntry.setAccount(account.get());
-        }
-        return addCashAccount(totalAmount, TranType.DEBIT, transaction, transaction.getContributionsPlan().getName()+" income ");
-    }
-    private boolean attachOtherTranEntriesForSavingDeposit(Transaction transaction) {
-        Double totalAmount = 0.0;
-        for (TranEntry tranEntry: transaction.getTranEntries()) {
-            if (tranEntry.getTranType() != TranType.CREDIT || tranEntry.getAmount() <=0 ) {
-                return false;
-            }
-            totalAmount += tranEntry.getAmount();
-            Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
-            if (account.isEmpty())
-                return false;
-            tranEntry.setAccount(account.get());
-        }
-        return addCashAccount(totalAmount, TranType.DEBIT, transaction, transaction.getContributionsPlan().getName()+" income ");
-    }
-    private boolean attachOtherTranEntriesForSavingWithdrawal(Transaction transaction) {
-        Double totalAmount = 0.0;
-        for (TranEntry tranEntry: transaction.getTranEntries()) {
-            if (tranEntry.getTranType() != TranType.DEBIT || tranEntry.getAmount() <=0 ) {
-                System.out.println("Is not debit");
-                return false;
-            }
-            totalAmount += tranEntry.getAmount();
-            Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
-            if (account.isEmpty()) {
-                System.out.println("Did not find account");
-                return false;
-            }
-            tranEntry.setAccount(account.get());
-        }
-        return addCashAccount(totalAmount, TranType.CREDIT, transaction, transaction.getContributionsPlan().getName()+" expenses ");
-    }
-    private boolean attachOtherTranEntriesForLend(Transaction transaction) {
-        Double totalAmount = 0.0;
-        for (TranEntry tranEntry: transaction.getTranEntries()) {
-            if (tranEntry.getTranType() != TranType.DEBIT || tranEntry.getAmount() <=0 ) {
-                System.out.println("Is not debit");
-                return false;
-            }
-            totalAmount += tranEntry.getAmount();
-            Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
-            if (account.isEmpty()) {
-                System.out.println("Did not find account");
-                return false;
-            }
-            tranEntry.setAccount(account.get());
-        }
-        return addCashAccount(totalAmount, TranType.CREDIT, transaction, transaction.getContributionsPlan().getName()+" loan out ");
-    }
-    private boolean attachOtherTranEntriesForBorrow(Transaction transaction) {
-        Double totalAmount = 0.0;
-        for (TranEntry tranEntry: transaction.getTranEntries()) {
-            if (tranEntry.getTranType() != TranType.CREDIT || tranEntry.getAmount() <=0 ) {
-                return false;
-            }
-            totalAmount += tranEntry.getAmount();
-            Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
-            if (account.isEmpty())
-                return false;
-            tranEntry.setAccount(account.get());
-        }
-        return addCashAccount(totalAmount, TranType.DEBIT, transaction, transaction.getContributionsPlan().getName()+" loan in ");
-    }
-    private boolean attachOtherTranEntriesForRepayBorrow(Transaction transaction) {
-        Double totalAmount = 0.0;
-        for (TranEntry tranEntry: transaction.getTranEntries()) {
-            if (tranEntry.getTranType() != TranType.DEBIT || tranEntry.getAmount() <=0 ) {
-                return false;
-            }
-            totalAmount += tranEntry.getAmount();
-            Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
-            if (account.isEmpty())
-                return false;
-            tranEntry.setAccount(account.get());
-        }
-        return addCashAccount(totalAmount, TranType.CREDIT, transaction, transaction.getContributionsPlan().getName()+" loan in ");
-    }
-    private boolean attachOtherTranEntriesForRepayLend(Transaction transaction) {
-        Double totalAmount = 0.0;
-        for (TranEntry tranEntry: transaction.getTranEntries()) {
-            if (tranEntry.getTranType() != TranType.CREDIT || tranEntry.getAmount() <=0 ) {
-                System.out.println("Is not debit");
-                return false;
-            }
-            totalAmount += tranEntry.getAmount();
-            Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
-            if (account.isEmpty()) {
-                System.out.println("Did not find account");
-                return false;
-            }
-            tranEntry.setAccount(account.get());
-        }
-        return addCashAccount(totalAmount, TranType.DEBIT, transaction, transaction.getContributionsPlan().getName()+" loan out ");
-    }
-
 
     private boolean attachOtherTranEntries(Transaction transaction) {
         System.out.println("----attachOtherTranEntries----");
         if (transaction.getCategory() == TransactionCategory.EXPENSE) {
-            return attachOtherTranEntriesForExpense(transaction);
+            return expenseValidator.attachOtherTranEntries(transaction);
         } else if (transaction.getCategory() == TransactionCategory.INCOME) {
-            return attachOtherTranEntriesForIncome(transaction);
+            return incomeValidator.attachOtherTranEntries(transaction);
         } else  if (transaction.getCategory() == TransactionCategory.LEND) {
-           return attachOtherTranEntriesForLend(transaction);
+           return lendValidator.attachOtherTranEntries(transaction);
         } else  if (transaction.getCategory() == TransactionCategory.REPAY_LEND) {
-            return attachOtherTranEntriesForRepayLend(transaction);
+            return repayLendValidator.attachOtherTranEntries(transaction);
         } else if (transaction.getCategory() == TransactionCategory.BORROW) {
-            return attachOtherTranEntriesForBorrow(transaction);
+            return borrowValidator.attachOtherTranEntries(transaction);
         } else if (transaction.getCategory() == TransactionCategory.REPAY_BORROW) {
-            return attachOtherTranEntriesForRepayBorrow(transaction);
+            return repayBorrowValidator.attachOtherTranEntries(transaction);
         } else if (transaction.getCategory() == TransactionCategory.SAVING_DEPOSIT) {
-            return attachOtherTranEntriesForSavingDeposit(transaction);
+            return savingDepositValidator.attachOtherTranEntries(transaction);
         } else if (transaction.getCategory() == TransactionCategory.SAVING_WITHDRAWAL) {
-            return attachOtherTranEntriesForSavingWithdrawal(transaction);
+            return savingWithdrawalValidator.attachOtherTranEntries(transaction);
         }
         return true;
-    }
-
-    private boolean addCashAccount(Double amount, TranType tranType, Transaction transaction, String particulars) {
-        System.out.println("----addCashAccount----");
-        Account cashAccount = getCashAccount(transaction.getContributionsPlan().getId(), transaction.getContributionsPlan().getPeopleGroup());
-        if (cashAccount == null) {
-            System.out.println("Did not get cash account");
-            return false;
-        }
-        TranEntry tranEntry = new TranEntry();
-        tranEntry.setAmount(amount);
-        tranEntry.setTranType(tranType);
-        tranEntry.setParticulars(particulars);
-        tranEntry.setAccount(cashAccount);
-        transaction.getTranEntries().add(tranEntry);
-        return true;
-    }
-
-    private Account getCashAccount(Long planId, PeopleGroup peopleGroup) {
-        System.out.println("----getCashAccount----");
-        User user = UserRequestContext.getcurrentUser();
-
-        if (user == null) {
-            System.out.println("Current user is null");
-            return null;
-        }
-
-//        Optional<Person> person = personRepository.findPersonByUserIdAndGroupId(user.getId(), peopleGroup.getId());
-        Optional<GroupAccess> groupAccess = groupAccessService.findGroupAccess(user.getEmail(), peopleGroup.getId());
-
-        if (groupAccess.isEmpty()) {
-            System.out.println("User "+user.getId()+" does not have access to the group "+peopleGroup.getId());
-            return null;
-        }
-
-        Optional<Account> account = accountRepository.findAccountForPersonByTypeAndPlanId(groupAccess.get().getPerson().getId(), planId,  peopleGroup.getId(),AccountOwnershipType.CASH.name());
-
-        if (account.isEmpty()) {
-            System.out.println("cash account is empty, will need to create");
-        }
-
-        //create cash account for this user
-        return account.orElseGet(() -> createCashAccount(groupAccess.get(), peopleGroup, planId));
-    }
-
-    private Account createCashAccount(GroupAccess groupAccess, PeopleGroup peopleGroup, Long planId) {
-        Account account = new Account();
-        account.setOwner(groupAccess.getPerson());
-        account.setPeopleGroup(peopleGroup);
-        account.setName(groupAccess.getPerson().getName()+" Cash");
-        account.setPinPriority(1);
-        account.setPlanId(planId);
-        account.setContributionsPlan(contributionsPlanRepository.findById(planId).get());
-        account.setOwnershipType(AccountOwnershipType.CASH);
-
-        Account account1 = accountService.saveAutoCreatedAccount(account);
-
-        return account1;
     }
 }

@@ -20,11 +20,10 @@ public class AccountService {
     AccountRepository repository;
 
     @Autowired
-    PeopleGroupRepository peopleGroupRepository;
-
-    @Autowired
     PersonRepository personRepository;
 
+    @Autowired
+    PeopleGroupRepository peopleGroupRepository;
     @Autowired
     ContributionsPlanRepository contributionsPlanRepository;
     public UniversalResponse saveAccount(Account account) {
@@ -34,13 +33,17 @@ public class AccountService {
         if (peopleGroup.isEmpty()) return null;
         account.setPeopleGroup(peopleGroup.get());
         if (account.getOwnershipType() == AccountOwnershipType.EXPENSE ||
-                account.getOwnershipType() == AccountOwnershipType.INCOME) {
+                account.getOwnershipType() == AccountOwnershipType.INCOME ||
+                account.getOwnershipType() == AccountOwnershipType.SAVING) {
             if (account.getPlanId() == null) {
                 System.out.println("Plan Id is null");
                 return null;
             }
-            if (account.getOwnershipType() == AccountOwnershipType.INCOME) {
+            if (account.getOwnershipType() == AccountOwnershipType.INCOME
+                || account.getOwnershipType() == AccountOwnershipType.SAVING) {
                 if (account.getPersonId() == null) return null;
+            }
+            if (account.getOwnershipType() == AccountOwnershipType.INCOME){
                 Optional<Account> existingIncomeAccount = repository.findByPersonAndPlan(account.getPersonId(), account.getPlanId());
                 if (existingIncomeAccount.isPresent()) {
                     UniversalResponse response = new UniversalResponse();

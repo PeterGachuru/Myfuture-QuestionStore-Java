@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 
 @Data
 public class LoanProductRequestDTO {
+    @Min(1)
+    Long id;
 
     @NotNull
     @Size(min = 3)
@@ -28,6 +30,9 @@ public class LoanProductRequestDTO {
     @NotNull
     @Min(1)
     private Integer maxDurationMonths;
+    @NotNull
+    @Min(1)
+    private Integer numberOfApproversRequired;
 
     @NotNull
     @DecimalMin("0.0")

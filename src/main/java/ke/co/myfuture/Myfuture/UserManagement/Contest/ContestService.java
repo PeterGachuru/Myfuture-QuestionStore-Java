@@ -18,13 +18,16 @@ import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAc
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ContestService {
@@ -136,6 +139,10 @@ public class ContestService {
         return true;
     }
 
+    public List<Contest> findAll() {
+        return null;
+    }
+
 
     @Data
     static class CreateContest {
@@ -193,5 +200,24 @@ public class ContestService {
     """.formatted(inviteeName, invitorName, subject, gradeLevel, uniqueToken);
     }
 
+    public List<ContestSummaryDTO> findAllContestSummaries() {
+        // Load all Subjects and CurriLevels into maps for fast access
+        Map<Long, Subject> subjectMap = subjectRepository.findAll().stream()
+                .collect(Collectors.toMap(Subject::getId, s -> s));
 
+        Map<Long, CurriLevel> levelMap = curriLevelRepository.findAll().stream()
+                .collect(Collectors.toMap(CurriLevel::getId, c -> c));
+
+        // Load contests
+        List<Contest> contests = repository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        // Map to DTO
+        return contests.stream()
+                .map(contest -> {
+                    Subject subject = subjectMap.get(contest.subjectId);
+                    CurriLevel level = levelMap.get(contest.classlevelId);
+                    return new ContestSummaryDTO(contest, subject, level);
+                })
+                .collect(Collectors.toList());
+    }
 }

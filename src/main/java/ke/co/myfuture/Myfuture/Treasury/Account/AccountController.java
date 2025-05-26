@@ -83,6 +83,7 @@ public class AccountController {
     public ResponseEntity<?> fetchProductCategory(@RequestParam(required = false, name = "planId") Long planId,
                                                   @RequestParam(name = "groupId") Long groupId,
                                                   @RequestParam(name = "ownershipType") String ownershipType) {
+        System.out.println("Request received: planId: "+planId+", groupId: "+groupId+", ownership: "+ownershipType);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("ProductCategory retrieved Successfully");

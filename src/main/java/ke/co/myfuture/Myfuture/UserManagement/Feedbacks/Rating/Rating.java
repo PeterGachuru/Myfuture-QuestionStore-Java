@@ -66,7 +66,6 @@ public class Rating {
     public void preUpdate() {
         this.updatedAt = new Date();
 
-
         this.updatedBy = UserRequestContext.getCurrentUserName();
     }
 }
