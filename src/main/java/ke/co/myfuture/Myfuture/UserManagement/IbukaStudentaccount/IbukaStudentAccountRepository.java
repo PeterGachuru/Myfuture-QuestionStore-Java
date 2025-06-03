@@ -15,7 +15,7 @@ public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStuden
                                               @Param("classlevel") Long classlevel, @Param("studentId")  Long studentId);
     List<IbukaStudentAccount> findByParent(Long parentId);
 
-    List<IbukaStudentAccount> findTop300ByOrderByCreatedAtDesc();
+    List<IbukaStudentAccount> findTop200ByOrderByCreatedAtDesc();
 
 
 //    @Query(value = """

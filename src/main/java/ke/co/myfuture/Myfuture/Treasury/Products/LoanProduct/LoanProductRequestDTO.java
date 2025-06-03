@@ -3,7 +3,6 @@ package ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct;
 import lombok.Data;
 
 import javax.validation.constraints.*;
-import java.math.BigDecimal;
 
 @Data
 public class LoanProductRequestDTO {
@@ -18,7 +17,7 @@ public class LoanProductRequestDTO {
 
     @NotNull
     @DecimalMin("0.0")
-    private BigDecimal interestRate;
+    private Double interestRate;
 
     @NotNull
     private InterestRateType interestRateType;
@@ -36,11 +35,11 @@ public class LoanProductRequestDTO {
 
     @NotNull
     @DecimalMin("0.0")
-    private BigDecimal minLoanAmount;
+    private Double minLoanAmount;
 
     @NotNull
     @DecimalMin("0.0")
-    private BigDecimal maxLoanAmount;
+    private Double maxLoanAmount;
 
     private String loanPurpose;
 

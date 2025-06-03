@@ -7,13 +7,10 @@ import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranEntry;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranType;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
-
-public class ExpenseValidator {
+public class ReturnExpenseCashValidator {
     @Autowired
     AccountRepository accountRepository;
     @Autowired
@@ -22,7 +19,7 @@ public class ExpenseValidator {
     public boolean attachOtherTranEntries(Transaction transaction) {
         Double totalAmount = 0.0;
         for (TranEntry tranEntry: transaction.getTranEntries()) {
-            if (tranEntry.getTranType() != TranType.DEBIT || tranEntry.getAmount() <=0 ) {
+            if (tranEntry.getTranType() != TranType.CREDIT || tranEntry.getAmount() <=0 ) {
                 System.out.println("Is not debit");
                 return false;
             }
@@ -32,12 +29,13 @@ public class ExpenseValidator {
                 System.out.println("Did not find account");
                 return false;
             }
+
             if (account.get().getOwnershipType() != AccountOwnershipType.EXPENSE){
                 System.out.println("Must be an expense account");
                 return false;
             }
             tranEntry.setAccount(account.get());
         }
-        return validatorCommons.addCashAccount(totalAmount, TranType.CREDIT, transaction, transaction.getContributionsPlan().getName()+" expenses ");
+        return validatorCommons.addCashAccount(totalAmount, TranType.DEBIT, transaction, transaction.getContributionsPlan().getName()+" expense cash return ");
     }
 }

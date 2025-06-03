@@ -123,7 +123,7 @@ public class StudentAccountController {
                 .stream()
                 .collect(Collectors.toMap(curriLevel -> curriLevel.getId(), curriLevel -> curriLevel));
 
-        List<IbukaStudentAccount> ibukaStudentAccounts = repository.findTop300ByOrderByCreatedAtDesc();
+        List<IbukaStudentAccount> ibukaStudentAccounts = repository.findTop200ByOrderByCreatedAtDesc();
         List<IbukaStudentAccount> dtos = ibukaStudentAccounts.stream()
                 .map(account -> {
                     Curriculum curriculum = curriculumMap.getOrDefault(account.curriculum, null);

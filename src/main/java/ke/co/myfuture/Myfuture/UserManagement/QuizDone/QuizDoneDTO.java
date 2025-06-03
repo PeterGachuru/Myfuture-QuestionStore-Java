@@ -14,6 +14,7 @@ public class QuizDoneDTO {
     public Long inid;
     public Long installId;
     public Integer questionsCount;
+    public Integer appVersion;
     public String category;
     public IbukaStudentAccount student;
     public Contest contest;
@@ -36,6 +37,7 @@ public class QuizDoneDTO {
         this.category = quizDone.category;
         this.student = quizDone.student;
         this.contest = quizDone.contest;
+        this.appVersion = quizDone.appVersion;
         this.startDate = quizDone.startDate;
         this.endDate = quizDone.endDate;
         this.subjectId = quizDone.subjectId;

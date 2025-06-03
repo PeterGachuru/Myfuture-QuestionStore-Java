@@ -10,7 +10,6 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.math.BigDecimal;
 
 @Entity
 @Data
@@ -32,7 +31,7 @@ public class LoanProduct {
 
     @NotNull
     @DecimalMin("0.0")
-    private BigDecimal interestRate;
+    private Double interestRate;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -51,11 +50,11 @@ public class LoanProduct {
 
     @NotNull
     @DecimalMin("0.0")
-    private BigDecimal maxLoanAmount;
+    private Double maxLoanAmount;
 
     @NotNull
     @DecimalMin("0.0")
-    private BigDecimal minLoanAmount;
+    private Double minLoanAmount;
 
     private String loanPurpose;
 

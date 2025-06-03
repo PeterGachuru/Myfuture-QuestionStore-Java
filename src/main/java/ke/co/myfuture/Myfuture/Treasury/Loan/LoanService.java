@@ -3,10 +3,10 @@ package ke.co.myfuture.Myfuture.Treasury.Loan;
 import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import ke.co.myfuture.Myfuture.Treasury.Account.AccountRepository;
+import ke.co.myfuture.Myfuture.Treasury.Account.AccountService;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlanRepository;
 import ke.co.myfuture.Myfuture.Treasury.Loan.LoanApprover.LoanApprovalRepository;
-import ke.co.myfuture.Myfuture.Treasury.Loan.LoanApprover.LoanApproveDTO;
 import ke.co.myfuture.Myfuture.Treasury.Loan.LoanApprover.LoanApproval;
 import ke.co.myfuture.Myfuture.Treasury.Person.Person;
 import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;
@@ -14,11 +14,16 @@ import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroupRepository;
 import ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.LoanProduct;
 import ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.LoanProductRepository;
+import ke.co.myfuture.Myfuture.Treasury.Transaction.SystemTransactionService;
+import ke.co.myfuture.Myfuture.Treasury.Transaction.Transaction;
+import ke.co.myfuture.Myfuture.Treasury.Transaction.TransactionBuilder;
+import ke.co.myfuture.Myfuture.Treasury.Transaction.TransactionCategory;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -36,6 +41,8 @@ public class LoanService {
     private final PeopleGroupRepository peopleGroupRepository;
     private final ContributionsPlanRepository contributionsPlanRepository;
     private final LoanApprovalRepository loanApprovalRepository;
+    private final SystemTransactionService systemTransactionService;
+    private final AccountService accountService;
     public UniversalResponse createLoan(CreateLoanRequest request) {
         System.out.println(request);
         Person person = personRepository.findById(request.getPersonId())
@@ -196,9 +203,10 @@ public class LoanService {
         return loanRepository.findById(id);
     }
 
-    public UniversalResponse approveLoan(LoanApproveDTO request) {
+    @Transactional
+    public UniversalResponse approveLoan(LoanActionsDTO request) {
         LoanApproval loanApproval = new LoanApproval();
-        loanApproval.setApprovalStatus(request.getApprovalStatus());
+        loanApproval.setLoanStatus(request.getLoanStatus());
         Loan loan = loanRepository.findById(request.getLoanId()).get();
         loanApproval.setLoan(loan);
         loanApprovalRepository.disableAllForApproverAndLoan(loan.getId(), UserRequestContext.getCurrentUserName());
@@ -210,9 +218,59 @@ public class LoanService {
 
         if (loan.getLoanProduct().getNumberOfApproversRequired() >= numberOfApprovals && !hasReject){
             loan.setStatus(LoanStatus.APPROVED);
+            loan.setApprovedAmount(loan.getRequestedAmount());
             loanRepository.save(loan);
         }
 
         return new UniversalResponse(201,  savedApproval, "Approved successfully");
+    }
+
+    @Transactional
+    public UniversalResponse disburseLoan(LoanActionsDTO request) {
+        if (request.getLoanStatus() != LoanStatus.DISBURSED) return null;
+
+        Loan loan = loanRepository.findById(request.getLoanId()).get();
+
+        if (loan.getStatus() != LoanStatus.APPROVED) return null;
+        Account loanAccount = accountService.makeAccountActive(loan.getAccount());
+        loan.setAccount(loanAccount);
+
+        if (loan.getDisburseThroughSavings()) {
+            TransactionBuilder transactionBuilder = TransactionBuilder.builder()
+                    .transactionCategory(TransactionCategory.LOAN_DISBURSEMENT_BY_SAVING)
+                    .creditAccount(loan.getDisbursementAccount())
+                    .debitAccount(loan.getAccount())
+                    .oneOfTheAccounts(loan.getAccount())
+                    .amount(loan.getApprovedAmount())
+                    .creditParticulars("Loan Disbursement")
+                    .debitParticulars("Loan Disbursement")
+                    .build();
+            UniversalResponse universalResponse = systemTransactionService.saveTransaction(transactionBuilder);
+
+            if (universalResponse.getStatusCode() < 400){
+                loan.setStatus(LoanStatus.DISBURSED);
+                Loan savedLoan = loanRepository.save(loan);
+                return new UniversalResponse(201,  savedLoan, "Disbursed successfully");
+            }
+        } else {
+            TransactionBuilder transactionBuilder = TransactionBuilder.builder()
+                    .transactionCategory(TransactionCategory.LOAN_DISBURSEMENT_BY_CASH)
+                    .debitAccount(loan.getAccount())
+                    .oneOfTheAccounts(loan.getAccount())
+                    .amount(loan.getApprovedAmount())
+                    .debitParticulars("Loan Disbursement")
+                    .contributionsPlan(loan.getAccount().getContributionsPlan())
+                    .build();
+            UniversalResponse universalResponse = systemTransactionService.saveTransaction(transactionBuilder);
+
+            if (universalResponse.getStatusCode() < 400){
+                loan.setStatus(LoanStatus.DISBURSED);
+                Loan savedLoan = loanRepository.save(loan);
+                return new UniversalResponse(201,  savedLoan, "Disbursed successfully");
+            }
+        }
+
+
+        return new UniversalResponse(400,  null, "Error");
     }
 }

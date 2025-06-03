@@ -45,7 +45,7 @@ public class Loan {
     // Loan Request
     @NotNull
     @DecimalMin("0.0")
-    private BigDecimal requestedAmount;
+    private Double requestedAmount;
 
     @NotNull
     @Min(1)
@@ -54,7 +54,7 @@ public class Loan {
     private String loanPurpose;
 
     // Approval and Disbursement
-    private BigDecimal approvedAmount;
+    private Double approvedAmount;
     private Date approvalDate;
     private String approvedBy;
 
@@ -62,8 +62,8 @@ public class Loan {
     private String disbursedBy;
 
     // Repayment Tracking
-    private BigDecimal totalRepaid = BigDecimal.ZERO;
-    private BigDecimal outstandingBalance;
+    private Double totalRepaid = 0.0;
+    private Double outstandingBalance;
 
     private Integer numberOfRepaymentsMade = 0;
     private Date nextDueDate;

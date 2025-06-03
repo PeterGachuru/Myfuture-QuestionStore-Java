@@ -4,7 +4,6 @@ package ke.co.myfuture.Myfuture.Treasury.Loan;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -17,16 +16,16 @@ public class LoanSummaryDTO {
     private String borrowerName;
     private String borrowerGroupName;
 
-    private BigDecimal requestedAmount;
+    private Double requestedAmount;
     private Integer requestedDurationMonths;
     private String loanPurpose;
 
-    private BigDecimal approvedAmount;
+    private Double approvedAmount;
     private String approvedBy;
     private Date approvalDate;
 
-    private BigDecimal outstandingBalance;
-    private BigDecimal totalRepaid;
+    private Double outstandingBalance;
+    private Double totalRepaid;
     private Integer numberOfRepaymentsMade;
 
     private Date disbursementDate;

@@ -1,17 +1,12 @@
 package ke.co.myfuture.Myfuture.Treasury.Transaction;
 
-import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
-import ke.co.myfuture.Myfuture.Treasury.Account.AccountOwnershipType;
 import ke.co.myfuture.Myfuture.Treasury.Account.AccountRepository;
 import ke.co.myfuture.Myfuture.Treasury.Account.AccountService;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlanRepository;
-import ke.co.myfuture.Myfuture.Treasury.GroupAccess.GroupAccess;
 import ke.co.myfuture.Myfuture.Treasury.GroupAccess.GroupAccessService;
 import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;
-import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranEntry;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranEntryRepository;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranType;
@@ -27,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class TransactionService {
+public class UITransactionService {
     @Autowired
     TransactionRepository repository;
 
@@ -48,23 +43,11 @@ public class TransactionService {
 
     @Autowired
     GroupAccessService groupAccessService;
-    @Autowired
-    IncomeValidator incomeValidator;
 
     @Autowired
-    BorrowValidator borrowValidator;
+    TransactionPostingService transactionPostingService;
     @Autowired
-    ExpenseValidator expenseValidator;
-    @Autowired
-    LendValidator lendValidator;
-    @Autowired
-    RepayBorrowValidator repayBorrowValidator;
-    @Autowired
-    RepayLendValidator repayLendValidator;
-    @Autowired
-    SavingDepositValidator savingDepositValidator;
-    @Autowired
-    SavingWithdrawalValidator savingWithdrawalValidator;
+    CommonTransactionService commonTransactionService;
 
     public UniversalResponse error(String message) {
         UniversalResponse response = new UniversalResponse();
@@ -82,7 +65,7 @@ public class TransactionService {
         if(!attachAccounts(transaction)) {
             return error("Account not found");
         }
-        attachOtherTranEntries(transaction);
+        commonTransactionService.attachOtherTranEntries(transaction);
         if (!transaction.balances()) {
             UniversalResponse response = new UniversalResponse();
             response.setStatus("Error");
@@ -92,7 +75,7 @@ public class TransactionService {
             return response;
         }
         System.out.println(transaction);
-        Transaction savedTransaction = saveNew(transaction);
+        Transaction savedTransaction = transactionPostingService.saveNew(transaction);
         System.out.println(savedTransaction);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
@@ -100,48 +83,6 @@ public class TransactionService {
         response.setEntity(savedTransaction);
         response.setStatusCode(201);
         return response;
-    }
-
-
-    private Transaction saveNew(Transaction transaction) {
-        List<TranEntry> tranEntryList = transaction.getTranEntries();
-        transaction.setTranEntries(new ArrayList<>());
-        Transaction savedTransaction = repository.save(transaction);
-        for (TranEntry tranEntry: tranEntryList) {
-            Account account = tranEntry.getAccount();
-            tranEntry.setAccountId(account.getId());
-            tranEntry.setAccountName(account.getName());
-            tranEntry.setTransaction(savedTransaction);
-            tranEntryRepository.save(tranEntry);
-        }
-        return post(savedTransaction.getId());
-    }
-
-    private Transaction saveReversal(Transaction transaction) {
-        List<TranEntry> tranEntryList = transaction.getTranEntries();
-        transaction.setTranEntries(new ArrayList<>());
-        Transaction savedTransaction = repository.save(transaction);
-        for (TranEntry tranEntry: tranEntryList) {
-            tranEntry.setTransaction(savedTransaction);
-            tranEntryRepository.save(tranEntry);
-        }
-        return post(savedTransaction.getId());
-    }
-
-    @Transactional
-    private Transaction post(Long id) {
-        Optional<Transaction> transaction = repository.findById(id);
-        if (transaction.isEmpty()) return null;
-        List<TranEntry> tranEntryList = transaction.get().getTranEntries();
-        for (TranEntry tranEntry: tranEntryList) {
-            Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
-            if (account.isEmpty()) return null;
-            Double currentBalance = account.get().getBalance();
-            Double newBalance = currentBalance + (tranEntry.getTranType() == TranType.DEBIT? -1*tranEntry.getAmount(): tranEntry.getAmount());
-            account.get().setBalance(newBalance);
-            accountRepository.save(account.get());
-        }
-        return transaction.get();
     }
 
     private boolean attachAccounts(Transaction transaction) {
@@ -198,7 +139,7 @@ public class TransactionService {
             return response;
         }
 
-        Transaction transaction1 = saveReversal(reversalTransaction);
+        Transaction transaction1 = transactionPostingService.saveReversal(reversalTransaction);
         repository.save(transaction);
 
         UniversalResponse response = new UniversalResponse();
@@ -207,28 +148,5 @@ public class TransactionService {
         response.setEntity(transaction1);
         response.setStatusCode(HttpStatus.SC_OK);
         return response;
-    }
-
-
-    private boolean attachOtherTranEntries(Transaction transaction) {
-        System.out.println("----attachOtherTranEntries----");
-        if (transaction.getCategory() == TransactionCategory.EXPENSE) {
-            return expenseValidator.attachOtherTranEntries(transaction);
-        } else if (transaction.getCategory() == TransactionCategory.INCOME) {
-            return incomeValidator.attachOtherTranEntries(transaction);
-        } else  if (transaction.getCategory() == TransactionCategory.LEND) {
-           return lendValidator.attachOtherTranEntries(transaction);
-        } else  if (transaction.getCategory() == TransactionCategory.REPAY_LEND) {
-            return repayLendValidator.attachOtherTranEntries(transaction);
-        } else if (transaction.getCategory() == TransactionCategory.BORROW) {
-            return borrowValidator.attachOtherTranEntries(transaction);
-        } else if (transaction.getCategory() == TransactionCategory.REPAY_BORROW) {
-            return repayBorrowValidator.attachOtherTranEntries(transaction);
-        } else if (transaction.getCategory() == TransactionCategory.SAVING_DEPOSIT) {
-            return savingDepositValidator.attachOtherTranEntries(transaction);
-        } else if (transaction.getCategory() == TransactionCategory.SAVING_WITHDRAWAL) {
-            return savingWithdrawalValidator.attachOtherTranEntries(transaction);
-        }
-        return true;
     }
 }

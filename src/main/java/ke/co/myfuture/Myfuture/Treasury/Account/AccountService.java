@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -88,6 +89,11 @@ public class AccountService {
     public Account saveAutoCreatedAccount(Account account) {
         System.out.println("---saveAutoCreatedAccount--");
         account.setBalance(0.0);
+        return repository.save(account);
+    }
+
+    public Account makeAccountActive(Account account) {
+        account.setActive();
         return repository.save(account);
     }
 }

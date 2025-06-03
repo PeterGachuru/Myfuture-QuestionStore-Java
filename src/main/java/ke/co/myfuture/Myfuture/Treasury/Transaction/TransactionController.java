@@ -19,14 +19,14 @@ public class TransactionController {
     TransactionRepository repository;
 
     @Autowired
-    TransactionService transactionService;
+    UITransactionService UITransactionService;
 
     @Autowired
     TranEntryRepository tranEntryRepository;
 
     @PostMapping("add")
     public ResponseEntity<?> newTransaction(@RequestBody Transaction transaction) {
-        UniversalResponse response = transactionService.saveTransaction(transaction);
+        UniversalResponse response = UITransactionService.saveTransaction(transaction);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -58,7 +58,7 @@ public class TransactionController {
     public ResponseEntity<?> reverse(@RequestParam("id") Long id) {
         Optional<Transaction> transactionOptional = repository.findById(id);
         if (transactionOptional.isPresent()) {
-            UniversalResponse universalResponse = transactionService.reverseTransaction(transactionOptional.get());
+            UniversalResponse universalResponse = UITransactionService.reverseTransaction(transactionOptional.get());
             return new ResponseEntity<>(universalResponse, HttpStatus.OK);
         }
         return null;

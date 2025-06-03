@@ -1,6 +1,7 @@
 package ke.co.myfuture.Myfuture.Treasury.Transaction.TranValidators;
 
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
+import ke.co.myfuture.Myfuture.Treasury.Account.AccountOwnershipType;
 import ke.co.myfuture.Myfuture.Treasury.Account.AccountRepository;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranEntry;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranType;
@@ -27,6 +28,10 @@ public class IncomeValidator {
             Optional<Account> account = accountRepository.findById(tranEntry.getAccountId());
             if (account.isEmpty())
                 return false;
+            if (account.get().getOwnershipType() != AccountOwnershipType.INCOME) {
+                System.out.println("Must be an expense account");
+                return false;
+            }
             tranEntry.setAccount(account.get());
         }
         return validatorCommons.addCashAccount(totalAmount, TranType.DEBIT, transaction, transaction.getContributionsPlan().getName()+" income ");

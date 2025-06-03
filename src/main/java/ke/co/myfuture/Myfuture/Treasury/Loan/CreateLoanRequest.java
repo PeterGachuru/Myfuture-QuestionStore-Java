@@ -29,7 +29,7 @@ public class CreateLoanRequest {
 
     @NotNull
     @DecimalMin("0.0")
-    private BigDecimal requestedAmount;
+    private Double requestedAmount;
 
     @NotNull
     @Min(1)

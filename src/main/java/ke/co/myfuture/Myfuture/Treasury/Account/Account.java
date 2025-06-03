@@ -90,6 +90,9 @@ public class Account {
 
 	Date updatedAt;
 
+	Date activatedAt;
+	String activatedBy;
+
 //    @CreationTimestamp
 
 	@Column(updatable = false)
@@ -123,6 +126,12 @@ public class Account {
 	@PreUpdate
 	public void preUpdate() {
 		this.updatedAt = new Date();
+	}
+
+	public void setActive() {
+		activatedBy = UserRequestContext.getCurrentUserName();
+		activatedAt = new Date();
+		status = AccountStatus.ACTIVE;
 	}
 
 	static public interface Retriever {
