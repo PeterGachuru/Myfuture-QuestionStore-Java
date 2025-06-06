@@ -8,5 +8,5 @@ import java.util.List;
 public interface LoanProductRepository extends JpaRepository<LoanProduct, Long> {
     boolean existsByProductCodeAndPeopleGroup(String productCode, PeopleGroup peopleGroup);
 
-    List<LoanProduct> findByPeopleGroupId(Long peopleGroupId);
+    List<LoanProduct> findByPeopleGroupIdAndContributionsPlanId(Long peopleGroupId, Long planId);
 }

@@ -1,7 +1,10 @@
 package ke.co.myfuture.Myfuture.Treasury.Products.SavingsProduct;
 
+import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
+import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlanRepository;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroupRepository;
+import ke.co.myfuture.Myfuture.Treasury.Products.ProductStatus;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,12 +19,16 @@ public class SavingsProductService {
 
     private final SavingsProductRepository savingsProductRepository;
     private final PeopleGroupRepository peopleGroupRepository;
+    private final ContributionsPlanRepository contributionsPlanRepository;
 
     @Transactional
     public SavingsProduct createSavingsProduct(SavingsProductRequestDTO dto) {
         // Validate group exists
         PeopleGroup group = peopleGroupRepository.findById(dto.getPeopleGroupId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
+        // Validate group exists
+        ContributionsPlan plan = contributionsPlanRepository.findById(dto.getPlanId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid plan ID"));
 
         // Auto-generate product code if missing
         String code = dto.getProductCode();
@@ -39,11 +46,12 @@ public class SavingsProductService {
         SavingsProduct product = new SavingsProduct();
         product.setName(dto.getName());
         product.setProductCode(code);
+        product.setContributionsPlan(plan);
         product.setDescription(dto.getDescription());
         product.setInterestRate(dto.getInterestRate());
         product.setMinContributionAmount(dto.getMinContributionAmount());
         product.setMaxContributionAmount(dto.getMaxContributionAmount());
-        product.setStatus(SavingsProductStatus.ACTIVE); // default to active
+        product.setStatus(ProductStatus.PENDING); // default to active
         product.setPeopleGroup(group);
 
         return savingsProductRepository.save(product);

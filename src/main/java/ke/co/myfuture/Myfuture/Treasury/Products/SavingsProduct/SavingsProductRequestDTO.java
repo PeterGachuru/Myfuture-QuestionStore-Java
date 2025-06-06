@@ -8,7 +8,8 @@ import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
 @Data
-public class SavingsProductRequestDTO {
+public class
+SavingsProductRequestDTO {
 
     @NotNull
     @Size(min = 3, max = 255)
@@ -29,4 +30,7 @@ public class SavingsProductRequestDTO {
 
     @NotNull
     private Long peopleGroupId;
+
+    @NotNull
+    private Long planId;
 }

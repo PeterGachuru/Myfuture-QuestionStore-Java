@@ -49,4 +49,8 @@ public class LoanProductRequestDTO {
 
     @NotNull
     private Long peopleGroupId; // The group ID
+
+
+    @NotNull
+    private Long planId; // The group ID
 }

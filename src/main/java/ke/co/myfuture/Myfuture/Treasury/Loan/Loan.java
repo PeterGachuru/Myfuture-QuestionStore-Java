@@ -35,12 +35,15 @@ public class Loan {
     @NotNull
     private String name;
 
+    @ManyToOne(optional = false)
+    private LoanProduct loanProduct;
+
+    @Enumerated(EnumType.STRING)
+    private LoanStatus status = LoanStatus.PENDING;
+
     // Optional: Group where the borrower belongs
     @ManyToOne()
     private PeopleGroup borrowerGroup;
-
-    @ManyToOne(optional = false)
-    private LoanProduct loanProduct;
 
     // Loan Request
     @NotNull
@@ -72,9 +75,6 @@ public class Loan {
     private Integer gracePeriodUsedDays = 0;
     private boolean fullyRepaid = false;
 
-    @Enumerated(EnumType.STRING)
-    private LoanStatus status = LoanStatus.PENDING;
-
     private Date applicationDate = new Date();
     private Date closedDate;
 
@@ -98,8 +98,6 @@ public class Loan {
     private Boolean backdate;
     private String reasonForBackdating;
     private Date backdatedDisbursementDate;
-
-
 
     Date updatedAt;
 

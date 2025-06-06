@@ -1,7 +1,14 @@
 package ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct;
 
+import ke.co.myfuture.Myfuture.Treasury.Account.Account;
+import ke.co.myfuture.Myfuture.Treasury.Account.AccountOwnershipType;
+import ke.co.myfuture.Myfuture.Treasury.Account.AccountService;
+import ke.co.myfuture.Myfuture.Treasury.Loan.LoanRepository;
+import ke.co.myfuture.Myfuture.Treasury.Loan.LoanStatus;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroupRepository;
+import ke.co.myfuture.Myfuture.Treasury.Products.ProductActionsDTO;
+import ke.co.myfuture.Myfuture.Treasury.Products.ProductStatus;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +23,8 @@ public class LoanProductService {
 
     private final LoanProductRepository loanProductRepository;
     private final PeopleGroupRepository peopleGroupRepository;
+    private final LoanRepository loanRepository;
+    private final AccountService accountService;
 
 
     @Transactional
@@ -60,10 +69,15 @@ public class LoanProductService {
         product.setLoanPurpose(dto.getLoanPurpose());
         product.setGracePeriodDays(dto.getGracePeriodDays());
         product.setDescription(dto.getDescription());
-        product.setStatus(LoanProductStatus.ACTIVE); // default to active
+        product.setStatus(ProductStatus.PENDING); // default to active
         product.setPeopleGroup(group);
 
         return loanProductRepository.save(product);
+    }
+
+    public long countActiveOrClosedLoans(Long productId) {
+        List<LoanStatus> relevantStatuses = List.of(LoanStatus.ACTIVE, LoanStatus.CLOSED);
+        return loanRepository.countByLoanProductIdAndStatuses(productId, relevantStatuses);
     }
     @Transactional
     public LoanProduct updateLoanProduct(LoanProductRequestDTO dto) {
@@ -75,6 +89,10 @@ public class LoanProductService {
         // Load existing loan product
         LoanProduct existingProduct = loanProductRepository.findById(dto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("LoanProduct not found"));
+
+        if (countActiveOrClosedLoans(dto.getId()) > 0) {
+            throw new IllegalArgumentException("Already in use, cannot modify this product");
+        }
 
         // Validate group exists
         PeopleGroup group = peopleGroupRepository.findById(dto.getPeopleGroupId())
@@ -130,8 +148,8 @@ public class LoanProductService {
     }
 
 
-    public UniversalResponse getLoanProductsByGroup(Long peopleGroupId) {
-        List<LoanProduct> products = loanProductRepository.findByPeopleGroupId(peopleGroupId);
+    public UniversalResponse getLoanProductsByGroup(Long peopleGroupId, Long planId) {
+        List<LoanProduct> products = loanProductRepository.findByPeopleGroupIdAndContributionsPlanId(peopleGroupId, planId);
 
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
@@ -144,5 +162,54 @@ public class LoanProductService {
 
     public Optional<LoanProduct> findById(Long id) {
         return loanProductRepository.findById(id);
+    }
+
+    public UniversalResponse approveProduct(ProductActionsDTO request) {
+        if (request.getId() == null) {
+            throw new IllegalArgumentException("LoanProduct ID is required for update");
+        }
+
+        // Load existing loan product
+        LoanProduct existingProduct = loanProductRepository.findById(request.getId())
+                .orElseThrow(() -> new IllegalArgumentException("LoanProduct not found"));
+
+        if (existingProduct.getStatus() == ProductStatus.ACTIVE)
+            throw new IllegalArgumentException("Already active");
+
+        if (existingProduct.getStatus() != ProductStatus.PENDING)
+            throw new IllegalArgumentException("Not in compatible state");
+
+        if (request.getProductStatus() == ProductStatus.APPROVED) {
+            existingProduct.approve();
+        } else if (request.getProductStatus() == ProductStatus.REJECTED) {
+            existingProduct.reject();
+        }else {
+            System.out.println(request);
+            throw new IllegalArgumentException("Not supported operation");
+        }
+
+        LoanProduct savedProduct =  loanProductRepository.save(existingProduct);
+        if (request.getProductStatus() == ProductStatus.APPROVED) {
+            createInterestIncomeAccount(savedProduct);
+        }
+
+        return new UniversalResponse(201,  savedProduct, "Executed successfully");
+    }
+
+    private Boolean createInterestIncomeAccount(LoanProduct savedProduct) {
+        Account account = new Account();
+        account.setPeopleGroup(savedProduct.getPeopleGroup());
+        account.setName(savedProduct.getName() + " Interest Income ");
+        account.setPinPriority(1);
+        account.setPlanId(savedProduct.getContributionsPlan().getId());
+        account.setContributionsPlan(savedProduct.getContributionsPlan());
+        account.setOwnershipType(AccountOwnershipType.INCOME);
+
+        Account account1 = accountService.saveAutoCreatedAccount(account);
+        savedProduct.setInterestIncomeAccount(account1);
+
+        loanProductRepository.save(savedProduct);
+
+        return true;
     }
 }

@@ -1,6 +1,8 @@
 package ke.co.myfuture.Myfuture.Treasury.Products.SavingsProduct;
 
+import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
+import ke.co.myfuture.Myfuture.Treasury.Products.ProductStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -50,10 +52,12 @@ public class SavingsProduct {
     private BigDecimal maxContributionAmount;
 
     @Enumerated(EnumType.STRING)
-    private SavingsProductStatus status;
+    private ProductStatus status;
 
     @ManyToOne(optional = false)
     private PeopleGroup peopleGroup;
+    @ManyToOne(optional = false)
+    private ContributionsPlan contributionsPlan;
 
     public void setName(String name) {
         this.name = name;
