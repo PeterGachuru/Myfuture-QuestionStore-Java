@@ -1,8 +1,10 @@
 package ke.co.myfuture.Myfuture.Treasury.Loan;
 
+import ke.co.myfuture.Myfuture.Treasury.Loan.LoanScheduleItem.LoanScheduleItem;
 import ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.InterestRateType;
 import ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.LoanProduct;
 import ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.LoanProductRepository;
+import ke.co.myfuture.Myfuture.Utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +12,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LoanScheduleGenerator {
@@ -32,12 +33,11 @@ public class LoanScheduleGenerator {
                 ? request.getBackdatedDisbursementDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                 : LocalDate.now();
 
-        LocalDate startDate = disbursementDate.plusDays(
-                Optional.ofNullable(product.getGracePeriodDays()).orElse(0)
-        );
+        // First due date is 1 month after disbursement
+        LocalDate startDate = disbursementDate.plusMonths(1);
 
         if (product.getInterestRateType() == InterestRateType.FLAT_RATE) {
-            double totalInterest = loanAmount * rate * duration;
+            double totalInterest = loanAmount * rate * (duration / 12.0);
             double totalPayment = loanAmount + totalInterest;
             double monthlyPayment = Math.round(totalPayment / duration * 100.0) / 100.0;
             double monthlyPrincipal = Math.round(loanAmount / duration * 100.0) / 100.0;
@@ -50,7 +50,7 @@ public class LoanScheduleGenerator {
 
                 schedule.add(new LoanScheduleItem(
                         i,
-                        dueDate,
+                        DateUtils.convertLocalDateToDate(dueDate),
                         monthlyPrincipal,
                         monthlyInterest,
                         monthlyPayment,
@@ -74,7 +74,7 @@ public class LoanScheduleGenerator {
 
                 schedule.add(new LoanScheduleItem(
                         i,
-                        dueDate,
+                        DateUtils.convertLocalDateToDate(dueDate),
                         principal,
                         interest,
                         emi,
@@ -84,5 +84,20 @@ public class LoanScheduleGenerator {
         }
 
         return schedule;
+    }
+
+    public List<LoanScheduleItem> generateSchedule(Loan loan) {
+        CreateLoanRequest request = new CreateLoanRequest();
+        request.setDisburseThroughSavings(loan.getDisburseThroughSavings());
+        request.setName(loan.getName());
+        request.setLoanProductId(loan.getLoanProduct().getId());
+        request.setBackdate(loan.getBackdate());
+        request.setReasonForBackdating(loan.getReasonForBackdating());
+        request.setBackdatedDisbursementDate(loan.getBackdatedDisbursementDate());
+        request.setRequestedAmount(loan.getRequestedAmount());
+        request.setRequestedDurationMonths(loan.getRequestedDurationMonths());
+        request.setLoanPurpose(loan.getLoanPurpose());
+
+        return generateSchedule(request);
     }
 }

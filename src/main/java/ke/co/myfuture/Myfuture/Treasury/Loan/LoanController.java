@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.Loan;
 
+import ke.co.myfuture.Myfuture.Treasury.Loan.LoanScheduleItem.LoanScheduleItem;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

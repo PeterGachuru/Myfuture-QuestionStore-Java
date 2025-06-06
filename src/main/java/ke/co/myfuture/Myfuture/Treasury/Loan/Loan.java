@@ -67,6 +67,7 @@ public class Loan {
 
     private Integer numberOfRepaymentsMade = 0;
     private Date nextDueDate;
+    private Date lastInterestRunDate;
 
     private Integer gracePeriodUsedDays = 0;
     private boolean fullyRepaid = false;
@@ -178,5 +179,11 @@ public class Loan {
         if (approvedAmount != null && outstandingBalance == null) {
             this.outstandingBalance = approvedAmount;
         }
+    }
+
+    public void setDisbursed() {
+        this.disbursementDate = new Date();
+        this.disbursedBy =  UserRequestContext.getCurrentUserName();
+        setStatus(LoanStatus.DISBURSED);
     }
 }

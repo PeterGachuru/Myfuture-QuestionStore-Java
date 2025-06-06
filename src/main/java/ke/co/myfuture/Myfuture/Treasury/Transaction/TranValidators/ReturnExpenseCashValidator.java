@@ -7,9 +7,11 @@ import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranEntry;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranType;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class ReturnExpenseCashValidator {
     @Autowired
     AccountRepository accountRepository;

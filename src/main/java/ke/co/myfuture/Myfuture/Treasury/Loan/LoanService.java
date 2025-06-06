@@ -8,6 +8,8 @@ import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlanRepository;
 import ke.co.myfuture.Myfuture.Treasury.Loan.LoanApprover.LoanApprovalRepository;
 import ke.co.myfuture.Myfuture.Treasury.Loan.LoanApprover.LoanApproval;
+import ke.co.myfuture.Myfuture.Treasury.Loan.LoanScheduleItem.LoanScheduleItem;
+import ke.co.myfuture.Myfuture.Treasury.Loan.LoanScheduleItem.LoanScheduleItemRepository;
 import ke.co.myfuture.Myfuture.Treasury.Person.Person;
 import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
@@ -43,6 +45,8 @@ public class LoanService {
     private final LoanApprovalRepository loanApprovalRepository;
     private final SystemTransactionService systemTransactionService;
     private final AccountService accountService;
+    private final LoanScheduleGenerator loanScheduleGenerator;
+    private final LoanScheduleItemRepository loanScheduleItemRepository;
     public UniversalResponse createLoan(CreateLoanRequest request) {
         System.out.println(request);
         Person person = personRepository.findById(request.getPersonId())
@@ -263,13 +267,16 @@ public class LoanService {
                     .build();
             UniversalResponse universalResponse = systemTransactionService.saveTransaction(transactionBuilder);
 
-            if (universalResponse.getStatusCode() < 400){
-                loan.setStatus(LoanStatus.DISBURSED);
+            if (universalResponse.getStatusCode() < 400) {
+                loan.setDisbursed();
                 Loan savedLoan = loanRepository.save(loan);
+                List<LoanScheduleItem> loanScheduleItems = loanScheduleGenerator.generateSchedule(loan);
+                for (LoanScheduleItem loanScheduleItem: loanScheduleItems)
+                    loanScheduleItem.setLoan(savedLoan);
+                loanScheduleItemRepository.saveAll(loanScheduleItems);
                 return new UniversalResponse(201,  savedLoan, "Disbursed successfully");
             }
         }
-
 
         return new UniversalResponse(400,  null, "Error");
     }
