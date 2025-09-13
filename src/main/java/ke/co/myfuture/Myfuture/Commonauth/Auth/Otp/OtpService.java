@@ -68,9 +68,9 @@ public class    OtpService {
 
             boolean status = otpObj.getIsValid() && !Objects.isNull(otpObj.getOtpValue()) && otpObj.getOtpValue().equals(otp);
 
-            if (status){
+            if (status) {
                 invalidateAllOtps(email);
-            }else{
+            } else {
                 otpObj.setRetries(otpObj.getRetries() + 1);
             }
 
@@ -104,7 +104,7 @@ public class    OtpService {
 
         System.out.println("After empty check");
 
-        if (otp.getRetries() >= 6){
+        if (otp.getRetries() >= 15){
             System.out.println("Out of validateLoginRetries");
             return false;
         } else {

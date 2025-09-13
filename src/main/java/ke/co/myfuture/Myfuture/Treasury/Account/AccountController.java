@@ -82,8 +82,9 @@ public class AccountController {
     @GetMapping("all")
     public ResponseEntity<?> fetchProductCategory(@RequestParam(required = false, name = "planId") Long planId,
                                                   @RequestParam(name = "groupId") Long groupId,
+                                                  @RequestParam(required = false, name = "ownerId") Long ownerId,
                                                   @RequestParam(name = "ownershipType") String ownershipType) {
-        System.out.println("Request received: planId: "+planId+", groupId: "+groupId+", ownership: "+ownershipType);
+        System.out.println("Request received: planId: "+planId+", groupId: "+groupId+", ownership: "+ownershipType+", ownerId: "+ownerId);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("ProductCategory retrieved Successfully");
@@ -93,7 +94,11 @@ public class AccountController {
             accountList = repository.findAllByAuditTrails_DeletedFlag(false, groupId, ownershipType);
         } else {
             System.out.println();
-            accountList = repository.findAllByAuditTrails_DeletedFlag(false, groupId, planId, ownershipType);
+            if (ownerId != null) {
+                accountList = repository.findAllByAuditTrails_DeletedFlag(false, groupId, planId, ownershipType, ownerId);
+            } else {
+                accountList = repository.findAllByAuditTrails_DeletedFlag(false, groupId, planId, ownershipType);
+            }
         }
 //
         response.setEntity(accountList);

@@ -3,6 +3,8 @@ package ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct;
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import ke.co.myfuture.Myfuture.Treasury.Account.AccountOwnershipType;
 import ke.co.myfuture.Myfuture.Treasury.Account.AccountService;
+import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
+import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlanRepository;
 import ke.co.myfuture.Myfuture.Treasury.Loan.LoanRepository;
 import ke.co.myfuture.Myfuture.Treasury.Loan.LoanStatus;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
@@ -23,6 +25,7 @@ public class LoanProductService {
 
     private final LoanProductRepository loanProductRepository;
     private final PeopleGroupRepository peopleGroupRepository;
+    private final ContributionsPlanRepository contributionsPlanRepository;
     private final LoanRepository loanRepository;
     private final AccountService accountService;
 
@@ -32,6 +35,8 @@ public class LoanProductService {
         // Validate group exists
         PeopleGroup group = peopleGroupRepository.findById(dto.getPeopleGroupId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
+        ContributionsPlan contributionsPlan = contributionsPlanRepository.findById(dto.getPlanId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid plan ID"));
 
         // Duration check
         if (dto.getMinDurationMonths() > dto.getMaxDurationMonths()) {
@@ -71,6 +76,7 @@ public class LoanProductService {
         product.setDescription(dto.getDescription());
         product.setStatus(ProductStatus.PENDING); // default to active
         product.setPeopleGroup(group);
+        product.setContributionsPlan(contributionsPlan);
 
         return loanProductRepository.save(product);
     }
@@ -97,6 +103,8 @@ public class LoanProductService {
         // Validate group exists
         PeopleGroup group = peopleGroupRepository.findById(dto.getPeopleGroupId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
+        ContributionsPlan contributionsPlan = contributionsPlanRepository.findById(dto.getPlanId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid plan ID"));
 
         // Duration check
         if (dto.getMinDurationMonths() > dto.getMaxDurationMonths()) {
@@ -115,7 +123,8 @@ public class LoanProductService {
         }
 
         // Check uniqueness of product code within group if changed
-        if (!code.equals(existingProduct.getProductCode()) || !group.equals(existingProduct.getPeopleGroup())) {
+        if (!code.equals(existingProduct.getProductCode())
+                || !group.equals(existingProduct.getPeopleGroup())) {
             boolean exists = loanProductRepository.existsByProductCodeAndPeopleGroup(code, group);
             if (exists) {
                 throw new IllegalArgumentException("Product code already exists in the group");

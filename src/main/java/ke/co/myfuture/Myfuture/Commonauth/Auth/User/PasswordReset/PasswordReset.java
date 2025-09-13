@@ -2,6 +2,7 @@ package ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

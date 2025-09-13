@@ -21,6 +21,8 @@ public class Account {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
+
+	@Column(nullable = false)
 	private Double balance = 0.0;
 
 	String name;
@@ -73,6 +75,9 @@ public class Account {
 	List<PeriodicContributionAnalysis> periodicContributionAnalyses;
 
 	Date lastAnalysisDate;
+	String accountClosureReason;
+	Date accountClosureDate;
+	String accountClosedBy;
 
 	public void update(Account account) {
 		this.name = account.name;
@@ -134,7 +139,14 @@ public class Account {
 		status = AccountStatus.ACTIVE;
 	}
 
-	static public interface Retriever {
+	public void close(String closureReason) {
+		this.accountClosureReason = closureReason;
+		this.accountClosureDate = new Date();
+		this.accountClosedBy = UserRequestContext.getCurrentUserName();
+		this.status = AccountStatus.CLOSED;
+	}
+
+    static public interface Retriever {
 		String getUpdatedAt();
 		String getCreatedAt();
 

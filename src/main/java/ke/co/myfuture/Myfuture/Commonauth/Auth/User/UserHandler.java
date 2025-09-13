@@ -6,9 +6,11 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UserCreate
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.AuthEntityResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.UserResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.UsersResponse;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.Request.PasswordResetConfirmation;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.Response.OtpResponse;
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MailServiceException;
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MakerCheckerFailException;
+import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MaximumRetriesException;
 import ke.co.myfuture.Myfuture.Commonauth.Utils.CustomMailSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,7 +164,25 @@ public class UserHandler {
         } catch (MailServiceException e) {
             return ResponseEntity.status(403).body(new OtpResponse(null, e.getMessage()));
         }
-
+    }
+    @PostMapping("/reset-forgetten-password")
+    public ResponseEntity<?> resetForgottenPassword(@RequestBody PasswordResetConfirmation passwordResetConfirmation) {
+        try {
+            if (this.userService.resetPassword(passwordResetConfirmation.getEmail(),
+                    passwordResetConfirmation.getOtp(),
+                    passwordResetConfirmation.getNewPassword()
+                    )) {
+                return ResponseEntity.ok().body(new AuthEntityResponse(200, "User password reset successfully"));
+            } else {
+                return ResponseEntity.ok().body(new AuthEntityResponse(400, "User password failed to rest."));
+            }
+        } catch (MakerCheckerFailException ignored) {
+            return ResponseEntity.status(403).body(new OtpResponse(null, "You cannot reset your own account password"));
+        } catch (MailServiceException e) {
+            return ResponseEntity.status(403).body(new OtpResponse(null, e.getMessage()));
+        } catch (MaximumRetriesException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping("/admin-kick-out")

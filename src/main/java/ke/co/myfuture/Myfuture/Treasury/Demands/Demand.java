@@ -8,6 +8,7 @@ import ke.co.myfuture.Myfuture.Treasury.Person.Person;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -35,6 +36,10 @@ public class Demand {
     @ManyToOne(optional = false)
     private Account accountToCredit;
 
+
+    @ManyToOne
+    private Account accountToDebit;
+
     private Double totalAmount;
 
     private Date dueDate;
@@ -43,10 +48,12 @@ public class Demand {
 
     private Boolean preGenerated = false;
 
-    @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @ToString.Exclude
     private List<DemandBreakdown> breakdowns = new ArrayList<>();
 
-    @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "demand", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @ToString.Exclude
     private List<DemandPayment> payments = new ArrayList<>();
 
     private Double overpaidAmount = 0.0; // if overpaid, store here
@@ -95,5 +102,4 @@ public class Demand {
         if (UserRequestContext.getCurrentUserName() == null)
             this.updatedBy = "Internal";
     }
-
 }

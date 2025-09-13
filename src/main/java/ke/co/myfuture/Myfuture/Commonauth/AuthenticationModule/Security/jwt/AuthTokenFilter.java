@@ -88,7 +88,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
                 UserData userData = userService.getUserDetails(email).getUser();
                 UserDetails userDetails = dataToUserDetails(userData);
-                System.out.println("userDetails"+userDetails);
+                System.out.println("userDetails: "+userDetails);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
 
@@ -114,9 +114,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 ignored.printStackTrace();
             }
         }
-//        System.out.println("Before filterchain");
+        System.out.println("Before filterchain");
         filterChain.doFilter(request, response);
-//        System.out.println("After filterchain");
+        System.out.println("After filterchain");
     }
 
     private UserDetails dataToUserDetails(UserData userData) {
@@ -127,6 +127,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             public Collection<? extends GrantedAuthority> getAuthorities() {
                 List<GrantedAuthority> authorities = new ArrayList<>();
 
+                if (userData.getRoles() != null)
                 userData.getRoles().forEach(userRoleData -> {
                     authorities.addAll(userRoleData.getAccessRights().stream().map(roleAccessRights -> new SimpleGrantedAuthority(roleAccessRights.getAccessRights().name())).collect(Collectors.toSet()));
                 });

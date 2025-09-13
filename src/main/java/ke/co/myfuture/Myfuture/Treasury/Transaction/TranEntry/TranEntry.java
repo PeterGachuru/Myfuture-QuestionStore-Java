@@ -33,6 +33,10 @@ public class TranEntry {
     @Column(nullable = false)
     private String accountName;
 
+    @Column(nullable = false)
+    private Double balanceAfter = 0.0;
+
+
     @Transient
     private Account account;
 

@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("tuabudu/song")
+@RequestMapping("tuabudu/songs")
 public class SongController {
     @Autowired
     SongRepository repository;

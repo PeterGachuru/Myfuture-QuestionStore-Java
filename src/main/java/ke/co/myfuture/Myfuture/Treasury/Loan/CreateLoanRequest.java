@@ -26,6 +26,7 @@ public class CreateLoanRequest {
     @NotNull
     private Boolean disburseThroughSavings;
     private Long disbursementAccountId;
+    private Long repaymentAccountId;
 
     @NotNull
     @DecimalMin("0.0")

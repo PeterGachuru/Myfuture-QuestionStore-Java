@@ -18,7 +18,9 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.RoleConfig;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.RoleConfigRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordReset;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordResetRepository;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordResetService;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.UserPasswords.UserPassword;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.UserPasswords.UserPasswordRepo;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.UserRole.UserRole;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.UserRole.UserRoleRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.PasswordGenerator;
@@ -64,6 +66,7 @@ public class UserService {
     private final JwtUtils jwtUtils;
     private final PasswordGenerator passwordGenerator = new PasswordGenerator();
     private final OtpService otpService;
+    private final PasswordResetService passwordResetService;
 
     private final MailService2 mailService2;
 
@@ -74,6 +77,8 @@ public class UserService {
 
     @Autowired
     PasswordResetRepository passwordResetRepository;
+    @Autowired
+    UserPasswordRepo userPasswordRepo;
 
     @Autowired
 
@@ -203,6 +208,9 @@ public class UserService {
 
                 System.out.println(" before Check password match");
 
+                if (user.getPasswords().isEmpty()) {
+                    response.set(LoginResponse.builder().statusCode(HttpStatus.BAD_REQUEST.value()).message("No password set").build());
+                } else
                 if (passwordUtil.matches(password.trim(),
                         user.getPasswords().get(user.getPasswords().size() - 1).getPassword())) {
                     System.out.println("Password does match");
@@ -284,9 +292,9 @@ public class UserService {
                 user.setPasswords(userPasswords);
 
                 try {
-                    if (inProd) {
+//                    if (inProd) {
                         String emailSubject = "Ibuka: User Registration";
-                        String emailBody = "Your Ibuka password is: " + password + ".  Do not share your password with anyone";
+                        String emailBody = "Your Ibuka password is: " + password + ".  Do not share your password with anyone. Login and change password.";
                         CustomMailSender customMailSender1 = getCustomMailSender();
                         customMailSender1.sendEmail(emailSubject,
                                 emailBody,
@@ -295,7 +303,7 @@ public class UserService {
 //                        mailService2.sendEmail(user.getEmail(),
 //                                "Your Myfuture password is: " + password + "  Do not share your password with anyone",
 //                                "Myfuture password");
-                    }
+//                    }
 
                     user = userRepository.save(user);
 
@@ -709,10 +717,45 @@ public class UserService {
 
 //            audit.log("USERS", "Resetting password for user: ", user.getEmail());
             if (inProd) {
-                mailService2.sendEmail(email, "Your email have been reset successfully: Use the following password to to " +
+                mailService2.sendEmail(email, "Your password have been reset successfully: Use the following password to to " +
                         "login: " + password, "Password Reset");
 
             }
+            userRepository.save(user);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public Boolean resetPassword(String email, String otp, String newPassword)
+            throws MakerCheckerFailException, MailServiceException, MaximumRetriesException {
+        if (!passwordResetService.validateResetOtp(email, otp))
+            return false;
+        Optional<User> userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            String encodedPassword = passwordUtil.encode(newPassword);
+
+            List<UserPassword> passwords = user.getPasswords();
+            UserPassword userPassword = new UserPassword();
+            userPassword.setUser(user);
+            userPassword.setPassword(encodedPassword);
+            user.setFirstLogin(1);
+
+            if (passwords.size() == 12) {
+                passwords.remove(0);
+            }
+            passwords.add(userPassword);
+            user.setPasswords(passwords);
+
+//            audit.log("USERS", "Resetting password for user: ", user.getEmail());
+//            if (inProd) {
+                mailService2.sendEmail(email, "Your password have been reset successfully. You access all systems provided by Ibuka Technologies ", "Password Reset");
+//            }
+            System.out.println("Saving user with new password");
+            userPasswordRepo.saveAll(passwords);
             userRepository.save(user);
             return true;
         } else {

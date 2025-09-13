@@ -32,6 +32,8 @@ public class GroupAccess {
 
     @Transient
     Long groupId;
+    @Transient
+    Long personId;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
@@ -22,7 +23,6 @@ import java.util.Date;
 @AllArgsConstructor
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"productCode", "people_group_id"}))
 public class LoanProduct {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -75,8 +75,10 @@ public class LoanProduct {
 
 
     @ManyToOne(optional = false)
+    @JsonIgnore
     private PeopleGroup peopleGroup;
     @ManyToOne(optional = false)
+    @JsonIgnore
     private ContributionsPlan contributionsPlan;
 
     Date updatedAt;

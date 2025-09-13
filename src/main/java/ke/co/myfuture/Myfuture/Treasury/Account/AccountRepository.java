@@ -41,7 +41,19 @@ AND ownership_type = :ownershipType
             "ORDER BY id ASC")
     List<Account> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag, @Param("groupId") Long groupId, @Param("planId") Long planId, @Param("ownershipType") String ownershipType);
 
-//    @Query(nativeQuery = true, value = "select * from account where owner_id = :id AND people_group_id = :groupId LIMIT 1")
+    @Query(nativeQuery = true, value = "SELECT * FROM account " +
+            "WHERE COALESCE(deleted_flag, false) = :deletedFlag " +
+            "AND people_group_id = :groupId " +
+            "AND contributions_plan_id = :planId " +
+            "AND owner_id = :ownerId " +
+            "AND ownership_type = :ownershipType " +
+            "ORDER BY id ASC")
+    List<Account> findAllByAuditTrails_DeletedFlag(@Param("deletedFlag") boolean deletedFlag, @Param("groupId") Long groupId,
+                                                   @Param("planId") Long planId,
+                                                   @Param("ownershipType") String ownershipType,
+                                                   @Param("ownerId") Long ownerId);
+
+    //    @Query(nativeQuery = true, value = "select * from account where owner_id = :id AND people_group_id = :groupId LIMIT 1")
 //    Optional<Account> findAccountForPersonByType(@Param("id") Long id, @Param("groupId") Long groupId);
     @Query(nativeQuery = true, value = "select * from account where owner_id = :personId AND people_group_id = :groupId AND ownership_type = :ownershipType LIMIT 1")
     Optional<Account> findAccountForPersonByType(@Param("personId") Long personId, @Param("groupId") Long groupId, @Param("ownershipType") String ownershipType);

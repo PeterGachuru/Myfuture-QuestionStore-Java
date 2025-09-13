@@ -17,7 +17,7 @@ public class TreasuryHttpFilters extends AbstractHttpConfigurer<TreasuryHttpFilt
                         .mvcMatchers("/treasury/people-group/add").hasAnyAuthority(AccessRight.CREATE_PEOPLE_GROUP.toString())
                         .mvcMatchers("/treasury/people-group/update").hasAnyAuthority(AccessRight.CREATE_PEOPLE_GROUP.toString())
                         .mvcMatchers("/treasury/people-group/get/by/id").hasAnyAuthority(AccessRight.VIEW_PEOPLE_GROUP.toString())
-                        .mvcMatchers("/treasury/people-group/all").hasAnyAuthority(AccessRight.VIEW_PEOPLE_GROUP.toString())
+//                        .mvcMatchers("/treasury/people-group/all").hasAnyAuthority(AccessRight.VIEW_PEOPLE_GROUP.toString())
 
 
                         .mvcMatchers("/treasury/textreport/add").hasAnyAuthority(AccessRight.CREATE_FUNDING_COMPAIGN.toString())

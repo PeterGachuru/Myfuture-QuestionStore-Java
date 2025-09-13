@@ -46,7 +46,6 @@ public class User implements Serializable {
     private String lastName;
 
     @JsonIgnore
-    @Column(name="passwords")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<UserPassword> passwords;
 

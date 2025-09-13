@@ -43,9 +43,11 @@ public class LoanController {
 
     @GetMapping("/recent-loans")
     public ResponseEntity<List<LoanSummaryDTO>> getRecentLoans(
-            @RequestParam(defaultValue = "10") int limit
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(required = false, name = "planId") Long planId,
+            @RequestParam(name = "groupId") Long groupId
     ) {
-        List<LoanSummaryDTO> loans = loanService.getRecentLoans(limit);
+        List<LoanSummaryDTO> loans = loanService.getRecentLoans(limit, groupId, planId);
         return ResponseEntity.ok(loans);
     }
 

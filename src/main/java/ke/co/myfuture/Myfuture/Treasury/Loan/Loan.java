@@ -70,7 +70,8 @@ public class Loan {
 
     private Integer numberOfRepaymentsMade = 0;
     private Date nextDueDate;
-    private Date lastInterestRunDate;
+    private Date lastInterestBookingDate;
+    private Date lastInterestDemandDate;
 
     private Integer gracePeriodUsedDays = 0;
     private boolean fullyRepaid = false;
@@ -78,17 +79,18 @@ public class Loan {
     private Date applicationDate = new Date();
     private Date closedDate;
 
-    // NEW: Last interest booking timestamp
-    private Date lastInterestBookingDate;
-
     // NEW: Separate tracking for principal and interest paid
     private BigDecimal totalPrincipalPaid = BigDecimal.ZERO;
+    private BigDecimal totalInterestBooked = BigDecimal.ZERO;
+    private BigDecimal totalInterestNotYetDemanded = BigDecimal.ZERO;
     private BigDecimal totalInterestPaid = BigDecimal.ZERO;
 
     @NotNull
     private Boolean disburseThroughSavings;
     @ManyToOne
     private Account disbursementAccount;
+    @ManyToOne
+    private Account repaymentAccount;
 
 
     @ManyToOne(optional = false)
@@ -180,8 +182,9 @@ public class Loan {
     }
 
     public void setDisbursed() {
-        this.disbursementDate = new Date();
         this.disbursedBy =  UserRequestContext.getCurrentUserName();
-        setStatus(LoanStatus.DISBURSED);
+        this.lastInterestBookingDate = backdatedDisbursementDate != null? backdatedDisbursementDate: null;
+        this.disbursementDate = backdatedDisbursementDate != null? backdatedDisbursementDate: new Date();
+        setStatus(LoanStatus.ACTIVE);
     }
 }

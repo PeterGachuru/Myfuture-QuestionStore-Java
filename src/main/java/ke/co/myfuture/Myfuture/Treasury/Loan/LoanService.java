@@ -14,12 +14,14 @@ import ke.co.myfuture.Myfuture.Treasury.Person.Person;
 import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroupRepository;
+import ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.InterestRateType;
 import ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.LoanProduct;
 import ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.LoanProductRepository;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.SystemTransactionService;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.Transaction;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TransactionBuilder;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TransactionCategory;
+import ke.co.myfuture.Myfuture.Utils.DateUtils;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -27,15 +29,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.InterestRateType.FLAT_RATE;
+import static ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.InterestRateType.REDUCING_BALANCE;
+
 @Service
 @RequiredArgsConstructor
 public class LoanService {
-
     private final LoanRepository loanRepository;
     private final PersonRepository personRepository;
     private final LoanProductRepository loanProductRepository;
@@ -60,6 +66,10 @@ public class LoanService {
             savingAccount = accountRepository.findById(request.getDisbursementAccountId())
                     .orElseThrow(() -> new RuntimeException("Saving Account not found"));
         }
+
+
+        Account repaymentAccount = accountRepository.findById(request.getRepaymentAccountId())
+                .orElseThrow(() -> new RuntimeException("Repayment Account not found"));
 
         // Validate loan amount
         if (request.getRequestedAmount().compareTo(loanProduct.getMinLoanAmount()) < 0 ||
@@ -86,6 +96,7 @@ public class LoanService {
         loan.setRequestedAmount(request.getRequestedAmount());
         loan.setRequestedDurationMonths(request.getRequestedDurationMonths());
         loan.setStatus(LoanStatus.PENDING);
+        loan.setRepaymentAccount(repaymentAccount);
         loan.setLoanPurpose(request.getLoanPurpose());
         loan.setApplicationDate(new Date());
         Optional<PeopleGroup> peopleGroup = peopleGroupRepository.findById(request.groupId);
@@ -196,9 +207,9 @@ public class LoanService {
     }
 
 
-    public List<LoanSummaryDTO> getRecentLoans(int limit) {
+    public List<LoanSummaryDTO> getRecentLoans(int limit, Long groupId, Long planId) {
         Pageable pageable = PageRequest.of(0, limit);
-        List<Loan> recentLoans = loanRepository.findRecentLoans(pageable);
+        List<Loan> recentLoans = loanRepository.findRecentLoans( groupId, planId, pageable);
         return recentLoans.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
@@ -244,6 +255,7 @@ public class LoanService {
                     .transactionCategory(TransactionCategory.LOAN_DISBURSEMENT_BY_SAVING)
                     .creditAccount(loan.getDisbursementAccount())
                     .debitAccount(loan.getAccount())
+                    .contributionsPlan(loan.getAccount().getContributionsPlan())
                     .oneOfTheAccounts(loan.getAccount())
                     .amount(loan.getApprovedAmount())
                     .creditParticulars("Loan Disbursement")
@@ -251,9 +263,22 @@ public class LoanService {
                     .build();
             UniversalResponse universalResponse = systemTransactionService.saveTransaction(transactionBuilder);
 
-            if (universalResponse.getStatusCode() < 400){
-                loan.setStatus(LoanStatus.DISBURSED);
+            if (universalResponse.getStatusCode() < 400) {
+                loan.setDisbursed();
                 Loan savedLoan = loanRepository.save(loan);
+                List<LoanScheduleItem> loanScheduleItems = loanScheduleGenerator.generateSchedule(loan);
+                for (LoanScheduleItem loanScheduleItem: loanScheduleItems)
+                    loanScheduleItem.setLoan(savedLoan);
+                loanScheduleItemRepository.saveAll(loanScheduleItems);
+                System.out.println("About to modify next due date");
+                if (!loanScheduleItems.isEmpty()) {
+                    System.out.println("Loan schedule is not empty");
+                    // Assuming the schedule is ordered by dueDate
+                    Date nextDueDate = loanScheduleItems.get(0).getDueDate();
+                    System.out.println("Next due date: "+nextDueDate);
+                    savedLoan.setNextDueDate(nextDueDate);
+                    loanRepository.save(savedLoan);
+                }
                 return new UniversalResponse(201,  savedLoan, "Disbursed successfully");
             }
         } else {
@@ -274,6 +299,15 @@ public class LoanService {
                 for (LoanScheduleItem loanScheduleItem: loanScheduleItems)
                     loanScheduleItem.setLoan(savedLoan);
                 loanScheduleItemRepository.saveAll(loanScheduleItems);
+                System.out.println("About to modify next due date");
+                if (!loanScheduleItems.isEmpty()) {
+                    System.out.println("Loan schedule is not empty");
+                    // Assuming the schedule is ordered by dueDate
+                    Date nextDueDate = loanScheduleItems.get(0).getDueDate();
+                    System.out.println("Next due date: "+nextDueDate);
+                    savedLoan.setNextDueDate(nextDueDate);
+                    loanRepository.save(savedLoan);
+                }
                 return new UniversalResponse(201,  savedLoan, "Disbursed successfully");
             }
         }

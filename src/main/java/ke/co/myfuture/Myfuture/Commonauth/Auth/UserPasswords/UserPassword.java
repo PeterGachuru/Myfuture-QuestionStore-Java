@@ -1,14 +1,12 @@
 package ke.co.myfuture.Myfuture.Commonauth.Auth.UserPasswords;
 
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
@@ -25,4 +23,7 @@ public class UserPassword {
     private String password;
     private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
     private Boolean isExpired = false;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

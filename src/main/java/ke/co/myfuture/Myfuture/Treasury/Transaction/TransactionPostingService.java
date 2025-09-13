@@ -30,6 +30,7 @@ public class TransactionPostingService {
             Account account = tranEntry.getAccount();
             tranEntry.setAccountId(account.getId());
             tranEntry.setAccountName(account.getName());
+            tranEntry.setBalanceAfter(account.getBalance()+(tranEntry.getTranType() == TranType.CREDIT? tranEntry.getAmount(): -1*tranEntry.getAmount()));
             tranEntry.setTransaction(savedTransaction);
             tranEntryRepository.save(tranEntry);
         }

@@ -61,16 +61,17 @@ public class PeopleGroupController {
         System.out.println("all");
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
-        response.setMessage("ProductCategory retrieved Successfully");
-        List<PeopleGroup> accountList;
+        response.setMessage("Groups retrieved Successfully");
+        List<PeopleGroup> peopleGroups;
+        System.out.println("Found username: "+UserRequestContext.getCurrentUserName());
         if (parentId == null || parentId == 0)
-            accountList = repository.findAllByAuditTrails_DeletedFlag(false, UserRequestContext.getCurrentUserName());
+            peopleGroups = repository.findAllByAuditTrails_DeletedFlag(false, UserRequestContext.getCurrentUserName());
         else {
-            accountList = repository.findAllByAuditTrails_DeletedFlag(false, parentId, UserRequestContext.getCurrentUserName());
+            peopleGroups = repository.findAllByAuditTrails_DeletedFlag(false, parentId, UserRequestContext.getCurrentUserName());
         }
 //        for (PeopleGroup account: accountList)
 //            account.setAudits(repository.getAudits(account.getId()));
-        response.setEntity(accountList);
+        response.setEntity(peopleGroups);
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

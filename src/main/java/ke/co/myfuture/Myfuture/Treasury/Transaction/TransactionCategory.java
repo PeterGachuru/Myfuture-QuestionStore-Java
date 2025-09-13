@@ -4,6 +4,8 @@ public enum TransactionCategory {
     EXPENSE,
     RETURN_EXPENSE_CASH,
     INCOME,
+    LOAN_INTEREST_BOOKING,
+    LOAN_REPAYMENT,
     CASH,
     REVERSAL,
     LEND,

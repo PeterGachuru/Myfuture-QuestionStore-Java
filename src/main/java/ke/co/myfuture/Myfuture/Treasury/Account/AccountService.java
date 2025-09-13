@@ -96,4 +96,15 @@ public class AccountService {
         account.setActive();
         return repository.save(account);
     }
+
+    public UniversalResponse closeAccount(Account account, String closureReason) {
+        System.out.println("In closeAccount");
+        if (Math.abs(account.getBalance()) <= 0.05) {
+            account.close(closureReason);
+            Account account1 = repository.save(account);
+            return new UniversalResponse(200, account1, "Closed");
+        }
+
+        return null;
+    }
 }
