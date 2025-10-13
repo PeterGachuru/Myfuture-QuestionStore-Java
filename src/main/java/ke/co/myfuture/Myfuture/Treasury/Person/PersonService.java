@@ -131,13 +131,23 @@ public class PersonService {
 
     public UniversalResponse executeVerifyPersonEmail(Long personId, Long groupId, String emailAddress) {
         Optional<Person> person = personRepository.foundMemberById(false, groupId, personId);
-        Optional<PeopleGroup> peopleGroup = peopleGroupRepository.findById(groupId);
-        if (person.isEmpty())
+//        Optional<PeopleGroup> peopleGroup = peopleGroupRepository.findById(groupId);
+        if (person.isEmpty()) {
+            System.out.println("Returning because did not find person");
             return null;
-        if (person.get().getEmail() == null || !isValidEmail(person.get().getEmail()))
+        }
+        if (person.get().getEmail() == null || !isValidEmail(person.get().getEmail())) {
+            System.out.println("Returning because email is invalid");
             return null;
-        if (!person.get().getEmail().equals(emailAddress))
+        }
+        if (!person.get().getEmail().equals(emailAddress)) {
+            System.out.println("Returning because email is invalid");
             return null;
+        }
+        if (person.get().getEmailVerified()) {
+            System.out.println("Returning because email is already verified");
+            return null;
+        }
 
         UniversalResponse response = new UniversalResponse();
 
@@ -152,4 +162,3 @@ public class PersonService {
         return response;
     }
 }
-

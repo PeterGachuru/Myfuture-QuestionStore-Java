@@ -6,12 +6,14 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UserCreate
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.AuthEntityResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.UserResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.UsersResponse;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.UserPhoneUpdate;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.Request.PasswordResetConfirmation;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.Response.OtpResponse;
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MailServiceException;
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MakerCheckerFailException;
 import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MaximumRetriesException;
 import ke.co.myfuture.Myfuture.Commonauth.Utils.CustomMailSender;
+import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -72,6 +74,17 @@ public class UserHandler {
     public ResponseEntity<?> updateUserRole(@RequestBody UpdateUserRoleRequest body) {
         try {
             AuthEntityResponse response = this.userService.updateUserRole(body.getEmail(), body.getRoleId());
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new OtpResponse(null, e.getMessage()));
+        }
+    }
+
+    @PutMapping("/update-user-phone")
+    public ResponseEntity<?> updateUserPhone(@RequestBody UserPhoneUpdate userPhoneUpdate) {
+        try {
+            UniversalResponse response = this.userService.updateUserPhone(userPhoneUpdate);
+            System.out.println("Response after phone update: "+response);
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new OtpResponse(null, e.getMessage()));

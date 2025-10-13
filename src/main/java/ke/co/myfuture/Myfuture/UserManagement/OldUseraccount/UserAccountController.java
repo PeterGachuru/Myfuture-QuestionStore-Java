@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.UserManagement.Useraccount;
+package ke.co.myfuture.Myfuture.UserManagement.OldUseraccount;
 
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;

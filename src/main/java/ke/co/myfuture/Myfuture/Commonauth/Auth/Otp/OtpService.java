@@ -104,7 +104,7 @@ public class    OtpService {
 
         System.out.println("After empty check");
 
-        if (otp.getRetries() >= 15){
+        if (otp.getRetries() >= 50) {
             System.out.println("Out of validateLoginRetries");
             return false;
         } else {

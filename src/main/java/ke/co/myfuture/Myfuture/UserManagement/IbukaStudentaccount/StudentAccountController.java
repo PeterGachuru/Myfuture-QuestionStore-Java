@@ -31,6 +31,8 @@ public class StudentAccountController {
     CurriculumRepository curriculumRepository;
     @Autowired
     CurriLevelRepository curriLevelRepository;
+    @Autowired
+    IbukaStudentAccountService ibukaStudentAccountService;
 
     @PostMapping("add")
     public ResponseEntity<?> newStudentAccount(@RequestBody IbukaStudentAccount student) {
@@ -83,6 +85,16 @@ public class StudentAccountController {
         response.setStatus("Success");
         response.setMessage("StudentAccount retrieved Successfully");
         response.setEntity(repository.findByParent(parentId));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("getdeep/by/parent")
+    public ResponseEntity<?> fetchAllDeep(@RequestParam("parentId") Long parentId) {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("StudentAccount retrieved Successfully");
+        response.setEntity(ibukaStudentAccountService.findByParent(parentId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

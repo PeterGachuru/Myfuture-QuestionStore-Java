@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -113,6 +114,7 @@ public class UITransactionService {
         reversalTransaction.setCategory(TransactionCategory.REVERSAL);
         reversalTransaction.reversalFor = transaction.getId();
         reversalTransaction.setReversal(true);
+        reversalTransaction.setTranDate(new Date());
         transaction.setReversal(true);
 
         reversalTransaction.setTranEntries(new ArrayList<>());

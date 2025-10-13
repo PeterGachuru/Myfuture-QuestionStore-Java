@@ -64,7 +64,6 @@ public class HttpConfigurer  {
                 .apply(new ImageStoreHttpFilters()).and()
                 .apply(new TreasuryHttpFilters()).and()
                 .apply(new AuthenticationHttpFilters()).and()
-
                 .authorizeHttpRequests((auth) -> auth
                                 // PERMIT ALL OPTIONS REQUEST
                                 .mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll()

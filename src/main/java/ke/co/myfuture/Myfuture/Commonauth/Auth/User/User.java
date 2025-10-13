@@ -4,6 +4,7 @@ package ke.co.myfuture.Myfuture.Commonauth.Auth.User;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.UserPasswords.UserPassword;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
@@ -44,6 +45,8 @@ public class User implements Serializable {
 
     @Column(name="last_name")
     private String lastName;
+
+
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -89,4 +92,9 @@ public class User implements Serializable {
     @Column(name = "reset_password_token_expire")
     private Timestamp resetPasswordTokenExpire;
 
+    private String updatedBy;
+
+    public void update() {
+        updatedBy = UserRequestContext.getCurrentUserName();
+    }
 }

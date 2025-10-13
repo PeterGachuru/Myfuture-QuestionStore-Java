@@ -28,6 +28,7 @@ public class StudySubscription {
 
     @Column(nullable = false)
     private int numberOfDays;
+    private int appVersion;
 
     @Column(nullable = false)
     private Long installId;
@@ -37,6 +38,8 @@ public class StudySubscription {
 
     @Column(nullable = false)
     private String transactionCode;
+
+    private String referralCode;
 
     @Column(nullable = false)
     private String emailAddress;
@@ -48,10 +51,10 @@ public class StudySubscription {
     private String paymentProcessor;
 
     @Column(nullable = false)
-    private LocalDateTime startDate;
+    private Date startDate;
 
     @Column(nullable = false)
-    private LocalDateTime endDate;
+    private Date endDate;
 
     @CreationTimestamp
     public Date createdAt;

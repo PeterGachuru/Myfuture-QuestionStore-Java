@@ -36,6 +36,8 @@ public class AuthenticationManager implements org.springframework.security.authe
 
             String email = jwtUtil.getEmailFromToken(authToken);
 
+            System.out.println("User to validate: "+email);
+
             List<RoleConfig> roles = this.userService.validateUser(email);
             if (roles != null && !roles.isEmpty()) {
                 log.log(Level.WARNING, String.format("Authenticated user roles [ %s ] ", roles));

@@ -15,6 +15,10 @@ import java.util.List;
 public class UserData implements Serializable {
     @Builder.Default
     private Long id = null;
+    @Builder.Default
+    private String loggedSystem = null;
+    @Builder.Default
+    private String loggedDomain = null;
 
     @Builder.Default
     private String email = null;

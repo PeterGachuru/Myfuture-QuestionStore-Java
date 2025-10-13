@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.PersonGroup;
 
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.AccessRight;
 import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;
@@ -7,6 +8,7 @@ import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -56,6 +58,8 @@ public class PeopleGroupController {
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+//    @PreAuthorize("hasAuthority('VIEW_PEOPLE_GROUP')")
     @GetMapping("all")
     public ResponseEntity<?> fetchProductCategory(@RequestParam(required = false, name = "parentId") Long parentId) {
         System.out.println("all");

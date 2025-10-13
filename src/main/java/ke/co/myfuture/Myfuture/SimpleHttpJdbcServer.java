@@ -1,16 +1,21 @@
-import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpHandler;
+package ke.co.myfuture.Myfuture;
+
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class SimpleHttpJdbcServer {
 
     // Change DB connection details
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/myfuture_question_store";
+    private static final String JDBC_URL = "jdbc:mariadb://localhost:3306/myfuture_question_store";
     private static final String JDBC_USER = "root";
     private static final String JDBC_PASS = "root";
 
@@ -29,7 +34,7 @@ public class SimpleHttpJdbcServer {
             String response = "";
             try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASS);
                  Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery("SELECT id, content FROM curri_notes WHERE id = 3204")) {
+                 ResultSet rs = stmt.executeQuery("SELECT id, content FROM curri_notes WHERE subtopic = 3204")) {
 
                 StringBuilder sb = new StringBuilder();
                 sb.append("[");

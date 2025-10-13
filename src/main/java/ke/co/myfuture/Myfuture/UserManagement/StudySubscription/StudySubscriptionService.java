@@ -19,7 +19,7 @@ public class StudySubscriptionService {
     }
 
     public List<StudySubscription> getAllSubscriptions() {
-        return studySubscriptionRepository.findAll();
+        return studySubscriptionRepository.findLatest300();
     }
 
     public StudySubscription getSubscriptionById(Long id) {

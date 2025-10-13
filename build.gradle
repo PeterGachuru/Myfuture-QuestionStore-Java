@@ -25,6 +25,11 @@ repositories {
 	}
 }
 
+bootRun {
+	jvmArgs = ['-Dfile.encoding=UTF-8']
+	sourceResources sourceSets.main
+}
+
 
 dependencies {
 	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.2'
@@ -85,8 +90,6 @@ dependencies {
 	implementation 'org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22'
 	implementation 'com.itextpdf:itextpdf:5.5.13.1'
 
-
-
 	implementation group: 'com.opencsv', name: 'opencsv', version: '5.7.1'
 	implementation 'org.jsoup:jsoup:1.14.3'
 	implementation 'e-iceblue:spire.pdf:9.6.2'
@@ -130,6 +133,12 @@ dependencies {
 	implementation 'com.google.auth:google-auth-library-oauth2-http:1.15.0'
 
 	implementation 'com.google.api-client:google-api-client:1.34.0'
+
+	// OkHttp for HTTP requests
+	implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+
+	// org.json for JSON parsing
+	implementation 'org.json:json:20240303'
 
 }
 

@@ -22,6 +22,8 @@ public class AuthenticationHttpFilters extends AbstractHttpConfigurer<Authentica
                         .mvcMatchers("/users/update-user/:id").hasAnyAuthority(AccessRight.CREATE_USER.toString())
                         .mvcMatchers("/powers/activate-role").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
                         .mvcMatchers("/users/all-accounts").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
+                        .mvcMatchers("/authentication/loginByRefreshToken").permitAll()
+//                        .anyRequest().authenticated()
                 );
     }
 }

@@ -27,14 +27,14 @@ public class EmailSchedulerService {
 
     // Periodically check for pending emails to send
 //    @Scheduled(initialDelay = 0,fixedRate = 60000) // Runs every minute
-    @Scheduled(initialDelay = 0,fixedRate = 2 * 60 * 1000) // Runs every 2 minute
+    @Scheduled(initialDelay = 0,fixedRate = 15 * 1000) // Runs every 15 seconds
     public void processPendingEmails() {
         System.out.println(" public void processPendingEmails() {");
 
-        if (!inProd) {
-            System.out.println("====Can't send scheduled emails because we are not in PROD=========");
-            return;
-        }
+//        if (!inProd) {
+//            System.out.println("====Can't send scheduled emails because we are not in PROD=========");
+//            return;
+//        }
 
         LocalDateTime now = LocalDateTime.now();
         List<ScheduledEmails> pendingEmails = emailRepository.findPendingEmails(new Date());

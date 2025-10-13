@@ -11,6 +11,7 @@ import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizQuestion.QuizQuestion
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +48,10 @@ public class QuizDoneService {
                 .collect(Collectors.toMap(curriLevel -> curriLevel.getId(), curriLevel -> curriLevel));
 
         // Load all quizzes
-        List<QuizDone> quizDones =  quizDoneRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<QuizDone> quizDones = quizDoneRepository.findAll(
+                PageRequest.of(0, 200, Sort.by(Sort.Direction.DESC, "createdAt"))
+        ).getContent();
+
 
         // Convert to DTOs
         List<QuizDoneDTO> dtos = quizDones.stream()

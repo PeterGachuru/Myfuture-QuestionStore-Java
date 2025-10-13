@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transactions")
-public class Transaction {
+public class MpesaTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,7 +19,7 @@ public class Transaction {
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime completedAt;
 
-    public Transaction() {}
+    public MpesaTransaction() {}
 
     // getters and setters
     public Long getId() { return id; }

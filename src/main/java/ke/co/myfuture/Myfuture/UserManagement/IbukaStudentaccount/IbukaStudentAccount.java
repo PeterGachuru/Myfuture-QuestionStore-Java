@@ -4,7 +4,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.Curriculum.Curriculum;
-import ke.co.myfuture.Myfuture.UserManagement.Useraccount.UserAccount;
+import ke.co.myfuture.Myfuture.UserManagement.OldUseraccount.UserAccount;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -22,12 +22,18 @@ public class IbukaStudentAccount {
     @Column(name = "id", nullable = false)
     public Long id;
 
+    @Column(unique = true)
+    public String shareCode;
+
     String school;
     Long classlevel;
     Long curriculum;
     Long totalScore;
     @Transient
     Long unsyncedScore;
+
+    @Column(columnDefinition = "INT DEFAULT 0")
+    private Integer creditsBalance;
 
     @Transient
     CurriLevel curriLevel;

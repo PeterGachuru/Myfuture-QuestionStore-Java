@@ -55,7 +55,6 @@ public class QuizDone {
     @Column(nullable = false)
     public Boolean deleted;
 
-
     @CreationTimestamp
     @Column(nullable = false)
     public Date createdAt;

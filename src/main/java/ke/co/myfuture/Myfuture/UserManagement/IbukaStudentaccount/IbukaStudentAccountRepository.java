@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStudentAccount, Long> {
     @Query(value = "SELECT * FROM(SELECT * FROM ibuka_student_account WHERE name LIKE CONCAT('%',:search,'%')  AND classlevel BETWEEN (:classlevel - 1) AND (:classlevel + 1) " +
@@ -14,6 +15,7 @@ public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStuden
     List<IbukaStudentAccount> contestInvitees(@Param("search") String search, @Param("count")  Integer count,
                                               @Param("classlevel") Long classlevel, @Param("studentId")  Long studentId);
     List<IbukaStudentAccount> findByParent(Long parentId);
+    Optional<IbukaStudentAccount> findByShareCode(String shareCode);
 
     List<IbukaStudentAccount> findTop200ByOrderByCreatedAtDesc();
 

@@ -27,6 +27,8 @@ public class DashboardSupport {
 
     public interface Snapshot{
         Long getId();
+
+        String getName();
         Double getTotalCashAndEquivalents();
         Double getTotalPledges();
         Double getTotalUnRedeemedPledges();

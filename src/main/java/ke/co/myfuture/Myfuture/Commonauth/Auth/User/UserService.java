@@ -1,6 +1,5 @@
 package ke.co.myfuture.Myfuture.Commonauth.Auth.User;
 
-//import co.ke.emtechhousee.emtr.Auditing.AuditTrail.AuditTrailProvider;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UpdateUserRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UserCreateRequest;
@@ -9,10 +8,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.LoginResp
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.UserResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.UsersResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Role.RoleAccessRights;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.LoginSession;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.LoginSessionRepository;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.UserData;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.UserRoleData;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.*;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Otp.OtpService;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.RoleConfig;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.RoleConfigRepository;
@@ -102,13 +98,13 @@ public class UserService {
         GoogleIdToken.Payload payload = googleTokenVerifierService.validateGoogleIdToken(idTokenString);
 
         // Extract user information from the payload
-        String userId = payload.getSubject();  // Google's unique user ID
-        String email = payload.getEmail();
-        boolean emailVerified = payload.getEmailVerified();
-        String name = (String) payload.get("name");
-        String firstName = (String) payload.get("given_name");  // Extract first name
-        String lastName = (String) payload.get("family_name");  // Extract last name
-        String pictureUrl = (String) payload.get("picture");
+//        String userId = payload.getSubject();  // Google's unique user ID
+//        String email = payload.getEmail();
+//        boolean emailVerified = payload.getEmailVerified();
+//        String name = (String) payload.get("name");
+//        String firstName = (String) payload.get("given_name");  // Extract first name
+//        String lastName = (String) payload.get("family_name");  // Extract last name
+//        String pictureUrl = (String) payload.get("picture");
 
         GoogleSignInData googleSignInData = new GoogleSignInData();
         googleSignInData.email = payload.getEmail();
@@ -176,6 +172,8 @@ public class UserService {
         userRepository.findByEmail(email.trim()).ifPresentOrElse(user -> {
             System.out.println("Found user "+email);
             System.out.println(user.getStatus());
+            user.setPasswords(userPasswordRepo.findByUserId(user.getId()));
+            System.out.println(user);
             if (Objects.equals(user.getStatus(), "Active")) {
                 System.out.println("User is active");
                 if (!otpService.validateLoginRetries(email)) {
@@ -209,6 +207,7 @@ public class UserService {
                 System.out.println(" before Check password match");
 
                 if (user.getPasswords().isEmpty()) {
+                    System.out.println("EMpty passwords");
                     response.set(LoginResponse.builder().statusCode(HttpStatus.BAD_REQUEST.value()).message("No password set").build());
                 } else
                 if (passwordUtil.matches(password.trim(),
@@ -937,5 +936,21 @@ public class UserService {
         Optional<LoginSession> authenticatedBy =  loginSessionRepository.findByRefreshToken(refreshToken);
 
         return loginResponse(authenticatedBy.get().getEmail());
+    }
+
+    public UniversalResponse updateUserPhone(UserPhoneUpdate userPhoneUpdate) {
+        Optional<User> user = userRepository.findByEmail(userPhoneUpdate.getEmail());
+        if (user.isEmpty())
+            return null;
+
+        user.get().setPhoneNumber(userPhoneUpdate.getPhoneNumber());
+        user.get().update();
+        User savedUser = userRepository.save(user.get());
+        UniversalResponse universalResponse = new UniversalResponse();
+        universalResponse.setStatusCode(200);
+        universalResponse.setMessage("Updated successfully");
+        universalResponse.setEntity(savedUser);
+
+        return universalResponse;
     }
 }

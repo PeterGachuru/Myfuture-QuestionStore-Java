@@ -30,7 +30,6 @@ public class DukazoteDataSourceConfig
 {
     @Autowired
     private Environment env;
-
     @Bean
     @ConfigurationProperties(prefix="datasource.dukazote")
     public DataSourceProperties dukazoteDataSourceProperties() {
@@ -86,7 +85,5 @@ public class DukazoteDataSourceConfig
         dataSourceInitializer.setEnabled(env.getProperty("datasource.dukazote.initialize", Boolean.class, false));
         return dataSourceInitializer;
     }
-
-
 }
 

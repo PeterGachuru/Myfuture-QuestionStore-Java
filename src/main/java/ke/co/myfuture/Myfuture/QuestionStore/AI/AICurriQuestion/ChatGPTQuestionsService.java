@@ -22,8 +22,12 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.*;
@@ -51,6 +55,27 @@ public class ChatGPTQuestionsService {
     private CurriQuestionService curriQuestionService;
 
     private static final int MAXIMUM_NUMBER_OF_QUESTIONS_ALLOWED = 35;
+
+    @Async
+    public UniversalResponse generateQuestionsForSubject(String model, long levelId, long subjectId) {
+        System.out.println("Automaticall generating questions for "+model+" level: "+levelId+" subject: "+subjectId);
+        List<CurriTopic> topicList  =  curriTopicRepository.findBySubjectAndClass(subjectId,
+                levelId);
+        for (CurriTopic topic: topicList) {
+            List<CurriTopic> subtopicList  =  curriTopicRepository.findByParent(topic.getId());
+            for (CurriTopic subtopic: subtopicList) {
+                generateForSubtopic(model,  subtopic);
+            }
+        }
+//        updateCurriTopicStats();
+
+        queryContentForAllSubtopics();
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Generated Successfully");
+        response.setStatusCode(200);
+        return response;
+    }
 
 
     public void queryContentForAllSubtopics() {
@@ -135,7 +160,7 @@ public class ChatGPTQuestionsService {
         }
     }
 
-
+    @Async
     public void generateForSubtopic(String model, CurriTopic curriTopic) {
         if (curriTopic.getCurriLevel().getCurriculum() == 1) {
             System.out.println("Cant continue because curriculum is extinct");
@@ -234,7 +259,8 @@ public class ChatGPTQuestionsService {
             Specify which is the correct choice.
             Use only question, choices, correct_choice, and explanation as the fields.
             Do not add A, B, C, D or any numbering to the answer choices.
-            Just provide the choices as plain text.
+            Just provide the choices as plain text. 
+            If the subject in this prompt is a language, focus only on grammatical matters in that language. 
             """;
 
         if (curriTopic.getParent() != null && curriTopic.getParent().getParent() != null)
@@ -248,7 +274,8 @@ public class ChatGPTQuestionsService {
             Specify which is the correct choice.
             Use only question, choices, correct_choice, and explanation as the fields.
             Do not add A, B, C, D or any numbering to the answer choices.
-            Just provide the choices as plain text.'
+            Just provide the choices as plain text. 
+            If the subject in this prompt is a language, focus only on grammatical matters in that language. '
             """;
         return question;
     }

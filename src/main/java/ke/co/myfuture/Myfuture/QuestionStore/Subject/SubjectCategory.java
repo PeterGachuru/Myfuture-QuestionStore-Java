@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.Subject;
 
-public enum SchoolSubjectCategory {
+public enum SubjectCategory {
     LANGUAGES,
     MATHEMATICS,
     SCIENCES,

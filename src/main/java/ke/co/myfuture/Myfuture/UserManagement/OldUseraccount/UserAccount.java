@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.UserManagement.Useraccount;
+package ke.co.myfuture.Myfuture.UserManagement.OldUseraccount;
 
 import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
 import lombok.Data;
@@ -15,7 +15,6 @@ public class UserAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     public Long id;
-
     @Column(nullable = false)
     String phone;
     String county;
@@ -26,18 +25,13 @@ public class UserAccount {
     String email;
     @Column(nullable = false)
     String password;
-
     @Column(name = "install_id", nullable = false)
     Long installId;
     @Transient
     Install install;
-
-
     @CreationTimestamp
     public Date createdAt;
     public Date lastLogin;
     @UpdateTimestamp
     public Date updatedAt = new Date();
-
-//    List<String> roles = List.of("ROLE1", "ROLE2");
 }

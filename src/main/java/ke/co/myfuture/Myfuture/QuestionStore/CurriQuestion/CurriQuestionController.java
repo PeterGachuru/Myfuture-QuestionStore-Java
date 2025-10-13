@@ -2,6 +2,7 @@ package ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion;
 
 import ke.co.myfuture.Myfuture.ImageStore.FileManagement.ImageFile;
 import ke.co.myfuture.Myfuture.ImageStore.FileManagement.ImageFileService;
+import ke.co.myfuture.Myfuture.QuestionStore.AI.AICurriQuestion.ChatGPTQuestionsService;
 import ke.co.myfuture.Myfuture.QuestionStore.Cgroup.Cgroup;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoice;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoiceRepository;
@@ -31,10 +32,13 @@ public class CurriQuestionController {
     CurriQuestionRepository repository;
 
     @Autowired
-    ImageFileService imageFileService;
+    CurriTopicRepository curriTopicRepository;
 
     @Autowired
-    CurriTopicRepository curriTopicRepository;
+    CurriQuestionRepository curriQuestionRepository;
+
+    @Autowired
+    ChatGPTQuestionsService chatGPTQuestionsService;
 
     @Autowired
     CgroupService cgroupService;
@@ -47,82 +51,12 @@ public class CurriQuestionController {
 
     @PostMapping("add/{subtopic}")
     public ResponseEntity<?> newCurriQuestion(@PathVariable("") Long subtopic, @RequestBody CurriQuestion question) {
-        Optional<CurriTopic> curriSubtopic = curriTopicRepository.findById(subtopic);
-        if (curriSubtopic.isPresent()) {
-            question.setSubtopic(curriSubtopic.get());
-
-            Cgroup cgroup = new Cgroup();
-            cgroup.setType("Many");
-            cgroup.setDescription("Question group");
-            cgroup.setName("Question group");
-
-            cgroup = cgroupService.newCgroup(cgroup);
-
-            question.setCgroup(cgroup.id);
-
-            List<CurriNormalChoice> choices = question.getChoices();
-//            question.updateChoices();
-
-            CurriQuestion savedCurriQuestion = repository.save(question);
-//
-            for (CurriNormalChoice choice: choices) {
-                System.out.println(choice);
-                choice.setQuestion(savedCurriQuestion.getId());
-            }
-            curriNormalChoiceRepository.saveAll(choices);
-            savedCurriQuestion = repository.findById(savedCurriQuestion.getId()).get();
-
-            System.out.println(savedCurriQuestion);
-            UniversalResponse response = new UniversalResponse();
-            response.setStatus("Success");
-            response.setMessage("Saved successfully");
-            response.setEntity(savedCurriQuestion);
-            response.setStatusCode(201);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        return null;
+        return curriQuestionService.newCurriQuestion(subtopic, question);
     }
 
     @PutMapping("update")
     public ResponseEntity<?> updateCurriQuestion(@RequestBody CurriQuestion question) {
-        Optional<CurriQuestion> dbCurriQuestion = repository.findById(question.id);
-        if (dbCurriQuestion.isPresent()) {
-            CurriQuestion curriQuestion = dbCurriQuestion.get();
-            curriQuestion.setString(question.getString());
-            curriQuestion.setHasImage(question.getHasImage());
-            curriQuestion.setImageCode(question.getImageCode());
-//            curriQuestion.setImageLevel(question.getImageLevel());
-
-            Map<Long, CurriNormalChoice> mapForIncomingChoices = new HashMap<>();
-            for (CurriNormalChoice curriNormalChoice : question.choices) {
-                mapForIncomingChoices.put(curriNormalChoice.getId(), curriNormalChoice);
-            }
-
-            List<CurriNormalChoice> newCurriNormalChoices = new ArrayList<>();
-            for (CurriNormalChoice curriNormalChoice: dbCurriQuestion.get().getChoices()) {
-                CurriNormalChoice incomingChoice = mapForIncomingChoices.get(curriNormalChoice.getId());
-                if (incomingChoice != null) {
-                    curriNormalChoice.setImageCode(incomingChoice.getImageCode());
-                    curriNormalChoice.setValue(incomingChoice.getValue());
-                    curriNormalChoice.setType(incomingChoice.getType());
-                    newCurriNormalChoices.add(curriNormalChoice);
-                }
-            }
-            curriQuestion.setChoices(question.getChoices());
-            CurriQuestion savedSubquestion = repository.save(curriQuestion);
-            UniversalResponse response = new UniversalResponse();
-            response.setStatus("Success");
-            response.setMessage("Updated Successfully");
-            response.setEntity(savedSubquestion);
-            response.setStatusCode(201);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-
-        UniversalResponse response = new UniversalResponse();
-        response.setStatus("Success");
-        response.setMessage("Could not update");
-        response.setStatusCode(HttpStatus.NOT_ACCEPTABLE.value());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return curriQuestionService.updateCurriQuestion(question);
     }
 
     @GetMapping("get/by/id")
@@ -137,50 +71,18 @@ public class CurriQuestionController {
 
     @PutMapping("approve")
     public ResponseEntity<?> approveCurriQuestion(@RequestParam("id") Long id) {
-        UniversalResponse response = new UniversalResponse();
-        response.setStatus("Success");
-        response.setMessage("Question approved Successfully");
-        Optional<CurriQuestion> curriQuestion = repository.findById(id);
-        curriQuestion.get().approve();
-        curriQuestion.get().setUpdateId(curriQuestionService.getNewUpdateId());
-        curriQuestion.get().setApprovalDate(new Date());
-        repository.save(curriQuestion.get());
-        response.setStatusCode(200);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return curriQuestionService.approveCurriQuestion(id);
     }
 
 
     @DeleteMapping("delete")
     public ResponseEntity<?> deleteCurriQuestion(@RequestParam("id") Long id) {
-        UniversalResponse response = new UniversalResponse();
-        response.setStatus("Success");
-        response.setMessage("Question deleted");
-        Optional<CurriQuestion> curriQuestion = repository.findById(id);
-        curriQuestion.get().delete();
-        curriQuestion.get().setUpdateId(curriQuestionService.getNewUpdateId());
-        repository.save(curriQuestion.get());
-        response.setEntity(null);
-        response.setStatusCode(200);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return curriQuestionService.deleteCurriQuestion(id);
     }
 
     @DeleteMapping("deleteBySubject")
     public ResponseEntity<?> deleteCurriQuestion(@RequestParam("subjectId") Long subjectId, @RequestParam("bookModel") String bookModel) {
-        UniversalResponse response = new UniversalResponse();
-        response.setStatus("Success");
-        response.setMessage("Questions deleted");
-        List<CurriQuestion> curriQuestions = repository.findBySubjectAndBookModel(subjectId, bookModel);
-
-        List<CurriQuestion> updatedQuestions = new ArrayList<>();
-        for (CurriQuestion curriQuestion: curriQuestions) {
-            curriQuestion.delete();
-            curriQuestion.setUpdateId(curriQuestionService.getNewUpdateId());
-            updatedQuestions.add(curriQuestion);
-        }
-        repository.saveAll(updatedQuestions);
-        response.setEntity(null);
-        response.setStatusCode(200);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return curriQuestionService.deleteCurriQuestion(subjectId, bookModel);
     }
 
     @GetMapping("forContestQuestionDownload")
@@ -199,23 +101,8 @@ public class CurriQuestionController {
                                                 @RequestParam("curriculum") Long curriculum,
                                                 @RequestParam("page") int page,
                                                 @RequestParam("size") int size) {
-        System.out.println("model: "+model+", lastUpdateId: "+lastUpdateId+", curriculum: "+curriculum+", page: "+", "+size);
-        UniversalResponse response = new UniversalResponse();
-        response.setStatus("Success");
-        response.setMessage("CurriQuestion retrieved Successfully");
-        System.out.println(new Date());
-        System.out.println("Started reading questions");
-        Pageable paging = PageRequest.of(page, size);
-        Page<CurriQuestion> curriQuestions = repository.findByBookModel(paging, model, lastUpdateId, curriculum);
-        System.out.println(curriQuestions.getContent().size());
-        response.setEntity(curriQuestions.getContent());
-        response.setCurrentPage(page);
-        response.setTotalItems(curriQuestions.getSize());
-        response.setTotalPages(curriQuestions.getTotalPages());
-        System.out.println("Completed reading questions");
-        System.out.println(new Date());
-        response.setStatusCode(200);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+
+        return curriQuestionService.fetchCurriQuestion(model, lastUpdateId, curriculum, page, size);
     }
 
     @GetMapping("get/all/level/and/subject")
@@ -233,8 +120,12 @@ public class CurriQuestionController {
         System.out.println(new Date());
         System.out.println("Started reading questions");
         Pageable paging = PageRequest.of(page, size);
-        Page<CurriQuestion> curriQuestions = repository.findByBookModel(paging, model, lastUpdateId, curriculum, level, subject);
+        Page<CurriQuestion> curriQuestions = curriQuestionRepository.findByBookModel(paging, model, lastUpdateId, curriculum, level, subject);
         System.out.println(curriQuestions.getContent().size());
+
+        if (Long.parseLong(lastUpdateId) < 5 && curriQuestions.getContent().size() < 5) {
+            chatGPTQuestionsService.generateQuestionsForSubject(model, level, subject);
+        }
         response.setEntity(curriQuestions.getContent());
         response.setCurrentPage(page);
         response.setTotalItems(curriQuestions.getSize());
@@ -267,22 +158,6 @@ public class CurriQuestionController {
 
     @RequestMapping(path = "attach-image/{id}", method = POST,  consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> newFile(@RequestParam("image") MultipartFile fileUploaded, @PathVariable Long id) {
-        ImageFile imageFile = imageFileService.save(fileUploaded);
-        UniversalResponse response = new UniversalResponse();
-        response.setStatus("Success");
-        response.setMessage("Saved successfully");
-        response.setStatusCode(HttpStatus.NOT_ACCEPTABLE.value());
-        Optional<CurriQuestion> curriNormalChoice = repository.findById(id);
-        if (imageFile != null && curriNormalChoice.isPresent()) {
-            curriNormalChoice.get().setHasImage(true);
-            curriNormalChoice.get().setImageCode(imageFile.getCode());
-            repository.save(curriNormalChoice.get());
-            response.setStatus("Success");
-            response.setMessage("Saved successfully");
-            response.setEntity(curriNormalChoice.get());
-            response.setStatusCode(HttpStatus.NOT_ACCEPTABLE.value());
-        }
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return curriQuestionService.newFile(fileUploaded, id);
     }
 }

@@ -56,6 +56,8 @@ public class PersonController {
         System.out.println("executeVerifyPersonEmail");
 
         UniversalResponse response = personService.executeVerifyPersonEmail(personId, groupId, emailAddress);
+        if(response == null)
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @GetMapping("all")

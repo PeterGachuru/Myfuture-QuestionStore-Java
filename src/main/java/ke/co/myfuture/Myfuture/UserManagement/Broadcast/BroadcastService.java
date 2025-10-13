@@ -7,7 +7,7 @@ import ke.co.myfuture.Myfuture.NonJdbc.Migration.MigratorService;
 import ke.co.myfuture.Myfuture.QuestionStore.Users.WriterUsersRepository;
 import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SchedulerService;
 import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SenderService;
-import ke.co.myfuture.Myfuture.UserManagement.Useraccount.UserAccountRepository;
+import ke.co.myfuture.Myfuture.UserManagement.OldUseraccount.UserAccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

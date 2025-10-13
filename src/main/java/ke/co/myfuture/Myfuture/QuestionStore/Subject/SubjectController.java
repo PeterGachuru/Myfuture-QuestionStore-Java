@@ -53,6 +53,37 @@ public class SubjectController {
         return ResponseEntity.ok().body(universalResponse);
     }
 
+    @PutMapping("update")
+    public ResponseEntity<UniversalResponse<?>> update(@RequestBody Subject subject) {
+        System.out.println("Subject @PostMapping(\"add\")");
+        System.out.println(subject);
+        if (subject.id == null) return null;
+
+        Subject saved = subjectRepository.save(subject);
+
+        System.out.println("Saved subject");
+        System.out.println(saved);
+
+        UniversalResponse universalResponse = new UniversalResponse();
+        universalResponse.setEntity(saved);
+        universalResponse.setMessage("Saved");
+        universalResponse.setStatusCode(HttpStatus.FOUND.value());
+        return ResponseEntity.ok().body(universalResponse);
+    }
+
+    @GetMapping("categories")
+    public ResponseEntity<UniversalResponse<SubjectCategory[]>> getCategories() {
+        SubjectCategory[] categories = SubjectCategory.values();
+
+        UniversalResponse<SubjectCategory[]> response = new UniversalResponse<>();
+        response.setEntity(categories);
+        response.setMessage("Retrieved categories");
+        response.setStatusCode(HttpStatus.OK.value());
+
+        return ResponseEntity.ok(response);
+    }
+
+
     @GetMapping("get/by/id")
     public ResponseEntity<?> fetchCurriTopic(@RequestParam("id") Long id) {
         UniversalResponse response = new UniversalResponse();

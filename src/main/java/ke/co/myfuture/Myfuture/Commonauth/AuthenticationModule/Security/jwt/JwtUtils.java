@@ -42,6 +42,8 @@ public class JwtUtils {
         }
         return Jwts.builder()
                 .setSubject((userData.getEmail()))
+                .claim("LOGGED_SYSTEM", userData.getLoggedSystem())
+                .claim("LOGGED_DOMAIN", userData.getLoggedDomain())
                 .setIssuedAt(new Date())
                 .setHeader(headerData)
                 .setExpiration(new Date((new Date()).getTime() + expiration))

@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.UserManagement.Useraccount;
+package ke.co.myfuture.Myfuture.UserManagement.OldUseraccount;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

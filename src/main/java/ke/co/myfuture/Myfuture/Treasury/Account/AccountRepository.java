@@ -65,19 +65,35 @@ AND ownership_type = :ownershipType
     Optional<Account> findByPersonAndPlan(@Param("personId") Long personId, @Param("planId") Long planId);
 
     @Query(nativeQuery = true, value = """
+    SELECT 
+        :groupId AS id,
+        pg.name AS name,
+        SUM(CASE WHEN a.ownership_type = 'CASH' THEN (-1 * a.balance) ELSE 0 END) AS totalCashAndEquivalents,
+        SUM(CASE WHEN a.target_amount > 0 AND a.ownership_type = 'INCOME' THEN a.target_amount ELSE 0 END) AS totalPledges, 
+        SUM(CASE WHEN a.target_amount > 0 AND a.ownership_type = 'INCOME' AND a.target_amount > a.balance THEN (a.target_amount - a.balance) ELSE 0 END) AS totalUnRedeemedPledges, 
+        SUM(CASE WHEN a.ownership_type = 'INCOME' THEN a.balance ELSE 0 END) AS totalIncome, 
+        SUM(CASE WHEN a.ownership_type = 'EXPENSE' THEN a.balance ELSE 0 END) AS totalExpenses 
+    FROM 
+        (
             SELECT 
-                :groupId AS id,
-                SUM(CASE WHEN a.ownership_type = 'CASH' THEN (-1 * a.balance) ELSE 0 END) AS totalCashAndEquivalents,
-                SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' THEN a.target_amount ELSE 0 END) AS totalPledges, 
-                SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' AND  a.target_amount >  a.balance THEN (a.target_amount-a.balance) ELSE 0 END) AS totalUnRedeemedPledges, 
-                SUM(CASE WHEN a.ownership_type = 'INCOME' THEN a.balance ELSE 0 END) AS totalIncome, 
-                SUM(CASE WHEN a.ownership_type = 'EXPENSE' THEN a.balance ELSE 0 END) AS totalExpenses 
+                a.ownership_type, a.balance, a.target_amount, a.contributions_plan_id
             FROM 
-                account a 
+                account a
             WHERE 
-                a.deleted_flag = false AND a.contributions_plan_id IN (SELECT id FROM contributions_plan WHERE people_group_id = :groupId)                        
-    """)
+                a.deleted_flag = false 
+                AND a.contributions_plan_id IN (
+                    SELECT id FROM contributions_plan WHERE people_group_id = :groupId
+                )
+        ) a
+    JOIN 
+        contributions_plan cp ON a.contributions_plan_id = cp.id
+    JOIN 
+        people_group pg ON pg.id = cp.people_group_id
+    WHERE 
+        pg.id = :groupId
+""")
     Optional<DashboardSupport.Snapshot> getSnapshotForGroup(Long groupId);
+
 
     @Query(nativeQuery = true, value = """
             SELECT 
@@ -98,19 +114,26 @@ AND ownership_type = :ownershipType
     Optional<DashboardSupport.Snapshot> getSnapshotForGroupAndGroupByPlan(Long groupId);
 
     @Query(nativeQuery = true, value = """
-                            SELECT 
-                                a.contributions_plan_id AS id,
-                                SUM(CASE WHEN a.ownership_type = 'CASH' THEN (-1 * a.balance) ELSE 0 END) AS totalCashAndEquivalents, 
-                                                SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' THEN a.target_amount ELSE 0 END) AS totalPledges, 
-                SUM(CASE WHEN a.target_amount > 0 AND  a.ownership_type = 'INCOME' AND  a.target_amount >  a.balance THEN (a.target_amount-a.balance) ELSE 0 END) AS totalUnRedeemedPledges, 
-                                SUM(CASE WHEN a.ownership_type = 'INCOME' THEN a.balance ELSE 0 END) AS totalIncome, 
-                                SUM(CASE WHEN a.ownership_type = 'EXPENSE' THEN a.balance ELSE 0 END) AS totalExpenses 
-                            FROM 
-                                account a 
-                            WHERE 
-                                a.deleted_flag = false AND a.contributions_plan_id = :planId 
-                            GROUP BY 
-                                a.contributions_plan_id limit 1 
-                    """)
+        SELECT 
+            a.contributions_plan_id AS id,
+            cp.name AS name,
+            SUM(CASE WHEN a.ownership_type = 'CASH' THEN (-1 * a.balance) ELSE 0 END) AS totalCashAndEquivalents, 
+            SUM(CASE WHEN a.target_amount > 0 AND a.ownership_type = 'INCOME' THEN a.target_amount ELSE 0 END) AS totalPledges, 
+            SUM(CASE WHEN a.target_amount > 0 AND a.ownership_type = 'INCOME' AND a.target_amount > a.balance THEN (a.target_amount - a.balance) ELSE 0 END) AS totalUnRedeemedPledges, 
+            SUM(CASE WHEN a.ownership_type = 'INCOME' THEN a.balance ELSE 0 END) AS totalIncome, 
+            SUM(CASE WHEN a.ownership_type = 'EXPENSE' THEN a.balance ELSE 0 END) AS totalExpenses 
+        FROM 
+            (
+                SELECT ownership_type, balance, target_amount, contributions_plan_id
+                FROM account
+                WHERE deleted_flag = false AND contributions_plan_id = :planId
+            ) a
+        JOIN 
+            contributions_plan cp ON cp.id = a.contributions_plan_id
+        GROUP BY 
+            a.contributions_plan_id, cp.name
+        LIMIT 1
+    """)
     Optional<DashboardSupport.Snapshot> getSnapshotForPlan(Long planId);
+
 }
