@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,6 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ChatGPTNotesService {
@@ -180,7 +178,7 @@ public class ChatGPTNotesService {
         String purpose = "curri_question";
         System.out.println("Sutopic "+curriTopic.id);
         AIQuery aiQuery = new AIQuery();
-        String sanitizedQuestion = getGenerationInstructions(curriTopic);
+        String sanitizedQuestion = getNotesGenerationInstructions(curriTopic);
 //        String sanitizedQuestion = question.replaceAll("\\r|\\n", " ");
 
         System.out.println("----------------------------");
@@ -217,7 +215,7 @@ public class ChatGPTNotesService {
                 .append("    If rejecting a question, provide a reason in at most 3 words. \n")
                 .append("    Return a json object with a json array(named questions) of objects in format with fields: id, approved (true/false), and reason (if rejected).\n\n")
                 .append("    The questions were generated using the following instructions:\n")
-                .append(getGenerationInstructions(subtopic)) // Append original generation instructions
+                .append(getNotesGenerationInstructions(subtopic)) // Append original generation instructions
                 .append("\n");
 
           //to append the notes to be approved
@@ -247,7 +245,7 @@ public class ChatGPTNotesService {
     }
 
     // Helper method to get the generation instructions
-    private String getGenerationInstructions(CurriTopic curriTopic) {
+    private String getNotesGenerationInstructions(CurriTopic curriTopic) {
         String question = notesPromptTemplate(curriTopic);
 
         if (curriTopic.getInstructionsOnGenerationOfQuestions() == null)
@@ -255,23 +253,27 @@ public class ChatGPTNotesService {
         else
             question = question.replaceAll("InstructionsOnGenerationOfQuestions_subtopic", curriTopic.getInstructionsOnGenerationOfQuestions());
 
-        if (curriTopic.getParent().getInstructionsOnGenerationOfQuestions() == null)
+        if (curriTopic.getParent() == null || curriTopic.getParent().getInstructionsOnGenerationOfQuestions() == null)
             question = question.replaceAll("\\(InstructionsOnGenerationOfQuestions_topic\\)", "");
         else
             question = question.replaceAll("InstructionsOnGenerationOfQuestions_topic", curriTopic.getParent().getInstructionsOnGenerationOfQuestions());
 
-        if (curriTopic.getParent().getParent() != null) {
+        if (curriTopic.getParent() != null && curriTopic.getParent().getParent() != null) {
             question = question.replaceAll("sub_subtopic_name_replace", curriTopic.getName());
             question = question.replaceAll("subtopic_name_replace", curriTopic.getParent().getName());
             question = question.replaceAll("topic_name_replace", curriTopic.getParent().getParent().getName());
         } else {
             question = question.replaceAll("subtopic_name_replace", curriTopic.getName());
-            question = question.replaceAll("topic_name_replace", curriTopic.getParent().getName());
+            if (curriTopic.getParent() != null)
+                question = question.replaceAll("topic_name_replace", curriTopic.getParent().getName());
         }
         question = question.replaceAll("subtopic_name_replace", curriTopic.getName());
-        question = question.replaceAll("topic_name_replace", curriTopic.getParent().getName());
-        question = question.replaceAll("age_replace", curriTopic.getParent().getCurriLevel().getAgeEstimate().toString());
-        question = question.replaceAll("subject_replace", curriTopic.getParent().getSubject().getName());
+        if (curriTopic.getParent() != null){
+            question = question.replaceAll("topic_name_replace", curriTopic.getParent().getName());
+            question = question.replaceAll("age_replace", curriTopic.getParent().getCurriLevel().getAgeEstimate().toString());
+            question = question.replaceAll("subject_replace", curriTopic.getParent().getSubject().getName());
+        }
+
 
         return question.replaceAll("\\r|\\n", " ");
     }

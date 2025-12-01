@@ -1,10 +1,14 @@
 package ke.co.myfuture.Myfuture.MpesaIntegration;
 
+import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transactions")
+@Data
 public class MpesaTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,26 +20,13 @@ public class MpesaTransaction {
     private Double amount;
     private String status; // PENDING, SUCCESS, FAILED
     private String mpesaReceiptNumber;
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime createdAt;
     private LocalDateTime completedAt;
+    private LocalDateTime timeCallbackReceived;
+    private String callbackDescription;
+    private Integer callbackResultCode;
 
-    public MpesaTransaction() {}
-
-    // getters and setters
-    public Long getId() { return id; }
-    public String getMerchantRequestId() { return merchantRequestId; }
-    public void setMerchantRequestId(String merchantRequestId) { this.merchantRequestId = merchantRequestId; }
-    public String getCheckoutRequestId() { return checkoutRequestId; }
-    public void setCheckoutRequestId(String checkoutRequestId) { this.checkoutRequestId = checkoutRequestId; }
-    public String getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-    public Double getAmount() { return amount; }
-    public void setAmount(Double amount) { this.amount = amount; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-    public String getMpesaReceiptNumber() { return mpesaReceiptNumber; }
-    public void setMpesaReceiptNumber(String mpesaReceiptNumber) { this.mpesaReceiptNumber = mpesaReceiptNumber; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getCompletedAt() { return completedAt; }
-    public void setCompletedAt(LocalDateTime completedAt) { this.completedAt = completedAt; }
+    private String accountReference;
+    private Long transactionReferenceId;
 }

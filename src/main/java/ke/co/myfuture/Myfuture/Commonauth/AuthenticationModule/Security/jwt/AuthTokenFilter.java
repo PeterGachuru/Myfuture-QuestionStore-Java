@@ -42,17 +42,17 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            log.info("-------------------------------Authentication Entry");
+            log.debug("-------------------------------Authentication Entry");
             Enumeration<String> headerNames = request.getHeaderNames();
 //            if ("POST".equalsIgnoreCase(request.getMethod()))
 //            {
 //                String test = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-//                System.out.println("Body: "+test);
+//                log.debug("Body: "+test);
 ////            }
 //            if (headerNames != null) {
 //                while (headerNames.hasMoreElements()) {
 //                    String name = headerNames.nextElement();
-//                    System.out.println(name+": " + request.getHeader(name));
+//                    log.debug(name+": " + request.getHeader(name));
 //                }
 //            }
             String accessToken = request.getHeader("Authorization");
@@ -71,13 +71,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
             String jwt = accessToken;
             clientinformation.getClientInformation(request);
-            System.out.println("jwt: "+jwt);
+            log.debug("jwt: "+jwt);
 
             if (jwt != null && !jwt.equals("jcbnvdsgcvsdggvgvcvsdhghdsdwodweidwebdfhbvweh326432fdwbhgcdf4736bvcghf36vgvdgy4r76t37t")) {
             if (jwtUtils.validateJwtToken(jwt)) {
-                System.out.println("Jwt is not null");
+                log.debug("Jwt is not null");
                 String email = jwtUtils.getUserNameFromJwtToken(jwt);
-                System.out.println("email");
+                log.debug("email");
                 Map<String, Object> jwtHeaders = jwtUtils.getHeadersFromJwtToken(jwt);
                 Optional<User> user = usersRepository.findByEmail(email);
 
@@ -88,24 +88,24 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
                 UserData userData = userService.getUserDetails(email).getUser();
                 UserDetails userDetails = dataToUserDetails(userData);
-                System.out.println("userDetails: "+userDetails);
+                log.debug("userDetails: "+userDetails);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
 
 //                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                System.out.println("Authenticated");
+                log.debug("Authenticated");
             }else {
-                System.out.println("Could not authenticate jwt");
+                log.debug("Could not authenticate jwt");
             }
             }else {
-                System.out.println("JWT is null");
+                log.debug("JWT is null");
             }
         } catch (Exception e) {
             e.printStackTrace();
             JwtStatusContext.setExpiredJWT(true);
-            log.info("Could not be authenticated");
+            log.debug("Could not be authenticated");
             SecurityContextHolder.clearContext();
         } finally {
             try {
@@ -114,9 +114,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 ignored.printStackTrace();
             }
         }
-        System.out.println("Before filterchain");
+        log.debug("Before filterchain");
         filterChain.doFilter(request, response);
-        System.out.println("After filterchain");
+        log.debug("After filterchain");
     }
 
     private UserDetails dataToUserDetails(UserData userData) {
@@ -171,9 +171,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     public void getLogs(HttpServletRequest request) {
 //        String currentUserDetails = null;
 //        try {
-//            System.out.println("Context: "+SecurityContextHolder.getContext());
-//            System.out.println("Authentication: "+SecurityContextHolder.getContext().getAuthentication());
-//            System.out.println("Principal"+SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+//            log.debug("Context: "+SecurityContextHolder.getContext());
+//            log.debug("Authentication: "+SecurityContextHolder.getContext().getAuthentication());
+//            log.debug("Principal"+SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 //            currentUserDetails =
 //                    ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
 //        } catch (Exception e) {

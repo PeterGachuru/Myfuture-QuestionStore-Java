@@ -20,4 +20,14 @@ public class InitiateStkResponse {
     public void setResponseCode(String responseCode) { this.responseCode = responseCode; }
     public String getResponseDescription() { return responseDescription; }
     public void setResponseDescription(String responseDescription) { this.responseDescription = responseDescription; }
+
+    @Override
+    public String toString() {
+        return "InitiateStkResponse{" +
+                "merchantRequestId='" + merchantRequestId + '\'' +
+                ", checkoutRequestId='" + checkoutRequestId + '\'' +
+                ", responseCode='" + responseCode + '\'' +
+                ", responseDescription='" + responseDescription + '\'' +
+                '}';
+    }
 }

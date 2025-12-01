@@ -8,16 +8,14 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Date;
+
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints =
-        {@UniqueConstraint(columnNames = {"inid", "installId"})})
-public class StudySubscription {
+public class StkSubscriptionRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,24 +28,24 @@ public class StudySubscription {
     private int appVersion;
 
     @Column(nullable = false)
-    private Long installId;
+    private String subscriptionType;
 
-    private String phoneNumber;
-
-    private Long inid;
 
     @Column(nullable = false)
-    private String transactionCode;
+    private String status;
 
-    private String referralCode;
+    @Column(nullable = false)
+    private Long installId;
+
+    @ManyToOne
+    private StudySubscription subscription;
 
     private String emailAddress;
 
-    @Column(nullable = false)
-    private String subscriptionType;
+    private String transactionCode;
 
     @Column(nullable = false)
-    private String paymentProcessor;
+    private String phoneNumber;
 
     @Column(nullable = false)
     private Date startDate;
@@ -59,4 +57,6 @@ public class StudySubscription {
     public Date createdAt;
     @UpdateTimestamp
     public Date updatedAt;
+
+    public Date callbackAt;
 }

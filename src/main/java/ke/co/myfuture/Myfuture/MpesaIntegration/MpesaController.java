@@ -24,6 +24,7 @@ public class MpesaController {
                     request.getPhoneNumber(),
                     request.getAmount(),
                     request.getAccountReference() == null ? "ACCOUNT" : request.getAccountReference(),
+                    request.getAccountReferenceId() == null ? 0L : request.getAccountReferenceId(),
                     request.getTransactionDesc() == null ? "Payment" : request.getTransactionDesc()
             );
             return ResponseEntity.ok(resp);

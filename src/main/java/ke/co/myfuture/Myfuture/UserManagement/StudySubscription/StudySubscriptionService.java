@@ -4,13 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StudySubscriptionService {
 
     @Autowired
     private StudySubscriptionRepository studySubscriptionRepository;
+
+    @Autowired
+    private StkSubscriptionRequestRepository stkSubscriptionRequestRepository;
 
     public StudySubscription createSubscription(StudySubscription subscription) {
         if (subscription.getId() != null && subscription.getId() > 0)
@@ -45,5 +50,49 @@ public class StudySubscriptionService {
 
     public void deleteSubscription(Long id) {
         studySubscriptionRepository.deleteById(id);
+    }
+
+    public void stkPaymentSuccessful(Long transactionReferenceId, String mpesaReceiptNumber) {
+        Optional<StkSubscriptionRequest> stkSubscriptionRequest = stkSubscriptionRequestRepository.findById(transactionReferenceId);
+        if (stkSubscriptionRequest.isPresent()) {
+            stkSubscriptionRequest.get().setTransactionCode(mpesaReceiptNumber);
+            stkSubscriptionRequest.get().setCallbackAt(new Date());
+            stkSubscriptionRequest.get().setStatus("SUCCESS");
+            stkSubscriptionRequestRepository.save(stkSubscriptionRequest.get());
+
+            StudySubscription studySubscription = createSubscriptionFromStk(stkSubscriptionRequest.get());
+            StudySubscription savedStudySubscription = studySubscriptionRepository.save(studySubscription);
+            stkSubscriptionRequest.get().setSubscription(savedStudySubscription);
+
+            stkSubscriptionRequestRepository.save(stkSubscriptionRequest.get());
+        }else {
+            System.out.println("No StkSubscriptionRequest with id "+transactionReferenceId);
+        }
+    }
+
+    public StudySubscription createSubscriptionFromStk(StkSubscriptionRequest req) {
+        StudySubscription sub = new StudySubscription();
+        sub.setPayAmount(req.getPayAmount());
+        sub.setNumberOfDays(req.getNumberOfDays());
+        sub.setAppVersion(req.getAppVersion());
+        sub.setInstallId(req.getInstallId());
+        sub.setTransactionCode(req.getTransactionCode());
+        sub.setStartDate(req.getStartDate());
+        sub.setEndDate(req.getEndDate());
+        sub.setEmailAddress(req.getEmailAddress());
+        sub.setPhoneNumber(req.getPhoneNumber());
+
+        sub.setSubscriptionType(req.getSubscriptionType());
+        sub.setPaymentProcessor("MPESA");
+        return sub;
+    }
+
+    public void stkPaymentFailed(Long transactionReferenceId) {
+        Optional<StkSubscriptionRequest> stkSubscriptionRequest = stkSubscriptionRequestRepository.findById(transactionReferenceId);
+        if (stkSubscriptionRequest.isPresent()) {
+            stkSubscriptionRequest.get().setCallbackAt(new Date());
+            stkSubscriptionRequest.get().setStatus("FAILED");
+            stkSubscriptionRequestRepository.save(stkSubscriptionRequest.get());
+        }
     }
 }

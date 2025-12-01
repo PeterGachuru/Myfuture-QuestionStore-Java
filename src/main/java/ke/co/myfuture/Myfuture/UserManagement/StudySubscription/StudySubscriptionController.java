@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.StudySubscription;
 
+import ke.co.myfuture.Myfuture.MpesaIntegration.MpesaService;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,11 @@ public class StudySubscriptionController {
     private StudySubscriptionService studySubscriptionService;
     @Autowired
     IbukaStudentAccountRepository ibukaStudentAccountRepository;
+    @Autowired
+    StkSubscriptionRequestRepository stkSubscriptionRequestRepository;
+
+    @Autowired
+    MpesaService mpesaService;
 
     @PostMapping
     public ResponseEntity<StudySubscription> createSubscription(@RequestBody StudySubscription studySubscription) {
@@ -34,6 +40,29 @@ public class StudySubscriptionController {
         }
         StudySubscription subscription = studySubscriptionService.createSubscription(studySubscription);
         return ResponseEntity.ok(subscription);
+    }
+
+    @PostMapping("mpesastk")
+    public ResponseEntity<StkSubscriptionRequest> stkRequest(@RequestBody StkSubscriptionRequest stkSubscriptionRequest) {
+        System.out.println("studySubscription: "+stkSubscriptionRequest);
+        stkSubscriptionRequest.setStatus("PENDING");
+        StkSubscriptionRequest stkSubscriptionRequestSaved = stkSubscriptionRequestRepository.save(stkSubscriptionRequest);
+
+        mpesaService.initiateStkPush(
+                stkSubscriptionRequestSaved.getPhoneNumber(),
+                stkSubscriptionRequestSaved.getPayAmount().doubleValue(),
+                stkSubscriptionRequestSaved.getEmailAddress(),
+                stkSubscriptionRequestSaved.getId(),
+                stkSubscriptionRequestSaved.getSubscriptionType()
+        );
+
+        return ResponseEntity.ok(stkSubscriptionRequestSaved);
+    }
+
+    @GetMapping("/mpesastk/status/{id}")
+    public ResponseEntity<StkSubscriptionRequest> getSubscriptionStkRequestById(@PathVariable Long id) {
+        Optional<StkSubscriptionRequest> subscriptionRequest = stkSubscriptionRequestRepository.findById(id);
+        return ResponseEntity.ok(subscriptionRequest.get());
     }
 
     @GetMapping("all")

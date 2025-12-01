@@ -27,7 +27,7 @@ public class    OtpService {
         otpObj.setOtpValue(otp);
         otpRepository.save(otpObj);
 
-        log.info("Generating otp {}", otp);
+        log.debug("Generating otp {}", otp);
         return otp;
     }
 
@@ -129,7 +129,7 @@ public class    OtpService {
     }
 
     public Boolean validateJwtToken(String jwt) {
-        log.info("Validating");
+        log.debug("Validating");
         return !this.otpRepository.findByJwt(jwt).isEmpty();
 //        return true;
     }

@@ -24,6 +24,11 @@ public class Install {
     @Column(nullable = false)
     int version;
 
+    String accountEmail;
+    Long accountId;
+
+    public Date accountAddedAt;
+
     @CreationTimestamp
     public Date createdAt;
     public Date updatedAt = new Date();

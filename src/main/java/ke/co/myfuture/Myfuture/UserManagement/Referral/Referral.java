@@ -22,14 +22,16 @@ public class Referral {
     @Column(nullable = false)
     String referrerCode;
 
-    @Column(nullable = false)
     Long newUserId;
 
-    @Column(nullable = false)
     String newUserEmail;
 
     String referrerEmail;
     Long referrerStudentId;
+
+
+    @Enumerated(EnumType.STRING)
+    ReferralAction referralAction;
 
     @CreationTimestamp
     Date createdAt;

@@ -12,11 +12,24 @@ public class ReferralController {
     @Autowired
     ReferralService referralService;
 
-    @PostMapping("add")
+    @PostMapping("add")//to be moved to installedApp
     public ResponseEntity<?> newStudentAccount(@RequestBody Referral referral) {
         if (referral.id != null) return null;
 
-        Referral savedReferral = referralService.save(referral);
+        Referral savedReferral = referralService.saveNewReffaral(referral, ReferralAction.INSTALLED);
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Saved successfully");
+        response.setEntity(savedReferral);
+        response.setStatusCode(201);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("installedApp")//to be moved to installedApp
+    public ResponseEntity<?> newStudentAccountInstall(@RequestBody Referral referral) {
+        if (referral.id != null) return null;
+
+        Referral savedReferral = referralService.saveNewReffaral(referral, ReferralAction.INSTALLED);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Saved successfully");
@@ -27,7 +40,7 @@ public class ReferralController {
 
     @GetMapping(value = "share/{code}", produces = "text/html")
     public ResponseEntity<String> redirectWithPreview(@PathVariable String code) {
-//        referralService.incrementClick(code);
+        referralService.linkClicked(code);
 
         // HTML with Open Graph tags for WhatsApp preview
         String html = """
@@ -39,7 +52,7 @@ public class ReferralController {
             <meta property="og:image" content="https://myfuture.co.ke/images/launcher-playstore.png" />
             <meta property="og:url" content="https://your-domain.com/referral/share/%s" />
             <meta name="twitter:card" content="summary_large_image" />
-            <meta http-equiv="refresh" content="2;url=https://play.google.com/store/apps/details?id=ke.co.myfuture" />
+            <meta http-equiv="refresh" content="0;url=https://play.google.com/store/apps/details?id=ke.co.myfuture" />
         </head>
         <body>
             <p>Redirecting to Play Store...</p>

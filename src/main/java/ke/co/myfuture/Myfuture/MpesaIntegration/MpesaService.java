@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.MpesaIntegration;
 
+import ke.co.myfuture.Myfuture.UserManagement.StudySubscription.StudySubscriptionService;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -20,6 +21,9 @@ public class MpesaService {
     @Autowired
     private MpesaTransactionRepository mpesaTransactionRepository;
 
+    @Autowired
+    private StudySubscriptionService studySubscriptionService;
+
     private RestTemplate rest = new RestTemplate();
 
     public String getAccessToken() {
@@ -38,7 +42,10 @@ public class MpesaService {
         throw new RuntimeException("Unable to get access token: " + resp.getStatusCode());
     }
 
-    public InitiateStkResponse initiateStkPush(String phoneNumber, Double amount, String accountReference, String transactionDesc) {
+    public InitiateStkResponse initiateStkPush(String phoneNumber, Double amount,
+                                               String accountReference,
+                                               Long transactionReferenceId,
+                                               String transactionDesc) {
         String token = getAccessToken();
         String url = mpesaProperties.getStkUrl();
 
@@ -65,10 +72,15 @@ public class MpesaService {
         headers.add("Authorization", "Bearer " + token);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+
+        System.out.println("Request");
+        System.out.println(body);
         ResponseEntity<InitiateStkResponse> resp = rest.postForEntity(url, entity, InitiateStkResponse.class);
 
         // Save initial transaction record with status PENDING
         InitiateStkResponse respBody = resp.getBody();
+        System.out.println("Response");
+        System.out.println(respBody);
         MpesaTransaction tx = new MpesaTransaction();
         if (respBody != null) {
             tx.setMerchantRequestId(respBody.getMerchantRequestId());
@@ -77,6 +89,8 @@ public class MpesaService {
         tx.setPhoneNumber(formatPhone(phoneNumber));
         tx.setAmount(amount);
         tx.setStatus("PENDING");
+        tx.setAccountReference(accountReference);
+        tx.setTransactionReferenceId(transactionReferenceId);
         mpesaTransactionRepository.save(tx);
 
         return respBody;
@@ -102,12 +116,19 @@ public class MpesaService {
         Map<String, Object> stkCallback = (Map<String, Object>) callbackBody.get("stkCallback");
         Integer resultCode = (Integer) stkCallback.get("ResultCode");
         String checkoutRequestId = (String) stkCallback.get("CheckoutRequestID");
+        String callbackDescription = (String) stkCallback.get("ResultDesc");
         MpesaTransaction tx = mpesaTransactionRepository.findByCheckoutRequestId(checkoutRequestId);
         if (tx == null) {
             // maybe find by merchantRequestId
             String mrid = (String) stkCallback.get("MerchantRequestID");
             // try to find by merchant id - not implemented here; just log
+
+            return;
         }
+
+        tx.setTimeCallbackReceived(LocalDateTime.now());
+        tx.setCallbackResultCode(resultCode);
+        tx.setCallbackDescription(callbackDescription);
 
         if (resultCode != null && resultCode == 0) { // success
             tx.setStatus("SUCCESS");
@@ -129,10 +150,13 @@ public class MpesaService {
             }
 
             mpesaTransactionRepository.save(tx);
+            studySubscriptionService.stkPaymentSuccessful(tx.getTransactionReferenceId(), tx.getMpesaReceiptNumber());
+
         } else {
             tx.setStatus("FAILED");
             tx.setCompletedAt(LocalDateTime.now());
             mpesaTransactionRepository.save(tx);
+            studySubscriptionService.stkPaymentFailed(tx.getTransactionReferenceId());
         }
     }
 }

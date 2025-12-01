@@ -182,6 +182,16 @@ public class CurriTopicController {
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @GetMapping("get/by/classlevel")
+    public ResponseEntity<?> fetchCurriTopicByClasslevel(@RequestParam("classlevel") Long classlevel) {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("CurriTopic retrieved Successfully");
+        response.setEntity(curriTopicRepository.findAllTopicsByClassLevel(classlevel));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping("withcontent")
     public ResponseEntity<?> fetchCurriTopic() {
         UniversalResponse response = new UniversalResponse();
