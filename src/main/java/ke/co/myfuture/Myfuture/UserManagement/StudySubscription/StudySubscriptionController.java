@@ -51,7 +51,7 @@ public class StudySubscriptionController {
         mpesaService.initiateStkPush(
                 stkSubscriptionRequestSaved.getPhoneNumber(),
                 stkSubscriptionRequestSaved.getPayAmount().doubleValue(),
-                stkSubscriptionRequestSaved.getEmailAddress(),
+                stkSubscriptionRequestSaved.getInstallId().toString(),
                 stkSubscriptionRequestSaved.getId(),
                 stkSubscriptionRequestSaved.getSubscriptionType()
         );
