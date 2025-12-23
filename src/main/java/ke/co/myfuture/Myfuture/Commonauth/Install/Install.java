@@ -21,8 +21,10 @@ public class Install {
     @Column(nullable = false)
     String platform;
 
+    String fcmToken;
+
     @Column(nullable = false)
-    int version;
+    Integer version;
 
     String accountEmail;
     Long accountId;

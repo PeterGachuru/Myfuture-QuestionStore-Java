@@ -95,7 +95,7 @@ public class TransactionController {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Transactions retrieved Successfully");
-        List<TransactionDTO> accountList = repository.findAllRecentForGroupByAuditTrails_DeletedFlagOrderByAuditTrails_CreatedAtDesc(false, groupId, 100);
+        List<TransactionDTO> accountList = repository.findAllRecentForGroupByAuditTrails_DeletedFlagOrderByAuditTrails_CreatedAtDesc(false, groupId, 400);
 //        for (Transaction account: accountList)
 //            account.setAudits(repository.getAudits(account.getId()));
         response.setEntity(accountList);

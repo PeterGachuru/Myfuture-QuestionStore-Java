@@ -97,15 +97,6 @@ public class UserService {
     public LoginResponse loginByGoogle(String idTokenString, Long installId) throws Exception {
         GoogleIdToken.Payload payload = googleTokenVerifierService.validateGoogleIdToken(idTokenString);
 
-        // Extract user information from the payload
-//        String userId = payload.getSubject();  // Google's unique user ID
-//        String email = payload.getEmail();
-//        boolean emailVerified = payload.getEmailVerified();
-//        String name = (String) payload.get("name");
-//        String firstName = (String) payload.get("given_name");  // Extract first name
-//        String lastName = (String) payload.get("family_name");  // Extract last name
-//        String pictureUrl = (String) payload.get("picture");
-
         GoogleSignInData googleSignInData = new GoogleSignInData();
         googleSignInData.email = payload.getEmail();
         googleSignInData.givenName =  (String) payload.get("given_name");

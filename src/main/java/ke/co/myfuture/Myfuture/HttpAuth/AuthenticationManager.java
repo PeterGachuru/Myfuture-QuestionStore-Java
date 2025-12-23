@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.Commonauth.Auth.Config.Http;
+package ke.co.myfuture.Myfuture.HttpAuth;
 
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.RoleConfig;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserService;

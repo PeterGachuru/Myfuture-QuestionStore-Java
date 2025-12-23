@@ -70,6 +70,12 @@ public class StudySubscriptionController {
         return studySubscriptionService.getAllSubscriptions();
     }
 
+    @GetMapping("stkRequests")
+    public List<StkSubscriptionRequest> getAllStkRequests() {
+        return studySubscriptionService.getAllStkRquests();
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<StudySubscription> getSubscriptionById(@PathVariable Long id) {
         StudySubscription subscription = studySubscriptionService.getSubscriptionById(id);

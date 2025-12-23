@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.StudySubscription;
 
+import ke.co.myfuture.Myfuture.UserManagement.SubscriptionExpiryTrack.SubscriptionExpiryTrack;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -54,6 +55,11 @@ public class StudySubscription {
 
     @Column(nullable = false)
     private Date endDate;
+
+    private Boolean calculated;
+
+    @ManyToOne
+    SubscriptionExpiryTrack expiryTrack;
 
     @CreationTimestamp
     public Date createdAt;

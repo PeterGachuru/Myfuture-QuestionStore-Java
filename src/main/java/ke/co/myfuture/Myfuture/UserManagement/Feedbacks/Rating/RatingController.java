@@ -14,7 +14,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("student/rating")
 public class RatingController {
-
     @Autowired
     RatingRepository ratingRepository;
 

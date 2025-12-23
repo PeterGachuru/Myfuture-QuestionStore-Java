@@ -7,6 +7,7 @@ import org.apache.poi.hpsf.Decimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +24,9 @@ public class DashboardSupport {
 
     public Optional<Snapshot> getSnapshotForPlan(Long planId) {
         return accountRepository.getSnapshotForPlan(planId);
+    }
+    public List<Snapshot> getSnapshotForAllPlansByGroup(Long groupId) {
+        return accountRepository.getSnapshotForAllPlansByGroup(groupId);
     }
 
     public interface Snapshot{

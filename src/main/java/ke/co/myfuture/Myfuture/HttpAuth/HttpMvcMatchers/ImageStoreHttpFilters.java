@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.Commonauth.Auth.Config.Http.HttpMvcMatchers;
+package ke.co.myfuture.Myfuture.HttpAuth.HttpMvcMatchers;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;

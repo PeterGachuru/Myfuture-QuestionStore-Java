@@ -136,4 +136,25 @@ AND ownership_type = :ownershipType
     """)
     Optional<DashboardSupport.Snapshot> getSnapshotForPlan(Long planId);
 
+    @Query(nativeQuery = true, value = """
+        SELECT 
+            a.contributions_plan_id AS id,
+            cp.name AS name,
+            SUM(CASE WHEN a.ownership_type = 'CASH' THEN (-1 * a.balance) ELSE 0 END) AS totalCashAndEquivalents, 
+            SUM(CASE WHEN a.target_amount > 0 AND a.ownership_type = 'INCOME' THEN a.target_amount ELSE 0 END) AS totalPledges, 
+            SUM(CASE WHEN a.target_amount > 0 AND a.ownership_type = 'INCOME' AND a.target_amount > a.balance THEN (a.target_amount - a.balance) ELSE 0 END) AS totalUnRedeemedPledges, 
+            SUM(CASE WHEN a.ownership_type = 'INCOME' THEN a.balance ELSE 0 END) AS totalIncome, 
+            SUM(CASE WHEN a.ownership_type = 'EXPENSE' THEN a.balance ELSE 0 END) AS totalExpenses 
+        FROM 
+            (
+                SELECT ownership_type, balance, target_amount, contributions_plan_id
+                FROM account
+                WHERE deleted_flag = false AND people_group_id = :groupId
+            ) a
+        JOIN 
+            contributions_plan cp ON cp.id = a.contributions_plan_id
+        GROUP BY 
+            a.contributions_plan_id, cp.name
+    """)
+    List<DashboardSupport.Snapshot> getSnapshotForAllPlansByGroup(Long groupId);
 }

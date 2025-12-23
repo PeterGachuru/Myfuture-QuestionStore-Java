@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("interaction/install")
 public class Install2Controller {
@@ -27,15 +30,33 @@ public class Install2Controller {
     }
 
     @PutMapping("update")
-    public ResponseEntity<?> updateInstall(@RequestBody Install install) {
-        Install updatedInstall = repository.save(install);
+    public ResponseEntity<?> update(@RequestBody InstallUpdate installUpdate) {
+        Optional<Install> install = repository.findById(installUpdate.getInstallId());
+        if (install.isPresent()) {
+            if (installUpdate.getFcmToken() != null) {
+                install.get().setFcmToken(installUpdate.getFcmToken());
+            }
 
-        UniversalResponse response = new UniversalResponse();
-        response.setStatus("Success");
-        response.setMessage("Updated Successfully");
-        response.setEntity(updatedInstall);
-        response.setStatusCode(201);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+            if (installUpdate.getAppVersion() != null && installUpdate.getAppVersion() > 1){
+                install.get().setVersion(installUpdate.getAppVersion());
+            }
+            if (installUpdate.getAccountId() != null && installUpdate.getAccountId() > 1){
+                install.get().setAccountId(installUpdate.getAccountId());
+            }
+            if (installUpdate.getAccountEmail() != null) {
+                install.get().setAccountEmail(installUpdate.getAccountEmail());
+                install.get().setAccountAddedAt(new Date());
+            }
+            install.get().setUpdatedAt(new Date());
+            Install savedInstall = repository.save(install.get());
+            UniversalResponse response = new UniversalResponse();
+            response.setStatus("Success");
+            response.setMessage("Saved successfully");
+            response.setEntity(savedInstall);
+            response.setStatusCode(201);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        return null;
     }
 
     @GetMapping("get/by/id/{installId}")
@@ -44,6 +65,16 @@ public class Install2Controller {
         response.setStatus("Success");
         response.setMessage("Install retrieved Successfully");
         response.setEntity(repository.findById(installId));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("all")
+    public ResponseEntity<?> all() {
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Installs retrieved Successfully");
+        response.setEntity(repository.findLatest300());
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

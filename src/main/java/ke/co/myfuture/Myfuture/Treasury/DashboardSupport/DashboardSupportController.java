@@ -15,20 +15,16 @@ public class DashboardSupportController {
     DashboardSupport dashboardSupport;
     @GetMapping("group/snapshot")
     public ResponseEntity<?> getSnapshotForGroup(@RequestParam("groupId") Long groupId) {
-//        UniversalResponse response = new UniversalResponse();
-//        response.setStatus("Success");
-//        response.setMessage("Retrieved Successfully");
-//        response.setEntity();
-//        response.setStatusCode(200);
         return new ResponseEntity<>(dashboardSupport.getSnapshotForGroup(groupId), HttpStatus.OK);
     }
+
+    @GetMapping("allplans/snapshot")
+    public ResponseEntity<?> getSnapshotForAllPlans(@RequestParam("groupId") Long groupId) {
+        return new ResponseEntity<>(dashboardSupport.getSnapshotForAllPlansByGroup(groupId), HttpStatus.OK);
+    }
+
     @GetMapping("plan/snapshot")
     public ResponseEntity<?> getSnapshotForPlan(@RequestParam("planId") Long planId) {
-//        UniversalResponse response = new UniversalResponse();
-//        response.setStatus("Success");
-//        response.setMessage("Retrieved Successfully");
-//        response.setEntity();
-//        response.setStatusCode(200);
         return new ResponseEntity<>(dashboardSupport.getSnapshotForPlan(planId), HttpStatus.OK);
     }
 }

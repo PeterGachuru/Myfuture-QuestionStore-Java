@@ -42,7 +42,7 @@ public class AuthHandler {
     public ResponseEntity<?> googleSignIn(@RequestParam("idToken") String idTokenString,
                                           @RequestParam("installId") Long installId) {
         try {
-            return ResponseEntity.ok( userService.loginByGoogle(idTokenString, installId));
+            return ResponseEntity.ok(userService.loginByGoogle(idTokenString, installId));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Invalid ID Token");
         }

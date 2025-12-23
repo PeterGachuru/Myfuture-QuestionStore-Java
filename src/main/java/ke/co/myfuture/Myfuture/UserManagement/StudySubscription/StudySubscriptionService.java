@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.StudySubscription;
 
+import ke.co.myfuture.Myfuture.UserManagement.SubscriptionExpiryTrack.SubscriptionExpiryTrackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +18,27 @@ public class StudySubscriptionService {
     @Autowired
     private StkSubscriptionRequestRepository stkSubscriptionRequestRepository;
 
+    @Autowired
+    private SubscriptionExpiryTrackService subscriptionExpiryTrackService;
+
     public StudySubscription createSubscription(StudySubscription subscription) {
         if (subscription.getId() != null && subscription.getId() > 0)
             return null;
-        return studySubscriptionRepository.save(subscription);
+        StudySubscription savedStudySubscription =  studySubscriptionRepository.save(subscription);
+
+        subscriptionExpiryTrackService.receiveSubscription(savedStudySubscription);
+
+        return savedStudySubscription;
     }
 
     public List<StudySubscription> getAllSubscriptions() {
         return studySubscriptionRepository.findLatest300();
+    }
+
+
+
+    public List<StkSubscriptionRequest> getAllStkRquests() {
+        return stkSubscriptionRequestRepository.findLatest300();
     }
 
     public StudySubscription getSubscriptionById(Long id) {
@@ -65,6 +79,7 @@ public class StudySubscriptionService {
             stkSubscriptionRequest.get().setSubscription(savedStudySubscription);
 
             stkSubscriptionRequestRepository.save(stkSubscriptionRequest.get());
+            subscriptionExpiryTrackService.receiveSubscription(savedStudySubscription);
         }else {
             System.out.println("No StkSubscriptionRequest with id "+transactionReferenceId);
         }
@@ -81,6 +96,7 @@ public class StudySubscriptionService {
         sub.setEndDate(req.getEndDate());
         sub.setEmailAddress(req.getEmailAddress());
         sub.setPhoneNumber(req.getPhoneNumber());
+        sub.setCalculated(false);
 
         sub.setSubscriptionType(req.getSubscriptionType());
         sub.setPaymentProcessor("MPESA");
