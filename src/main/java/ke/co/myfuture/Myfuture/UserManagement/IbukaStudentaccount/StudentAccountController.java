@@ -101,8 +101,8 @@ public class StudentAccountController {
 
     @PostMapping("from/ids")
     public ResponseEntity<?> fetchAll(@RequestBody Ids ids) {
-        System.out.println(" @PostMapping(\"from/ids\")");
-        System.out.println(ids);
+//        System.out.println(" @PostMapping(\"from/ids\")");
+//        System.out.println(ids);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("StudentAccount retrieved Successfully");

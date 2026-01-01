@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.Post.Postatempt;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ke.co.myfuture.Myfuture.UserManagement.Post.Post;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import lombok.Data;
@@ -17,10 +18,11 @@ public class Postattempt {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    public Long id;
-    @ManyToOne
+    private Long id;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "post")
-    Post post;
+    @JsonIgnore
+    private Post post;
     @OneToOne
     @JoinColumn(name = "student_id", nullable = false)
     IbukaStudentAccount studentaccount;
@@ -29,7 +31,7 @@ public class Postattempt {
     @Column(nullable = false)
     Long selectedChoice;
     @CreationTimestamp
-    public Date createdAt;
+    private Date createdAt;
     @UpdateTimestamp
-    public Date updatedAt = new Date();
+    private Date updatedAt = new Date();
 }

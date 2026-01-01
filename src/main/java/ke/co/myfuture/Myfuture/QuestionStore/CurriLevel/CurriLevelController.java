@@ -103,7 +103,7 @@ public class CurriLevelController {
 
         UniversalResponse universalResponse = new UniversalResponse();
         universalResponse.setMessage("Retrieved");
-        if (curriLevel.isPresent()){
+        if (curriLevel.isPresent()) {
             CurriLevel classLevel = curriLevel.get();
             classLevel.setSubjects(subjectRepository.subjectsByClassLevel(classLevel.id));
             universalResponse.setEntity(classLevel);

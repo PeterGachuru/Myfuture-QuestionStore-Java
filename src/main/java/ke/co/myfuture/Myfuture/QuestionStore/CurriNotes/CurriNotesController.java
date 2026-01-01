@@ -82,12 +82,12 @@ public class CurriNotesController {
     public ResponseEntity<?> fetchCurriNotesBySubtopicId(@RequestParam("subtopicid") Long subtopicid) {
         System.out.println("........................................................");
         // 🔍 Log properties that might affect encoding
-        System.out.println("server.tomcat.uri-encoding = " + env.getProperty("server.tomcat.uri-encoding"));
-        System.out.println("spring.http.encoding.charset = " + env.getProperty("spring.http.encoding.charset"));
-        System.out.println("spring.http.encoding.enabled = " + env.getProperty("spring.http.encoding.enabled"));
-        System.out.println("spring.http.encoding.force = " + env.getProperty("spring.http.encoding.force"));
-        System.out.println("spring.web.locale = " + env.getProperty("spring.web.locale"));
-        System.out.println("defaultCharset = " + Charset.defaultCharset());
+//        System.out.println("server.tomcat.uri-encoding = " + env.getProperty("server.tomcat.uri-encoding"));
+//        System.out.println("spring.http.encoding.charset = " + env.getProperty("spring.http.encoding.charset"));
+//        System.out.println("spring.http.encoding.enabled = " + env.getProperty("spring.http.encoding.enabled"));
+//        System.out.println("spring.http.encoding.force = " + env.getProperty("spring.http.encoding.force"));
+//        System.out.println("spring.web.locale = " + env.getProperty("spring.web.locale"));
+//        System.out.println("defaultCharset = " + Charset.defaultCharset());
 
         // 🔍 Log Tomcat connector config
 //        System.out.println("Tomcat connectors:");
@@ -112,7 +112,7 @@ public class CurriNotesController {
             chatGPTNotesService.generateNotesForSubtopic("gpt-3.5-turbo-0125", curriTopic.get());
             curriNotes = curriNotesRepository.findBySubtopic(curriTopic.get());
         } else {
-            System.out.println(curriNotes.get());
+//            System.out.println(curriNotes.get());
         }
 
         response.setEntity(curriNotes.get());

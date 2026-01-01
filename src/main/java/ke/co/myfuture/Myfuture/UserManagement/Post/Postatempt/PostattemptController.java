@@ -29,7 +29,7 @@ public class PostattemptController {
         postattempt.scored = postattemptRequest.scored;
         postattempt.selectedChoice = postattemptRequest.selectedChoice;
         postattempt.studentaccount = ibukaStudentAccountRepository.findById(postattemptRequest.studentId).get();
-        postattempt.post = postRepository.findById(postattemptRequest.postId).get();
+        postattempt.setPost(postRepository.findById(postattemptRequest.postId).get());
         Postattempt savedPostattempt = repository.save(postattempt);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
@@ -55,13 +55,13 @@ public class PostattemptController {
                 continue;
 
             postattempt.studentaccount = ibukaStudentAccount.get();
-            postattempt.post = postRepository.findById(postattemptRequest.postId).get();
+            postattempt.setPost(postRepository.findById(postattemptRequest.postId).get());
             Postattempt savedPostattempt = repository.save(postattempt);
 
             Map<String, Long> result = new HashMap<>();
             result.put("studentId", savedPostattempt.studentaccount.id); // assuming there's a field `id`
-            result.put("postId", savedPostattempt.post.id);              // assuming there's a field `id`
-            result.put("attemptId", savedPostattempt.id);              // assuming there's a field `id`
+            result.put("postId", savedPostattempt.getPost().id);              // assuming there's a field `id`
+            result.put("attemptId", savedPostattempt.getId());              // assuming there's a field `id`
             saved.add(result);
         }
 
@@ -95,13 +95,19 @@ public class PostattemptController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("getall/after/id/{postattemptId}")
-    public ResponseEntity<?> fetchAllAfterPostattempt(@PathVariable("postattemptId") Long postattemptId) {
+    @GetMapping("getall/for/post")
+    public ResponseEntity<?> fetchAllForPost(@RequestParam("postId") Long postId,
+                                             @RequestParam("latestAttemptId") Long latestAttemptId) {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Postattempt retrieved Successfully");
-        response.setEntity(repository.postattemptsAfter(postattemptId));
+        response.setEntity(repository.attemptsForPost(postId, latestAttemptId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("scoresummary")
+    public ResponseEntity<?> scoreSummary(@RequestBody List<Long> postIds) {
+        return new ResponseEntity<>(repository.summarizeByPostIds(postIds), HttpStatus.OK);
     }
 }

@@ -100,14 +100,15 @@ public class SubscriptionExpiryTrackService {
                     "Either installId or parentUsername must be provided");
         }
 
+        SubscriptionExpiryTrack subscriptionExpiryTrack = repository.findByParentUsername(parentUsername)
+                .orElse(null);
+
+        if (subscriptionExpiryTrack != null) return subscriptionExpiryTrack;
+
         if (installId != null) {
             return repository.findByInstallId(installId)
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "No subscription found for installId=" + installId));
+                    .orElse(null);
         }
-
-        return repository.findByParentUsername(parentUsername)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "No subscription found for parentUsername=" + parentUsername));
+        return null;
     }
 }

@@ -10,10 +10,12 @@ import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAc
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,7 +49,10 @@ public class WeeklyAnalysisService {
     public WeeklyAnalysisDto getWeeklyAnalysis(IbukaStudentAccount student, LocalDateTime startOfWeek, LocalDateTime endOfWeek) {
         Optional<IbukaStudentAccount> studentAccount = ibukaStudentAccountRepository.findById(student.getId());
         if (studentAccount.isEmpty()) return null;
-        List<QuizDone> quizzes = quizDoneRepository.findQuizzesByStudentAndWeek(studentAccount.get(), startOfWeek, endOfWeek);
+        ZoneId zoneId = ZoneId.systemDefault();
+        Date startDate = Date.from(startOfWeek.atZone(zoneId).toInstant());
+        Date endDate   = Date.from(endOfWeek.atZone(zoneId).toInstant());
+        List<QuizDone> quizzes = quizDoneRepository.findQuizzesByStudentAndWeek(studentAccount.get(), startDate, endDate);
 
         Map<Long, List<QuizDone>> groupedBySubject = quizzes.stream().collect(Collectors.groupingBy(QuizDone::getSubjectId));
 
@@ -116,6 +121,7 @@ public class WeeklyAnalysisService {
                 String emailContent = generateHtmlEmailContent(student, report, startOfWeek, endOfWeek);
                 System.out.println(emailContent);
 
+                if (!inProd) return;
                 schedulerService.persistScheduledEmail(parentUser.getEmail(), "Myfuture CBC Revision Weekly Score: "+student.getName(), emailContent, "Ibuka Technologies", LocalDateTime.now().plusMinutes(count/3), SenderService.WeeklyScore);
 //                System.out.println("Weekly Report for Student ID " + student + ": " + report);
             }else {
@@ -177,11 +183,10 @@ public class WeeklyAnalysisService {
 
     @Scheduled(cron = "0 0 0 ? * SUN")
     public void generateReportsForPreviousWeek() {
-        if (!inProd) return;
+        System.out.println("generateReportsForPreviousWeek");
         System.out.println("Starting weekly report generation at: " + LocalDateTime.now());
         generateWeeklyReports();
     }
-
 
     @Scheduled(cron = "0 0 1 ? * FRI")
 //    @Bean

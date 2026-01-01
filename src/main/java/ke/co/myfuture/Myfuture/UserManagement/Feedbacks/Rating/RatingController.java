@@ -44,7 +44,8 @@ public class RatingController {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Retrieved successfully");
-        response.setEntity(ratingRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")));
+//        response.setEntity(ratingRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")));
+        response.setEntity(ratingRepository.findTop300ByOrderByCreatedAtDesc());
         response.setStatusCode(201);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

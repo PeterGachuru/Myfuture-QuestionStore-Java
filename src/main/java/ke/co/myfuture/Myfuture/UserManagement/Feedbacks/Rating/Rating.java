@@ -28,6 +28,8 @@ public class Rating {
     @Column(length = 5000)
     private String message;
 
+    private Long appVersion;
+
     @ManyToOne
     IbukaStudentAccount ibukaStudentAccount;
 
