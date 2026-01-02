@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.QuestionStore.Cgroup;
+package ke.co.myfuture.Myfuture.UserManagement.Cgroup;
 
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;

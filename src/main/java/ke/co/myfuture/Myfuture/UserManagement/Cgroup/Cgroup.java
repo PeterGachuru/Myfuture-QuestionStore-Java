@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.QuestionStore.Cgroup;
+package ke.co.myfuture.Myfuture.UserManagement.Cgroup;
 
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;

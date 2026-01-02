@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.QuestionStore.Cgroup;
+package ke.co.myfuture.Myfuture.UserManagement.Cgroup;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

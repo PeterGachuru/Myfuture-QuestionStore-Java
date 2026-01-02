@@ -1,12 +1,7 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion;
 
-import ke.co.myfuture.Myfuture.ImageStore.FileManagement.ImageFile;
-import ke.co.myfuture.Myfuture.ImageStore.FileManagement.ImageFileService;
 import ke.co.myfuture.Myfuture.QuestionStore.AI.AICurriQuestion.ChatGPTQuestionsService;
-import ke.co.myfuture.Myfuture.QuestionStore.Cgroup.Cgroup;
-import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoice;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoiceRepository;
-import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ke.co.myfuture.Myfuture.QuestionStore.Cgroup.CgroupService;
+import ke.co.myfuture.Myfuture.UserManagement.Cgroup.CgroupService;
 
 import java.util.*;
 
