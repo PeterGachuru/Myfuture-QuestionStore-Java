@@ -5,6 +5,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.Curriculum.Curriculum;
 import ke.co.myfuture.Myfuture.UserManagement.OldUseraccount.UserAccount;
+import ke.co.myfuture.Myfuture.UserManagement.Sender.Sender;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -34,6 +35,10 @@ public class IbukaStudentAccount {
 
     @Column(columnDefinition = "INT DEFAULT 0")
     private Integer creditsBalance;
+
+    @OneToOne()
+    @JoinColumn(name = "sender_id", unique = true)
+    Sender sender;
 
     @Transient
     CurriLevel curriLevel;

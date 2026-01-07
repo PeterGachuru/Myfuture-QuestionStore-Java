@@ -16,7 +16,8 @@ public class Sender {
     public Long id;
 
     @Column(nullable = false, length = 20)
-    String type;
+    @Enumerated(EnumType.STRING)
+    SenderType type;
     @Column(nullable = false)
     Long sourceId;
 

@@ -1,6 +1,10 @@
 package ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount;
 
+import ke.co.myfuture.Myfuture.UserManagement.Sender.Sender;
+import ke.co.myfuture.Myfuture.UserManagement.Sender.SenderService;
+import ke.co.myfuture.Myfuture.UserManagement.Sender.SenderType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -10,12 +14,51 @@ public class IbukaStudentAccountService {
 
     @Autowired
     IbukaStudentAccountRepository ibukaStudentAccountRepository;
+    @Autowired
+    SenderService senderService;
 
     public boolean isCodeInUse(String code) {
         Optional<IbukaStudentAccount> ibukaStudentAccountOptional = ibukaStudentAccountRepository.findByShareCode(code);
         return ibukaStudentAccountOptional.isPresent();
     }
 
+    @Bean
+    public void generateSenderIds() {
+        System.out.println("----generateSenderIds---");
+
+        List<IbukaStudentAccount> studentAccounts =
+                ibukaStudentAccountRepository.findBySenderIsNull();
+
+        int count = 0;
+        int failed = 0;
+
+        for (IbukaStudentAccount account : studentAccounts) {
+            try {
+                Sender sender = senderService.createSender(
+                        account.getName(),
+                        SenderType.STUDENT,
+                        account.getId()
+                );
+
+                account.setSender(sender);
+                ibukaStudentAccountRepository.save(account);
+
+                System.out.println(++count + ". Created senderId for "
+                        + account.getName() + " at " + new Date());
+
+            } catch (Exception e) {
+                failed++;
+                System.err.println(
+                        "❌ Failed for student ID=" + account.getId()
+                                + ", name=" + account.getName()
+                                + " | Reason: " + e.getMessage()
+                );
+                // continue with next student
+            }
+        }
+
+        System.out.println("✅ Completed. Success: " + count + ", Failed: " + failed);
+    }
 
     public String generateUniqueCode(String firstName, String lastName) {
         List<String> candidates = new ArrayList<>();

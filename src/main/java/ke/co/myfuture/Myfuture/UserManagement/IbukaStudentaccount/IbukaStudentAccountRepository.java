@@ -19,6 +19,8 @@ public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStuden
 
     List<IbukaStudentAccount> findTop200ByOrderByCreatedAtDesc();
 
+    List<IbukaStudentAccount> findBySenderIsNull();
+
 
 //    @Query(value = """
 //            SELECT * FROM(SELECT * FROM student_account WHERE name LIKE CONCATE('%',:search,'%') AND classlevel = :classlevel
