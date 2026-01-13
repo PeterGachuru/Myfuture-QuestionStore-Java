@@ -9,4 +9,6 @@ import java.util.List;
 public interface SenderRepository extends JpaRepository<Sender, Long> {
     @Query(value = "SELECT * FROM sender WHERE id > :senderId", nativeQuery = true)
     List<Sender> sendersAfter(@Param("senderId") Long senderId);
+
+    List<Sender> findByIdIn(List<Long> ids);
 }

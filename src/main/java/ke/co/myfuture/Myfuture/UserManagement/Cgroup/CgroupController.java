@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("cgroup")
 public class CgroupController {
@@ -40,6 +42,18 @@ public class CgroupController {
         response.setStatus("Success");
         response.setMessage("Cgroup retrieved Successfully");
         response.setEntity(repository.findById(cgroupId));
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("getall")
+    public ResponseEntity<?> fetchAll(@RequestBody ArrayList<Long> ids) {
+        System.out.println(ids);
+        System.out.println("Found all cgroups");
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Cgroups retrieved Successfully");
+        response.setEntity(repository.findByIdIn(ids));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

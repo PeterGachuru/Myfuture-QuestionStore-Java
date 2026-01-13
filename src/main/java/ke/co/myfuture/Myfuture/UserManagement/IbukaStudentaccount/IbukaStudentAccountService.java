@@ -45,7 +45,6 @@ public class IbukaStudentAccountService {
 
                 System.out.println(++count + ". Created senderId for "
                         + account.getName() + " at " + new Date());
-
             } catch (Exception e) {
                 failed++;
                 System.err.println(

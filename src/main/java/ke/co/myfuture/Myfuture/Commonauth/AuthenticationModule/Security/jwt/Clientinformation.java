@@ -84,7 +84,7 @@ public class Clientinformation {
         activesession.setAddress(ipAddress);
         activesession.setOs(os);
         activesession.setBrowser(browser);
-        System.out.println(activesession);
+//        System.out.println(activesession);
         CurrentUserContext.setCurrentActiveUser(activesession);
         printRequestDetails(request);
     }
