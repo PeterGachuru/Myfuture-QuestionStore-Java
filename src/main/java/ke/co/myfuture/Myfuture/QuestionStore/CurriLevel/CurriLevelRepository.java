@@ -26,4 +26,5 @@ public interface CurriLevelRepository extends JpaRepository<CurriLevel, Long> {
             SELECT name FROM curri_level WHERE id = :classlevel
             """, nativeQuery = true)
     String getName(Long classlevel);
+
 }

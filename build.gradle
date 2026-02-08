@@ -37,6 +37,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'com.auth0:java-jwt:3.18.1'
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
 	implementation 'org.springframework.boot:spring-boot-starter-security'

@@ -26,6 +26,8 @@ public class IbukaStudentAccount {
     @Column(unique = true)
     public String shareCode;
 
+    private Long appVersion;
+
     String school;
     Long classlevel;
     Long curriculum;

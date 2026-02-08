@@ -9,7 +9,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -52,6 +54,10 @@ public class CurriTopic {
     Boolean isParent = false;
     Boolean deleted = false;
     Boolean required = true;
+
+    @Transient
+    List<CurriTopic> children = new ArrayList<>();
+
 
     //    @UpdateTimestamp
     Date updatedAt;

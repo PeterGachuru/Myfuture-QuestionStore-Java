@@ -34,7 +34,7 @@ public class QuizDone {
     public String category;
 
     @OneToOne(targetEntity = IbukaStudentAccount.class)
-    @JoinColumn(name = "student_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "student_id", referencedColumnName = "id")
     public IbukaStudentAccount student;
 
     @OneToOne(targetEntity = Contest.class)

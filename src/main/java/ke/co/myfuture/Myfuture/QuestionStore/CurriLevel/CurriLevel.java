@@ -35,5 +35,4 @@ public class CurriLevel {
 
     @Transient
     List<Subject> subjects = new ArrayList<>();
-
 }

@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface CurriNotesRepository extends JpaRepository<CurriNotes, Long> {
     Optional<CurriNotes> findBySubtopic(CurriTopic subtopic);
+
+    Optional<CurriNotes> findBySubtopicIdAndDeletedFlagFalse(Long subtopicId);
 }

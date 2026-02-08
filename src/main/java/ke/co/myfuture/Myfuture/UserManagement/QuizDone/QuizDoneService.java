@@ -66,12 +66,13 @@ public class QuizDoneService {
     }
 
     public Optional<QuizDone> createQuiz(CreateQuizDone createQuizDone) {
-        Optional<IbukaStudentAccount> creator = ibukaStudentAccountRepository.findById(createQuizDone.studentId);
-        if (creator.isEmpty()) return Optional.empty();
-
         QuizDone quizDone = new QuizDone();
         quizDone.questionsCount = createQuizDone.questionsCount;
-        quizDone.student = creator.get();
+        if (createQuizDone.studentId != null && createQuizDone.studentId > 0){
+            Optional<IbukaStudentAccount> creator = ibukaStudentAccountRepository.findById(createQuizDone.studentId);
+            if (creator.isEmpty()) return Optional.empty();
+            quizDone.student = creator.get();
+        }
         quizDone.startDate = createQuizDone.startDate;
         quizDone.endDate = createQuizDone.endDate;
         quizDone.score = createQuizDone.score;

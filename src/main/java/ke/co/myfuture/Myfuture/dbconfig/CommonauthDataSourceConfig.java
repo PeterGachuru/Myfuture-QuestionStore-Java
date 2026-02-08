@@ -59,7 +59,7 @@ public class CommonauthDataSourceConfig {
     {
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setDataSource(commonauthDataSource());
-        factory.setPackagesToScan(new String[]{"ke.co.myfuture.Myfuture.Commonauth"});
+        factory.setPackagesToScan("ke.co.myfuture.Myfuture.Commonauth");
         factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         Properties jpaProperties = new Properties();
