@@ -1,10 +1,12 @@
 package ke.co.myfuture.Myfuture.UserManagement.ScoreAnalysis.WeekScore;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 public interface WeekScoreRepository extends JpaRepository<WeekScore, Long> {
 
@@ -23,4 +25,6 @@ public interface WeekScoreRepository extends JpaRepository<WeekScore, Long> {
     @Transactional
     @Query(nativeQuery = true, value = "TRUNCATE TABLE week_score")
     void clearEveryThing();
+
+    List<WeekScore> findAllByOrderByScoreDesc(Pageable pageable);
 }

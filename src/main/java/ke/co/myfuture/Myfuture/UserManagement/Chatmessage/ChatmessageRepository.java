@@ -11,4 +11,7 @@ public interface ChatmessageRepository extends JpaRepository<Chatmessage, Long> 
     List<Chatmessage> chatmessagesAfter(@Param("chatmessageId") Long chatmessageId);
     @Query(value = "SELECT * FROM chatmessage WHERE groupid = :groupid AND id > :chatmessageId", nativeQuery = true)
     List<Chatmessage> getMessagesForGroup(@Param("groupid") Long groupid,  @Param("chatmessageId") Long chatmessageId);
+
+    @Query("SELECT c FROM Chatmessage c ORDER BY c.id DESC")
+    List<Chatmessage> findLatestMessages(org.springframework.data.domain.Pageable pageable);
 }

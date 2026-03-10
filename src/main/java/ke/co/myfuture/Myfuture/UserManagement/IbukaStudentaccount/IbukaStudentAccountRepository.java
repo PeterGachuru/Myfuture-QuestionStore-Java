@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -39,4 +40,6 @@ public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStuden
              INNER JOIN ibuka_student_account ON ibuka_student_account.id = latest_score.student_id AND   ibuka_student_account.total_score = latest_score.total_score)) AS scores 
             """)
     void analyzeScores();
+
+    List<IbukaStudentAccount> findAllByOrderByIdDesc(Pageable pageable);
 }

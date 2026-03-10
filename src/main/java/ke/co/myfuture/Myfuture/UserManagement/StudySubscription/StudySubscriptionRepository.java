@@ -22,4 +22,6 @@ public interface StudySubscriptionRepository extends JpaRepository<StudySubscrip
     default List<StudySubscription> findLatest300() {
         return findLatestSubscriptions(PageRequest.of(0, 300));
     }
+
+    List<StudySubscription> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }

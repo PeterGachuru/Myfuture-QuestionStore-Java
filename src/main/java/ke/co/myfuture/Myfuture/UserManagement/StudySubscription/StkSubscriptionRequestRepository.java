@@ -15,4 +15,6 @@ public interface StkSubscriptionRequestRepository extends JpaRepository<StkSubsc
     default List<StkSubscriptionRequest> findLatest300() {
         return findLatestStkRequests(PageRequest.of(0, 300));
     }
+
+    List<StkSubscriptionRequest> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }

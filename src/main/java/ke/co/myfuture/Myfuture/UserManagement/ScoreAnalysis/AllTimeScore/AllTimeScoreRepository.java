@@ -1,10 +1,12 @@
 package ke.co.myfuture.Myfuture.UserManagement.ScoreAnalysis.AllTimeScore;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 public interface AllTimeScoreRepository extends JpaRepository<AllTimeScore, Long> {
     @Modifying
@@ -21,4 +23,6 @@ insert into all_time_score( name, student_id, class_level_id, school, score) SEL
     @Query(nativeQuery = true, value = "TRUNCATE TABLE all_time_score")
     void clearEveryThing();
 
+
+    List<AllTimeScore> findAllByOrderByScoreDesc(Pageable pageable);
 }

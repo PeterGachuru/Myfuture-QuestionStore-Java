@@ -1,10 +1,12 @@
 package ke.co.myfuture.Myfuture.UserManagement.ScoreAnalysis.TodayScore;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 public interface TodayScoreRepository extends JpaRepository<TodayScore, Long> {
     @Modifying
@@ -40,4 +42,6 @@ public interface TodayScoreRepository extends JpaRepository<TodayScore, Long> {
     @Transactional
     @Query(nativeQuery = true, value = "TRUNCATE TABLE today_score")
     void clearEveryThing();
+
+    List<TodayScore> findAllByOrderByScoreDesc(Pageable pageable);
 }
