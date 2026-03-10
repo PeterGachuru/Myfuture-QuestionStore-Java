@@ -56,4 +56,6 @@ public interface SubjectLevelRepository extends JpaRepository<SubjectLevel, Long
         java.util.Date getUpdatedAt();
     }
 
+    boolean existsBySlug(String slug);
+
 }

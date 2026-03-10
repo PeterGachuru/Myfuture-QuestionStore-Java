@@ -1,11 +1,10 @@
 package ke.co.myfuture.Myfuture.Treasury.GroupAccess;
 
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UserCreateRequest;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.AuthEntityResponse;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.UserCreateRequest;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.AuthEntityResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserService;
-import ke.co.myfuture.Myfuture.Treasury.Member.Member;
 import ke.co.myfuture.Myfuture.Treasury.Member.MemberService;
 import ke.co.myfuture.Myfuture.Treasury.Person.Person;
 import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;

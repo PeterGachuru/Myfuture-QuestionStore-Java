@@ -148,7 +148,7 @@ public class ChatGPTNotesService {
     public void generateNotesForSubtopic(String model, Long subtopic) {
         Optional<CurriTopic> curriTopic = curriTopicRepository.findById(subtopic);
 
-        generateNotesForSubtopic(model, subtopic);
+        generateNotesForSubtopic(model, curriTopic.get());
     }
 
 

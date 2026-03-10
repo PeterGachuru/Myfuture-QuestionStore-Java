@@ -22,4 +22,9 @@ public interface CurriculumRepository extends JpaRepository<Curriculum, Long> {
             ORDER BY id 
             """, nativeQuery = true)
     List<Curriculum> getAllCurriculumsWithUnapprovedQuestions();
+
+
+    boolean existsBySlug(String slug);
+
+    List<Curriculum> findBySlugIsNullOrSlug(String slug);
 }

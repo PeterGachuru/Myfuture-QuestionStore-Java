@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CurriLevelRepository extends JpaRepository<CurriLevel, Long> {
     @Query(value = """ 
@@ -27,4 +28,8 @@ public interface CurriLevelRepository extends JpaRepository<CurriLevel, Long> {
             """, nativeQuery = true)
     String getName(Long classlevel);
 
+    List<CurriLevel> findBySlugIsNullOrSlug(String slug);
+    boolean existsBySlug(String slug);
+
+    Optional<CurriLevel> findBySlug(String s);
 }

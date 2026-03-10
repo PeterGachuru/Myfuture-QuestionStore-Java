@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.HttpAuth;
 
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.RoleConfig;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.RoleConfig.RoleConfig;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserService;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.JWTUtil;
 import lombok.RequiredArgsConstructor;

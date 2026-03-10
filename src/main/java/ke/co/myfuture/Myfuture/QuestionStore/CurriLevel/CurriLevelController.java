@@ -1,10 +1,10 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriLevel;
 
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
+import ke.co.myfuture.Myfuture.QuestionStore.Subject.SubjectRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.SubjectLevel.SubjectLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.SubjectLevel.SubjectLevelRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
-import ke.co.myfuture.Myfuture.QuestionStore.Subject.SubjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,6 @@ public class CurriLevelController {
 
     @Autowired
     SubjectLevelRepository subjectLevelRepository;
-
     @PostMapping("add")
     public ResponseEntity<?> newCurriLevel(@RequestBody CurriLevel curriLevel) {
         // Save the new CurriLevel
@@ -56,7 +55,8 @@ public class CurriLevelController {
     }
 
     @PostMapping("{classlevelId}/subjects")
-    public ResponseEntity<UniversalResponse<?>> addSubject(@RequestBody IdPostDTO subjectId, @PathVariable("classlevelId") Long classlevelId) {
+    public ResponseEntity<UniversalResponse<?>> addSubject(@RequestBody IdPostDTO subjectId,
+                                                           @PathVariable("classlevelId") Long classlevelId) {
         System.out.println(subjectId);
         Optional<Subject> subject = subjectRepository.findById(subjectId.id);
         if (subject.isEmpty()) return null;
@@ -81,7 +81,8 @@ public class CurriLevelController {
 
 
     @DeleteMapping("{classlevelId}/subjects/{subjectId}")
-    public ResponseEntity<UniversalResponse<?>> deleteSubject(@PathVariable("classlevelId") Long classlevelId, @PathVariable("subjectId") Long subjectId) {
+    public ResponseEntity<UniversalResponse<?>> deleteSubject(@PathVariable("classlevelId") Long classlevelId,
+                                                              @PathVariable("subjectId") Long subjectId) {
         System.out.println(subjectId);
         Optional<SubjectLevel> subjectLevel = subjectLevelRepository.findByLevelAndSubject(classlevelId, subjectId);
         if (subjectLevel.isEmpty()) return null;

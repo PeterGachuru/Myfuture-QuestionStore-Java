@@ -61,6 +61,9 @@ public class ReferralService {
             referral.setReferrerEmail(referrer.get().getParentUsername());
             referral.setReferrerStudentId(referrer.get().getId());
 
+            if ( referrer.get().getCreditsBalance() == null)
+                referrer.get().setCreditsBalance(0);
+
             Integer currentCreditAmount = referrer.get().getCreditsBalance();
             currentCreditAmount += 4;
             referrer.get().setCreditsBalance(currentCreditAmount);

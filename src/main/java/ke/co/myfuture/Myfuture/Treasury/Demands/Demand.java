@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.Demands;
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import ke.co.myfuture.Myfuture.Treasury.Demands.DemandBreakdown.DemandBreakdown;
 import ke.co.myfuture.Myfuture.Treasury.Demands.DemandPayment.DemandPayment;

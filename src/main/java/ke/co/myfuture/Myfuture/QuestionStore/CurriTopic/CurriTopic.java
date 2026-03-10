@@ -1,12 +1,9 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriTopic;
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
-import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -35,6 +32,10 @@ public class CurriTopic {
     @ManyToOne
     @JoinColumn(name = "subject")
     Subject subject;
+
+
+    @Column(unique = true)
+    String slug;
 
     Integer numbering;
 

@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Commonauth.Utils;
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

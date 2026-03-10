@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.Transaction;
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TranEntry.TranEntry;

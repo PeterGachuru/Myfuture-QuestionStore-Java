@@ -1,7 +1,7 @@
 package ke.co.myfuture.Myfuture.HttpAuth;
 
 import ke.co.myfuture.Myfuture.HttpAuth.HttpMvcMatchers.*;
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.AuthTokenFilter;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.AuthTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

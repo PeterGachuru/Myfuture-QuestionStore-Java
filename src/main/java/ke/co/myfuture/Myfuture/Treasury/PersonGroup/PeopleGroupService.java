@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.PersonGroup;
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.GroupAccess.GroupAccessRole;
 import ke.co.myfuture.Myfuture.Treasury.GroupAccess.GroupAccessService;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;

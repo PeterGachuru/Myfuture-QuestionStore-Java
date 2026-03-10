@@ -1,9 +1,8 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion;
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoice;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
-import ke.co.myfuture.Myfuture.Utils.Response.StaticFunctionUtils;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -11,8 +10,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
-
-import static ke.co.myfuture.Myfuture.Utils.Response.StaticFunctionUtils.simpleDateFormat;
 
 @Entity
 @Data

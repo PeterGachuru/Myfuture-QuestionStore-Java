@@ -1,8 +1,7 @@
 package ke.co.myfuture.Myfuture.Treasury.PersonGroup;
 
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
-import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.Person.Person;
 import lombok.Data;

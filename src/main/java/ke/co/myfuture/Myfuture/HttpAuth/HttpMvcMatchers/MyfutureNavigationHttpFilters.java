@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.HttpAuth.HttpMvcMatchers;
 
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.AccessRight;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.RoleConfig.AccessRight;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 

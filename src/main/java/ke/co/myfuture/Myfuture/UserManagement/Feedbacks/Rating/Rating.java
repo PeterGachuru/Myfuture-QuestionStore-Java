@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.Feedbacks.Rating;
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import lombok.AllArgsConstructor;

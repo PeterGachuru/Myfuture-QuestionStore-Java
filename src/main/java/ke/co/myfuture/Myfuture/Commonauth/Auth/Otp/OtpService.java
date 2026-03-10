@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Commonauth.Auth.Otp;
 
-import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MaximumRetriesException;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.exception.MaximumRetriesException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.crossstore.ChangeSetPersister;

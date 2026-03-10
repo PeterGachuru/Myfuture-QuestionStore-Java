@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.Broadcast;
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import lombok.Data;
 
 import javax.persistence.*;

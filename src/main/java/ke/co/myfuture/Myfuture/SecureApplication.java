@@ -1,16 +1,15 @@
 package ke.co.myfuture.Myfuture;
 
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.AccessRight;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.RoleConfig;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.RoleConfigRepository;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.RoleConfig.AccessRight;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.RoleConfig.RoleConfig;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.RoleConfig.RoleConfigRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserService;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.UserPasswords.UserPassword;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.PasswordUtil;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.SendCredentialsToEmail;
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Roles.ERole;
-//import co.ke.emtechhousee.emtr.SchoolPayRecon.SchoolMaintenance.SchoolService;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.ERole;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;

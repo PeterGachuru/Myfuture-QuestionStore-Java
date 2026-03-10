@@ -25,4 +25,7 @@ public class Subject {
     @Enumerated(EnumType.STRING)
 //    @Column(nullable = false)
     SubjectCategory subjectCategory;
+
+    @Transient
+    private String firstSubtopicSlug;
 }

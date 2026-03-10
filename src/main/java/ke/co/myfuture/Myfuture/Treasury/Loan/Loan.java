@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.Loan;
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import ke.co.myfuture.Myfuture.Treasury.Account.AccountStatus;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;

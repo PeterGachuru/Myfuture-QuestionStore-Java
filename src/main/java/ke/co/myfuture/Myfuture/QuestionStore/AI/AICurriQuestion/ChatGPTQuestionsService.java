@@ -58,7 +58,7 @@ public class ChatGPTQuestionsService {
 
     @Async
     public UniversalResponse generateQuestionsForSubject(String model, long levelId, long subjectId) {
-        System.out.println("Automaticall generating questions for "+model+" level: "+levelId+" subject: "+subjectId);
+        System.out.println("Automatically generating questions for "+model+" level: "+levelId+" subject: "+subjectId);
         List<CurriTopic> topicList  =  curriTopicRepository.findBySubjectAndClass(subjectId,
                 levelId);
         for (CurriTopic topic: topicList) {

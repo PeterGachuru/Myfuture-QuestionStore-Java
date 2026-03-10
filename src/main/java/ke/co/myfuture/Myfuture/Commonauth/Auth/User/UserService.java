@@ -1,17 +1,16 @@
 package ke.co.myfuture.Myfuture.Commonauth.Auth.User;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UpdateUserRequest;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Request.User.UserCreateRequest;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.AuthEntityResponse;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.LoginResponse;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.UserResponse;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Http.Response.User.UsersResponse;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.Role.RoleAccessRights;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.*;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.*;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.UpdateUserRequest;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.UserCreateRequest;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.AuthEntityResponse;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.LoginResponse;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.UserResponse;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.UsersResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Otp.OtpService;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.RoleConfig;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.RoleConfigRepository;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.RoleConfig.RoleConfig;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.RoleConfig.RoleConfigRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordReset;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordResetRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordResetService;
@@ -21,11 +20,11 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.UserRole.UserRole;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.UserRole.UserRoleRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.PasswordGenerator;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.PasswordUtil;
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.JwtUtils;
-import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MailServiceException;
-import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MakerCheckerFailException;
-import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MaximumRetriesException;
-import ke.co.myfuture.Myfuture.Commonauth.GoogleSignin.GoogleTokenVerifierService;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.JwtUtils;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.exception.MailServiceException;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.exception.MakerCheckerFailException;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.exception.MaximumRetriesException;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.GoogleTokenVerifierService;
 import ke.co.myfuture.Myfuture.Commonauth.MailComponent.MailService2;
 import ke.co.myfuture.Myfuture.Commonauth.Utils.CustomMailSender;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
@@ -223,9 +222,6 @@ public class UserService {
                             CustomMailSender customMailSender1 = getCustomMailSender();
                             customMailSender1.sendEmail("Ibuka: User Login", "You have just logged in at "+new Date(), new String[]{user.getEmail()}, new String[]{}, new String[]{}, "Ibuka Technologies");
                             log.info("password {}",password);
-//                        mailService2.sendEmail(user.getEmail(),
-//                                "Your Myfuture password is: " + password + "  Do not share your password with anyone",
-//                                "Myfuture password");
                         }
 
                         response.set(LoginResponse.builder().statusCode(HttpStatus.OK.value()).message("Login successful").user(authResponse).build());

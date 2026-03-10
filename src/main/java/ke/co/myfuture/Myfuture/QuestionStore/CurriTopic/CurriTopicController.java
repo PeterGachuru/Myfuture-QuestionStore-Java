@@ -2,7 +2,6 @@ package ke.co.myfuture.Myfuture.QuestionStore.CurriTopic;
 
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevelRepository;
-import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.SubjectRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -23,6 +23,9 @@ public class CurriLevel {
     @Column(nullable = false, length = 20)
     String name;
 
+    @Column(length = 120, unique = true)
+    private String slug;
+
     @Column(nullable = false)
     Integer numbering;
 

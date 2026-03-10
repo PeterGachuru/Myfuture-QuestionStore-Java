@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CurriTopicRepository extends JpaRepository<CurriTopic, Long> {
@@ -86,6 +87,7 @@ SELECT * FROM curri_topic  WHERE parent IS NOT NULL AND id IN
         id AS id,
         parent AS parent,
         name AS name,
+        slug AS slug,
         curri_level AS curriLevel,
         subject AS subject,
         created_at AS createdAt,
@@ -108,4 +110,14 @@ SELECT * FROM curri_topic  WHERE parent IS NOT NULL AND id IN
     WHERE  curri_level = :classlevel 
 """)
     List<CurriTopicView> findAllTopicsByClassLevel(@Param("classlevel") Long classlevel);
+
+    // Find topics/subtopics with null or empty slug
+    List<CurriTopic> findBySlugIsNullOrSlugIs(String emptySlug);
+
+    boolean existsBySlug(String slug);
+
+    boolean existsBySlugAndIdNot(String slug, Long id);
+
+
+    Optional<CurriTopic> findBySlug(String slug);
 }

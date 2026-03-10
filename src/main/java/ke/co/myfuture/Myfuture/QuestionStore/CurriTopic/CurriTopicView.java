@@ -12,6 +12,7 @@ public interface CurriTopicView {
     Boolean getRequired();
     java.sql.Timestamp getUpdatedAt();
     String getContent();
+    String getSlug();
     String getCreatedBy();
     Boolean getDeletedFlag();
     java.util.Date getDeletedAt();

@@ -1,10 +1,9 @@
 package ke.co.myfuture.Myfuture.QuestionStore.SubjectLevel;
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -20,6 +19,9 @@ public class SubjectLevel {
     @ManyToOne
     @JoinColumn(name = "subject")
     Subject subject;
+
+    @Column(length = 150, unique = true)
+    private String slug;
 
     @ManyToOne
     @JoinColumn(name = "curri_level")

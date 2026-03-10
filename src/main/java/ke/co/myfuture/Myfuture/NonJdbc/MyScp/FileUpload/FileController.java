@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.NonJdbc.MyScp.FileUpload;
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.utils.EntityResponse;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.EntityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;

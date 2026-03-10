@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.Loan;
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import ke.co.myfuture.Myfuture.Treasury.Account.AccountRepository;
 import ke.co.myfuture.Myfuture.Treasury.Account.AccountService;
@@ -14,14 +14,11 @@ import ke.co.myfuture.Myfuture.Treasury.Person.Person;
 import ke.co.myfuture.Myfuture.Treasury.Person.PersonRepository;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroupRepository;
-import ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.InterestRateType;
 import ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.LoanProduct;
 import ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.LoanProductRepository;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.SystemTransactionService;
-import ke.co.myfuture.Myfuture.Treasury.Transaction.Transaction;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TransactionBuilder;
 import ke.co.myfuture.Myfuture.Treasury.Transaction.TransactionCategory;
-import ke.co.myfuture.Myfuture.Utils.DateUtils;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -29,15 +26,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.InterestRateType.FLAT_RATE;
-import static ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct.InterestRateType.REDUCING_BALANCE;
 
 @Service
 @RequiredArgsConstructor

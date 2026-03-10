@@ -1,7 +1,7 @@
 package ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;

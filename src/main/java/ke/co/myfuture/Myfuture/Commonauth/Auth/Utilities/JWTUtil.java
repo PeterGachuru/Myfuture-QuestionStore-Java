@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities;
 
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.User.UserData;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.UserData;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

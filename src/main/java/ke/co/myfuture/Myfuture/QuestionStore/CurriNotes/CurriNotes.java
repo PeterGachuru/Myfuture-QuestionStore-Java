@@ -1,7 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriNotes;
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
-import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;

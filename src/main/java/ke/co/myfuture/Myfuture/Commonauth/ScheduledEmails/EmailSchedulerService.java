@@ -27,7 +27,7 @@ public class EmailSchedulerService {
 
     // Periodically check for pending emails to send
 //    @Scheduled(initialDelay = 0,fixedRate = 60000) // Runs every minute
-    @Scheduled(initialDelay = 0,fixedRate = 15 * 1000) // Runs every 15 seconds
+    @Scheduled(initialDelay = 0,fixedRate = 30 * 1000) // Runs every 30 seconds
     public void processPendingEmails() {
         System.out.println(" public void processPendingEmails() {");
 
@@ -35,6 +35,10 @@ public class EmailSchedulerService {
 //            System.out.println("====Can't send scheduled emails because we are not in PROD=========");
 //            return;
 //        }
+
+        if (emailRepository.countAttemptsInLast50Minutes(new Date()) > 150) {
+            return;
+        }
 
         LocalDateTime now = LocalDateTime.now();
         List<ScheduledEmails> pendingEmails = emailRepository.findPendingEmails(new Date());
@@ -46,12 +50,14 @@ public class EmailSchedulerService {
                 email.setAttemptedSendAt(new Date());
                 email.setLastAttemptStatus(null);
                 emailRepository.save(email);
+//                Boolean status = customMailSender.sendEmail(email.getSubject(),
+//                        email.getBody(),
+//                        new String[]{email.getRecipient()}, new String[]{}, new String[]{}, email.getFromName());
+
                 Boolean status = customMailSender.sendEmail(email.getSubject(),
                         email.getBody(),
-                        new String[]{email.getRecipient()}, new String[]{}, new String[]{}, email.getFromName());
-//                customMailSender.sendEmail(email.getSubject(),
-//                        email.getBody(),
-//                        new String[]{"ngangagachuru919@gmail.com"}, new String[]{}, new String[]{});
+                        new String[]{"ngangagachuru001@gmail.com"}, new String[]{}, new String[]{}, email.getFromName());
+
                 email.setSent(status);
                 email.setLastAttemptStatus(status? LastStatus.SUCCESS: LastStatus.FAILED);
                 email.setTimeSent(new Date());

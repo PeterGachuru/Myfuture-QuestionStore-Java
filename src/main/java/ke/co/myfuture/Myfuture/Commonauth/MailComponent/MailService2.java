@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Commonauth.MailComponent;
 
-import ke.co.myfuture.Myfuture.Commonauth.CustomerExceptions.MailServiceException;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.exception.MailServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

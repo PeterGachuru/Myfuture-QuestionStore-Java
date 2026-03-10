@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Commonauth.Auth.UserRole;
 
-import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.RoleConfig;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.RoleConfig.RoleConfig;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

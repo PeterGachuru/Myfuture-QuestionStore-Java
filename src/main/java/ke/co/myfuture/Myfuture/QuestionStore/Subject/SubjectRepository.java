@@ -27,4 +27,5 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
             select name from subject where id = :subject
             """, nativeQuery = true)
     String getName(Long subject);
+
 }

@@ -20,6 +20,9 @@ public class Curriculum {
     String name;
     @Column(nullable = false, length = 80, unique = true)
     String fullname;
+    @Column(length = 120, unique = true)
+    private String slug;
+
     @CreationTimestamp
     Date createdAt;
 

@@ -1,7 +1,7 @@
 package ke.co.myfuture.Myfuture.QuestionStore.QuestionSettings;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Utils.Response.Action;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

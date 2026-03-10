@@ -1,7 +1,7 @@
 package ke.co.myfuture.Myfuture.Treasury.Loan.LoanApprover;
 
 
-import ke.co.myfuture.Myfuture.Commonauth.AuthenticationModule.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.Loan.Loan;
 import ke.co.myfuture.Myfuture.Treasury.Loan.LoanStatus;
 import lombok.AllArgsConstructor;

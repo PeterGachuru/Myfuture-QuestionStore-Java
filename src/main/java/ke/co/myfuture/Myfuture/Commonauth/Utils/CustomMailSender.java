@@ -110,7 +110,7 @@ public class CustomMailSender {
     }
 
     public Boolean sendEmail(String subject, String body, String[] toList, String[] ccList, String[] attachedFilePaths, String fromName) {
-        System.out.println("Sending mail to "+toList[0]+", subject: "+subject);
+//        System.out.println("Sending mail to "+toList[0]+", subject: "+subject);
 
         if (true) {
             return sendEmailOverRest(subject, body, toList,ccList, attachedFilePaths, fromName);
@@ -201,7 +201,7 @@ public class CustomMailSender {
     }
 
     public Boolean sendEmailOverRest(String subject, String body, String[] toList, String[] ccList, String[] attachedFilePaths, String fromName) {
-        System.out.println("Sending mail via REST to " + toList[0] + ", subject: " + subject);
+//        System.out.println("Sending mail via REST to " + toList[0] + ", subject: " + subject);
 
         // Load your SMTP configuration
         HashMap<String, String> properties = getProperties();
@@ -225,7 +225,7 @@ public class CustomMailSender {
 
             HttpEntity<EmailRequest> request = new HttpEntity<>(requestPayload, headers);
 
-            System.out.println(request);
+//            System.out.println(request);
 
             toJson(requestPayload);
 
