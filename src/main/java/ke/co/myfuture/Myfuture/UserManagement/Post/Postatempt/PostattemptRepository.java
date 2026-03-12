@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.Post.Postatempt;
 
+import ke.co.myfuture.Myfuture.UserManagement.Post.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,4 +36,6 @@ public interface PostattemptRepository extends JpaRepository<Postattempt, Long> 
         GROUP BY p.post.id
     """)
     List<PostAttemptSummary> summarizeByPostIds();
+
+    Long countByPost(Post post);
 }

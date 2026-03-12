@@ -7,6 +7,9 @@ import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.Curriculum.CurriculumRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.SubjectRepository;
+import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisit;
+import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisitRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,37 +17,32 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/read")
+@AllArgsConstructor
 public class CurriNotesReadController {
 
     private final CurriTopicRepository curriTopicRepository;
     private final CurriNotesRepository notesRepository;
 
-    @Autowired
-    ChatGPTNotesService chatGPTNotesService;
+    private final PageVisitRepository pageVisitRepository;
 
-    @Autowired
-    SubjectRepository subjectRepository;
+    private final  ChatGPTNotesService chatGPTNotesService;
 
-    @Autowired
-    CurriLevelRepository curriLevelRepository;
+    private final SubjectRepository subjectRepository;
 
-    @Autowired
-    CurriculumRepository curriculumRepository;
+    private final CurriLevelRepository curriLevelRepository;
 
-    public CurriNotesReadController(
-            CurriTopicRepository curriTopicRepository,
-            CurriNotesRepository notesRepository) {
-        this.curriTopicRepository = curriTopicRepository;
-        this.notesRepository = notesRepository;
-    }
+    private final CurriculumRepository curriculumRepository;
 
     // =============================
     // NEW SEO URL
@@ -98,8 +96,33 @@ public class CurriNotesReadController {
         }
 
         loadPageData(model, topic, notesOpt.get());
+        String visitorId = getOrCreateVisitorId(request, response);
+        // Save the visit
+        PageVisit visit = new PageVisit();
+        visit.setTopicId(topic.getId());
+        visit.setVisitorId(visitorId);
+        visit.setVisitTime(LocalDateTime.now());
+        pageVisitRepository.save(visit);
+        model.addAttribute("visitorId", visitorId);
 
         return "read/notes/profile";
+    }
+
+    private String getOrCreateVisitorId(HttpServletRequest request, HttpServletResponse response) {
+        if (request.getCookies() != null) {
+            for (Cookie c : request.getCookies()) {
+                if ("visitorId".equals(c.getName())) {
+                    return c.getValue();
+                }
+            }
+        }
+
+        String visitorId = UUID.randomUUID().toString();
+        Cookie cookie = new Cookie("visitorId", visitorId);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24 * 365); // 1 year
+        response.addCookie(cookie);
+        return visitorId;
     }
 
 

@@ -19,7 +19,7 @@ public class AdminSubscriptionExpiryTrackController {
     @GetMapping
     public String list(Model model) {
 
-        List<SubscriptionExpiryTrack> tracks = repository.findAllByOrderByCreatedAtDesc(PageRequest.of(0, 300));
+        List<SubscriptionExpiryTrack> tracks = repository.findAllByOrderByExpiryDateDesc(PageRequest.of(0, 300));
 
         model.addAttribute("tracks", tracks);
 

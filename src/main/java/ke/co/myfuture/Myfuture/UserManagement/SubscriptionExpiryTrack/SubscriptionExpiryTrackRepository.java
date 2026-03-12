@@ -16,6 +16,6 @@ public interface SubscriptionExpiryTrackRepository extends JpaRepository<Subscri
 
     Optional<SubscriptionExpiryTrack> findByInstallId(Long installId);
 
-    List<SubscriptionExpiryTrack> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    List<SubscriptionExpiryTrack> findAllByOrderByExpiryDateDesc(Pageable pageable);
 }
 

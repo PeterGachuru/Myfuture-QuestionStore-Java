@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 public interface ContestInviteeRepository extends JpaRepository<ContestInvitee, Long> {
 
@@ -13,4 +14,6 @@ public interface ContestInviteeRepository extends JpaRepository<ContestInvitee, 
     @Transactional
     @Query(nativeQuery = true, value = "UPDATE contest_invitee SET score = :score, attempted_at = CURRENT_TIMESTAMP WHERE contest = :contestId AND invitee_id = :studentId ")
     void updateScore(@Param("contestId") Long contestId, @Param("studentId") Long studentId, @Param("score") Integer score);
+
+    List<ContestInvitee> findByContestOrderByCreatedAtDesc(Long contestId);
 }

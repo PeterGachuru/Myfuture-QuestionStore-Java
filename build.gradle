@@ -86,14 +86,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-configuration-processor'
 	implementation 'org.apache.commons:commons-lang3:3.12.0'
 	implementation 'com.prowidesoftware:pw-swift-core:SRU2021-9.2.11'
-// https://mvnrepository.com/artifact/org.xhtmlrenderer/flying-saucer-pdf-openpdf
 	implementation group: 'org.xhtmlrenderer', name: 'flying-saucer-pdf-openpdf', version: '9.1.22'
 	implementation 'org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22'
 	implementation 'com.itextpdf:itextpdf:5.5.13.1'
 
 	implementation group: 'com.opencsv', name: 'opencsv', version: '5.7.1'
 	implementation 'org.jsoup:jsoup:1.14.3'
-	implementation 'e-iceblue:spire.pdf:9.6.2'
+//	implementation 'e-iceblue:spire.pdf:9.6.2'
 
 	implementation 'org.jasypt:jasypt:1.9.3'
 	implementation 'org.yaml:snakeyaml:1.29'

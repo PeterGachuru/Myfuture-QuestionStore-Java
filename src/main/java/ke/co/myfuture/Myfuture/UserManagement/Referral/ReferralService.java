@@ -69,7 +69,7 @@ public class ReferralService {
             referrer.get().setCreditsBalance(currentCreditAmount);
 
             ibukaStudentAccountRepository.save(referrer.get());
-        }else {
+        } else {
             System.out.println("Did not find referrer "+ referral.referrerCode);
         }
 

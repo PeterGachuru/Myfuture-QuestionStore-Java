@@ -1,6 +1,7 @@
 package ke.co.myfuture.Myfuture.UserManagement.QuizDone;
 
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,4 +15,6 @@ public interface QuizDoneRepository extends JpaRepository<QuizDone, Long> {
 
     @Query("SELECT DISTINCT q.student FROM QuizDone q")
     List<IbukaStudentAccount> findDistinctStudentIds();
+
+    List<QuizDone> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }
