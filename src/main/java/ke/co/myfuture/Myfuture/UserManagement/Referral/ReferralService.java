@@ -37,6 +37,8 @@ public class ReferralService {
             referral.setReferrerEmail(referrer.get().getParentUsername());
             referral.setReferrerStudentId(referrer.get().getId());
 
+            ibukaStudentAccountRepository.updateRecentActivity(referrer.get().getId());
+
             Integer currentCreditAmount = referrer.get().getCreditsBalance();
             currentCreditAmount += 20;
             referrer.get().setCreditsBalance(currentCreditAmount);
@@ -53,6 +55,7 @@ public class ReferralService {
         Referral referral = new Referral();
         referral.referralAction = ReferralAction.LINK_CLICKED;
         referral.referrerCode = code;
+        int creditsReward = 4;
 
         Optional<IbukaStudentAccount> referrer = ibukaStudentAccountRepository.findByShareCode(code);
 
@@ -60,12 +63,13 @@ public class ReferralService {
             System.out.println("Found referrer "+ referral.referrerCode);
             referral.setReferrerEmail(referrer.get().getParentUsername());
             referral.setReferrerStudentId(referrer.get().getId());
+            referral.setCreditsReward(creditsReward);
 
             if ( referrer.get().getCreditsBalance() == null)
                 referrer.get().setCreditsBalance(0);
 
             Integer currentCreditAmount = referrer.get().getCreditsBalance();
-            currentCreditAmount += 4;
+            currentCreditAmount += creditsReward;
             referrer.get().setCreditsBalance(currentCreditAmount);
 
             ibukaStudentAccountRepository.save(referrer.get());

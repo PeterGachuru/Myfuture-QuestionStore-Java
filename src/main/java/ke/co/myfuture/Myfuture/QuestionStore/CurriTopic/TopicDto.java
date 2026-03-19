@@ -9,6 +9,8 @@ public class TopicDto {
     private Long id;
 //    @NotNull
     private String name;
+    private String specificLearningOutcomes;
+    private String suggestLearningExperiences;
 
 //    @NotNull
     private Integer order;

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ReferralRepository extends JpaRepository<Referral, Long> {
     List<Referral> findAllByOrderByIdDesc(Pageable pageable);
+
+    List<Referral> findByReferrerStudentId(Long id);
 }

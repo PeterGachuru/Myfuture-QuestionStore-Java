@@ -32,10 +32,10 @@ public interface CurriTopicRepository extends JpaRepository<CurriTopic, Long> {
     @Query(value = """
 SELECT * FROM curri_topic  WHERE parent IS NOT NULL AND id IN
  (select subtopic from (select count(subtopic) as count, subtopic 
- from curri_question where book_model = :model group by subtopic) k where count < 30)
+ from curri_question group by subtopic) k where count < 30)
   ORDER BY numbering ASC
 """, nativeQuery = true)
-    List<CurriTopic> findSubtopicsWithLessAIQuestions(String model);
+    List<CurriTopic> findSubtopicsWithLessAIQuestions();
 
     @Query(value = """
             SELECT * FROM curri_topic  WHERE parent is null AND subject = :subject AND curri_level = :classLevel 
@@ -118,6 +118,6 @@ SELECT * FROM curri_topic  WHERE parent IS NOT NULL AND id IN
 
     boolean existsBySlugAndIdNot(String slug, Long id);
 
-
-    Optional<CurriTopic> findBySlug(String slug);
+    @Query(value = "SELECT * FROM curri_topic WHERE slug = :slug LIMIT 1", nativeQuery = true)
+    Optional<CurriTopic> findBySlug(@Param("slug") String slug);
 }

@@ -2,6 +2,8 @@ package ke.co.myfuture.Myfuture.UserManagement.QuizDone;
 
 import ke.co.myfuture.Myfuture.UserManagement.Contest.Contest;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestService;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,8 @@ public class QuizDoneController {
     QuizDoneService quizDoneService;
     @Autowired
     QuizDoneRepository quizDoneRepository;
+    @Autowired
+    IbukaStudentAccountRepository ibukaStudentAccountRepository;
 
     @PostMapping("add")
     public ResponseEntity<?> newContest(@RequestBody CreateQuizDone createQuizDone) {
@@ -40,5 +44,11 @@ public class QuizDoneController {
         response.setEntity(quizDoneService.findAll());
         response.setStatusCode(201);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("recentForStudent")
+    public ResponseEntity<?> recentQuizesForStudent(@RequestParam Long studentId) {
+        Optional<IbukaStudentAccount> ibukaStudentAccount = ibukaStudentAccountRepository.findById(studentId);
+        return new ResponseEntity<>(quizDoneRepository.findByStudentOrderByCreatedAtDesc(ibukaStudentAccount.get()), HttpStatus.OK);
     }
 }

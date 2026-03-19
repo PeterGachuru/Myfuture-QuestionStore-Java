@@ -33,6 +33,8 @@ public class StudentAccountController {
 
     @PostMapping("add")
     public ResponseEntity<?> newStudentAccount(@RequestBody IbukaStudentAccount student) {
+        System.out.println("=================Creating student===================");
+        System.out.println(student);
         if (student.id != null) return null;
 
         IbukaStudentAccount savedStudentAccount = repository.save(student);
@@ -48,6 +50,8 @@ public class StudentAccountController {
     public ResponseEntity<?> updateStudentAccount(@RequestBody IbukaStudentAccount student) {
         if (student.id == null) return null;
 
+        System.out.println("=====================================================");
+        System.out.println("Received student: "+student);
         Optional<IbukaStudentAccount> studentAccountFromDb = repository.findById(student.id);
         if (studentAccountFromDb.isEmpty()) return null;
         studentAccountFromDb.get().update(student);
@@ -108,17 +112,17 @@ public class StudentAccountController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("contest/Invitees")
-    public ResponseEntity<?> forContest(@RequestParam String search, @RequestParam Long studentId,
-                                        @RequestParam Long classlevel,
-                                        @RequestParam Integer count) {
-        UniversalResponse response = new UniversalResponse();
-        response.setStatus("Success");
-        response.setMessage("StudentAccount retrieved Successfully");
-        response.setEntity(repository.contestInvitees(search, count, classlevel, studentId));
-        response.setStatusCode(200);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+//    @PostMapping("contest/Invitees")
+//    public ResponseEntity<?> forContest(@RequestParam String search, @RequestParam Long studentId,
+//                                        @RequestParam Long classlevel,
+//                                        @RequestParam Integer count) {
+//        UniversalResponse response = new UniversalResponse();
+//        response.setStatus("Success");
+//        response.setMessage("StudentAccount retrieved Successfully");
+//        response.setEntity(repository.contestInvitees(search, count, classlevel, studentId));
+//        response.setStatusCode(200);
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
 
     @GetMapping("recent")
     public ResponseEntity<?> recentratings() {

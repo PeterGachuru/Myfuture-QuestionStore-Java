@@ -44,6 +44,10 @@ public class CurriTopic {
 
     @Lob
     String content;
+    @Lob
+    String specificLearningOutcomes;
+    @Lob
+    String suggestLearningExperiences;
 
     String instructionsOnGenerationOfQuestions;
     String instructionsOnGenerationOfNotes;
@@ -99,7 +103,7 @@ public class CurriTopic {
     public void update(CurriTopic topic) {
         this.name = topic.name;
         this.content = topic.content;
-        this.instructionsOnGenerationOfQuestions = topic.instructionsOnGenerationOfQuestions;
-        this.instructionsOnGenerationOfNotes = topic.instructionsOnGenerationOfNotes;
+        this.specificLearningOutcomes = topic.specificLearningOutcomes;
+        this.suggestLearningExperiences = topic.suggestLearningExperiences;
     }
 }

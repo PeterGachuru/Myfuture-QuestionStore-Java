@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.Post;
 
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,11 +18,15 @@ public class PostController {
     @Autowired
     PostService postService;
 
+    @Autowired
+    IbukaStudentAccountRepository ibukaStudentAccountRepository;
+
 
     @PostMapping("add")
     public ResponseEntity<?> newPost(@RequestBody Post post) {
         if (post.id != null) return null;
         Post savedPost = repository.save(post);
+        ibukaStudentAccountRepository.updateRecentActivity(post.studentaccount.getId());
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Saved successfully");

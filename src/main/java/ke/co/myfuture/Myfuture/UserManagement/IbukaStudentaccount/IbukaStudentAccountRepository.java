@@ -11,10 +11,20 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStudentAccount, Long> {
-    @Query(value = "SELECT * FROM(SELECT * FROM ibuka_student_account WHERE name LIKE CONCAT('%',:search,'%')  AND classlevel BETWEEN (:classlevel - 1) AND (:classlevel + 1) " +
-            "  AND id <> :studentId ORDER BY id DESC) AS m LIMIT :count", nativeQuery = true)
-    List<IbukaStudentAccount> contestInvitees(@Param("search") String search, @Param("count")  Integer count,
-                                              @Param("classlevel") Long classlevel, @Param("studentId")  Long studentId);
+    @Query(value = """
+        SELECT * 
+        FROM ibuka_student_account
+        WHERE name LIKE CONCAT('%', :search, '%')
+        AND classlevel IN (:classlevels)
+        AND id <> :studentId
+        ORDER BY id DESC
+        LIMIT :count
+        """, nativeQuery = true)
+    List<IbukaStudentAccount> contestInvitees(
+            @Param("search") String search,
+            @Param("count") Integer count,
+            @Param("classlevels") List<Long> classlevels,
+            @Param("studentId") Long studentId);
     List<IbukaStudentAccount> findByParent(Long parentId);
     Optional<IbukaStudentAccount> findByShareCode(String shareCode);
 
@@ -42,4 +52,9 @@ public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStuden
     void analyzeScores();
 
     List<IbukaStudentAccount> findAllByOrderByIdDesc(Pageable pageable);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE IbukaStudentAccount s SET s.recentActivity = CURRENT_TIMESTAMP WHERE s.id = :id")
+    int updateRecentActivity(@Param("id") Long id);
 }

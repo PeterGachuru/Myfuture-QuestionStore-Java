@@ -63,6 +63,8 @@ public class CurriQuestionService {
 
         curriQuestion.setCgroup(cgroup.id);
         curriQuestion.setUpdateId(updateId);
+        System.out.println("Question cgroup Id: "+cgroup.id);
+        System.out.println("Question update Id: "+updateId);
         CurriQuestion savedCurriQuestion = curriQuestionRepository.save(curriQuestion);
 //
         for (CurriNormalChoice choice: choices) {
@@ -283,7 +285,7 @@ public class CurriQuestionService {
         System.out.println(new Date());
         System.out.println("Started reading questions");
         Pageable paging = PageRequest.of(page, size);
-        Page<CurriQuestion> curriQuestions = curriQuestionRepository.findByBookModel(paging, model, lastUpdateId, curriculum);
+        Page<CurriQuestion> curriQuestions = curriQuestionRepository.findByBookModel(paging, lastUpdateId, curriculum);
         System.out.println(curriQuestions.getContent().size());
         response.setEntity(curriQuestions.getContent());
         response.setCurrentPage(page);

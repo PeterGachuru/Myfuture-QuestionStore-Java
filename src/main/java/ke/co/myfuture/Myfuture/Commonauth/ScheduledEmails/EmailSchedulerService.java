@@ -27,7 +27,7 @@ public class EmailSchedulerService {
 
     // Periodically check for pending emails to send
 //    @Scheduled(initialDelay = 0,fixedRate = 60000) // Runs every minute
-    @Scheduled(initialDelay = 0,fixedRate = 30 * 1000) // Runs every 30 seconds
+    @Scheduled(initialDelay = 0,fixedRate = 10*60 * 1000) // Runs every 10 minutes
     public void processPendingEmails() {
         System.out.println(" public void processPendingEmails() {");
 
@@ -56,7 +56,7 @@ public class EmailSchedulerService {
 
                 Boolean status = customMailSender.sendEmail(email.getSubject(),
                         email.getBody(),
-                        new String[]{"ngangagachuru001@gmail.com"}, new String[]{}, new String[]{}, email.getFromName());
+                        new String[]{email.getRecipient()}, new String[]{}, new String[]{}, email.getFromName());
 
                 email.setSent(status);
                 email.setLastAttemptStatus(status? LastStatus.SUCCESS: LastStatus.FAILED);

@@ -16,10 +16,20 @@ public class AdminPageVisitController {
         this.repository = repository;
     }
 
+    // 1. List visitors with multiple visits
     @GetMapping
-    public String list(Model model) {
-        List<PageVisit> visits = repository.findAllByOrderByVisitTimeDesc(PageRequest.of(0, 300));
+    public String listVisitors(Model model) {
+        List<VisitorSummary> visitors = repository.findVisitorsWithMultipleVisits();
+        model.addAttribute("visitors", visitors);
+        return "admin/page_visitors";
+    }
+
+    // 2. View visits for one visitor
+    @GetMapping("/{visitorId}")
+    public String visitorDetails(@PathVariable String visitorId, Model model) {
+        List<PageVisit> visits = repository.findByVisitorIdOrderByVisitTimeDesc(visitorId);
         model.addAttribute("visits", visits);
+        model.addAttribute("visitorId", visitorId);
         return "admin/page_visits";
     }
 }

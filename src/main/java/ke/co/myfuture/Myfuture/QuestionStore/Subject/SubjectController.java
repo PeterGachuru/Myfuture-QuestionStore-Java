@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -27,13 +28,13 @@ public class SubjectController {
         return ResponseEntity.ok().body(universalResponse);
     }
     @GetMapping("all")
-    public ResponseEntity<UniversalResponse<List<CurriLevel>>> getAll() {
-        List<Subject> subjects = subjectRepository.findAll();
+    public ResponseEntity<UniversalResponse<List<Subject>>> getAll() {
+        List<Subject> subjects = subjectRepository.findAllByOrderByNameAsc();
 
-        UniversalResponse universalResponse = new UniversalResponse();
+        UniversalResponse<List<Subject>> universalResponse = new UniversalResponse<>();
         universalResponse.setEntity(subjects);
         universalResponse.setMessage("Retrieved");
-        universalResponse.setStatusCode(HttpStatus.FOUND.value());
+        universalResponse.setStatusCode(HttpStatus.OK.value());
         return ResponseEntity.ok().body(universalResponse);
     }
 
@@ -41,15 +42,32 @@ public class SubjectController {
     public ResponseEntity<UniversalResponse<?>> add(@RequestBody Subject subject) {
         System.out.println("Subject @PostMapping(\"add\")");
         System.out.println(subject);
-        if (subject.id != null) return null;
 
+        // Return bad request if ID is already present
+        if (subject.getId() != null) {
+            UniversalResponse<?> response = new UniversalResponse<>();
+            response.setMessage("New subject cannot have an ID");
+            response.setStatusCode(HttpStatus.BAD_REQUEST.value());
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        // Check if a subject with the same name already exists
+        Optional<Subject> existing = subjectRepository.findByName(subject.getName());
+        if (existing.isPresent()) {
+            UniversalResponse<?> response = new UniversalResponse<>();
+            response.setMessage("Subject with name '" + subject.getName() + "' already exists");
+            response.setStatusCode(HttpStatus.CONFLICT.value()); // 409
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        }
+
+        // Save new subject
         Subject saved = subjectRepository.save(subject);
 
-        UniversalResponse universalResponse = new UniversalResponse();
+        UniversalResponse<Subject> universalResponse = new UniversalResponse<>();
         universalResponse.setEntity(saved);
-        universalResponse.setMessage("Saved");
-        universalResponse.setStatusCode(HttpStatus.FOUND.value());
-        return ResponseEntity.ok().body(universalResponse);
+        universalResponse.setMessage("Saved successfully");
+        universalResponse.setStatusCode(HttpStatus.CREATED.value()); // 201
+        return ResponseEntity.status(HttpStatus.CREATED).body(universalResponse);
     }
 
     @PutMapping("update")

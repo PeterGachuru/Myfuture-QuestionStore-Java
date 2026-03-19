@@ -22,6 +22,9 @@ public class StudySubscriptionController {
     StkSubscriptionRequestRepository stkSubscriptionRequestRepository;
 
     @Autowired
+    StudySubscriptionRepository studySubscriptionRepository;
+
+    @Autowired
     MpesaService mpesaService;
 
     @PostMapping
@@ -89,9 +92,14 @@ public class StudySubscriptionController {
     }
 
     @GetMapping("/email")
-    public ResponseEntity<StudySubscription> getSubscriptionByEmailAddress(@RequestParam("emailAddress") String emailAddress) {
-        StudySubscription subscription = studySubscriptionService.getSubscriptionByEmailAddress(emailAddress);
+    public ResponseEntity<List<StudySubscription>> getSubscriptionByEmailAddress(@RequestParam("emailAddress") String emailAddress) {
+        List<StudySubscription> subscription = studySubscriptionService.getSubscriptionByEmailAddress(emailAddress);
         return ResponseEntity.ok(subscription);
+    }
+    @GetMapping("/forparent")
+    public ResponseEntity<List<StudySubscription>> getSubscriptionListForParent(@RequestParam("emailAddress") String emailAddress) {
+        List<StudySubscription> subscriptions = studySubscriptionRepository.findTop10ByEmailAddressOrderByCreatedAtDesc(emailAddress);
+        return ResponseEntity.ok(subscriptions);
     }
 
     @PutMapping("/{id}")

@@ -50,8 +50,8 @@ public class StudySubscriptionService {
         return studySubscriptionRepository.findByTransactionCode(transactionCode);
     }
 
-    public StudySubscription getSubscriptionByEmailAddress(String emailAddress) {
-        return studySubscriptionRepository.findByEmailAddress(emailAddress);
+    public List<StudySubscription> getSubscriptionByEmailAddress(String emailAddress) {
+        return studySubscriptionRepository.findTop10ByEmailAddressOrderByCreatedAtDesc(emailAddress);
     }
 
     public StudySubscription updateSubscription(Long id, BigDecimal payAmount, int numberOfDays, String subscriptionType) {

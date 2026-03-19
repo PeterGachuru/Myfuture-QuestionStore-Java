@@ -24,6 +24,8 @@ public class Referral {
 
     Long newUserId;
 
+    Integer creditsReward;
+
     String newUserEmail;
 
     String referrerEmail;

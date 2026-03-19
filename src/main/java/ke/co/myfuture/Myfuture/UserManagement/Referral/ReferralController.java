@@ -1,16 +1,21 @@
 package ke.co.myfuture.Myfuture.UserManagement.Referral;
 
+import ke.co.myfuture.Myfuture.UserManagement.StudySubscription.StudySubscription;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("referral")
 public class ReferralController {
     @Autowired
     ReferralService referralService;
+    @Autowired
+    ReferralRepository referralRepository;
 
     @PostMapping("add")//to be moved to installedApp
     public ResponseEntity<?> newStudentAccount(@RequestBody Referral referral) {
@@ -61,5 +66,11 @@ public class ReferralController {
         """.formatted(code);
 
         return ResponseEntity.ok(html);
+    }
+
+    @GetMapping("forStudent")
+    public ResponseEntity<List<Referral>> getSubscriptionListForParent(@RequestParam("student") Long student) {
+        List<Referral> referrals = referralRepository.findByReferrerStudentId(student);
+        return ResponseEntity.ok(referrals);
     }
 }

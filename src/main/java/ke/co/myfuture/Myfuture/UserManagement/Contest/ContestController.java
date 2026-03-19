@@ -1,5 +1,8 @@
 package ke.co.myfuture.Myfuture.UserManagement.Contest;
 
+import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevelRepository;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInviteeRepository;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -17,6 +21,10 @@ public class ContestController {
 
     @Autowired
     IbukaStudentAccountRepository ibukaStudentAccountRepository;
+    @Autowired
+    CurriLevelRepository curriLevelRepository;
+    @Autowired
+    ContestInviteeRepository contestInviteeRepository;
     @Autowired
     ContestService contestService;
 
@@ -31,17 +39,17 @@ public class ContestController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("update")
-    public ResponseEntity<?> updateContest(@RequestBody Contest contest) {
-        Contest updatedContest = repository.save(contest);
-
-        UniversalResponse response = new UniversalResponse();
-        response.setStatus("Success");
-        response.setMessage("Updated Successfully");
-        response.setEntity(updatedContest);
-        response.setStatusCode(201);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+//    @PutMapping("update")
+//    public ResponseEntity<?> updateContest(@RequestBody Contest contest) {
+//        Contest updatedContest = repository.save(contest);
+//
+//        UniversalResponse response = new UniversalResponse();
+//        response.setStatus("Success");
+//        response.setMessage("Updated Successfully");
+//        response.setEntity(updatedContest);
+//        response.setStatusCode(201);
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
     @PutMapping("savescores")
     public ResponseEntity<?> saveScores(@RequestBody ContestService.ScoresParentHolder scoresParentHolder) {
         System.out.println("savescores");
@@ -76,13 +84,17 @@ public class ContestController {
     }
 
     @GetMapping("search/invitees")
-    public ResponseEntity<?> searchContestInvitees(@RequestParam("search") String search, @RequestParam() Integer count,
+    public ResponseEntity<?> searchContestInvitees(@RequestParam("search") String search,
                                                    @RequestParam("classlevel") Long classlevel,
                                                    @RequestParam("studentId") Long studentId) {
+
+        List<Long> classlevels = curriLevelRepository.classesAround(classlevel);
+        System.out.println("Classes "+classlevels);
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Invitees retrieved Successfully");
-        response.setEntity(ibukaStudentAccountRepository.contestInvitees(search, count,  classlevel, studentId));
+        ibukaStudentAccountRepository.updateRecentActivity(studentId);
+        response.setEntity(ibukaStudentAccountRepository.contestInvitees(search, 30,  classlevels, studentId));
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -95,5 +107,11 @@ public class ContestController {
         response.setEntity(contestService.findAllContestSummaries());
         response.setStatusCode(201);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("invited")
+    public ResponseEntity<?> fetchContestsInvited(@RequestParam("student") Long student) {
+        Optional<IbukaStudentAccount> studentAccount = ibukaStudentAccountRepository.findById(student);
+        return new ResponseEntity<>(contestInviteeRepository.findByStudentaccount(studentAccount.get()), HttpStatus.OK);
     }
 }

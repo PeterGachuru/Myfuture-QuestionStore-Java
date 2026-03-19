@@ -48,9 +48,6 @@ public class IbukaStudentAccount {
     @Transient
     Curriculum curriculumObject;
 
-//    @Column(nullable = false)
-//    Long parent;
-
     @Transient()
     UserAccount useraccount;
 
@@ -59,10 +56,10 @@ public class IbukaStudentAccount {
 
     @Column(nullable = false)
     String parentUsername;
-//    Long parent;
-//    Long parent;
 
     String name;
+    String firstName;
+    String lastName;
 
     @Column(name = "install_id", nullable = false)
     Long installId;
@@ -75,10 +72,13 @@ public class IbukaStudentAccount {
     public Date createdAt;
     @UpdateTimestamp
     public Date updatedAt;
+    public Date recentActivity;
     private User authUser;
 
     public void update(IbukaStudentAccount student) {
         name = student.name;
+        firstName = student.firstName;
+        lastName = student.lastName;
         school = student.school;
         curriculum = student.curriculum;
         classlevel = student.classlevel;

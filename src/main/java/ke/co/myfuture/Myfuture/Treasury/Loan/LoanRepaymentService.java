@@ -29,7 +29,7 @@ public class LoanRepaymentService {
     private final LoanInterestService loanInterestService;
 
 //    @Scheduled(cron = "0 0 6,12,18 * * ?") // Runs at 6AM, 12PM, 6PM
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 300000)
     public void autoCreateLoanDemands() {
         generateDemandsForDueLoans();
     }

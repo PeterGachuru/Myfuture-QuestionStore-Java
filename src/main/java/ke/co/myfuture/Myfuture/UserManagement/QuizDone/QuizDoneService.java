@@ -72,6 +72,7 @@ public class QuizDoneService {
             Optional<IbukaStudentAccount> creator = ibukaStudentAccountRepository.findById(createQuizDone.studentId);
             if (creator.isEmpty()) return Optional.empty();
             quizDone.student = creator.get();
+            ibukaStudentAccountRepository.updateRecentActivity(createQuizDone.studentId);
         }
         quizDone.startDate = createQuizDone.startDate;
         quizDone.endDate = createQuizDone.endDate;

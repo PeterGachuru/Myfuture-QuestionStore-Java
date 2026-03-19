@@ -54,11 +54,13 @@ public class ChatGPTQuestionsService {
     @Autowired
     private CurriQuestionService curriQuestionService;
 
+    private final String CURRENT_MODEL = "gpt-5-mini";
+
     private static final int MAXIMUM_NUMBER_OF_QUESTIONS_ALLOWED = 35;
 
     @Async
     public UniversalResponse generateQuestionsForSubject(String model, long levelId, long subjectId) {
-        System.out.println("Automatically generating questions for "+model+" level: "+levelId+" subject: "+subjectId);
+        System.out.println("Automatically generating questions  level: "+levelId+" subject: "+subjectId);
         List<CurriTopic> topicList  =  curriTopicRepository.findBySubjectAndClass(subjectId,
                 levelId);
         for (CurriTopic topic: topicList) {
@@ -85,7 +87,7 @@ public class ChatGPTQuestionsService {
             AIQuery aiQuery = new AIQuery();
             String question = """
                     {
-                        "model": "gpt-3.5-turbo-0125",
+                        "model": "-model_to_use-",
                         "response_format": { "type": "text" },
                         "messages": [
                                         
@@ -96,18 +98,19 @@ public class ChatGPTQuestionsService {
                         ]
                       }
                     """;
+            question = question.replaceAll("-model_to_use-", CURRENT_MODEL);
             question = question.replaceAll("subtopic_name_replace", curriTopic.getName());
             question = question.replaceAll("topic_name_replace", curriTopic.getParent().getName());
             question = question.replaceAll("age_replace", curriTopic.getParent().getCurriLevel().getAgeEstimate().toString());
             question = question.replaceAll("subject_replace", curriTopic.getParent().getSubject().getName().toString());
             aiQuery.setSubtopicId(curriTopic.getId());
             aiQuery.setQueryQuestion(question);
-            aiQuery.setAIModel("gpt-3.5-turbo-0125");
+            aiQuery.setAIModel(CURRENT_MODEL);
             aiQuery.setQueryPurpose(purpose);
 
             aiQuery = aiQueryRepo.save(aiQuery);
 
-            String response = gpt3_5Turbo0125Query(question);
+            String response = gpt5MiniQuery(question);
             System.out.println(response);
             aiQuery.setAiResponse(response);
 
@@ -121,7 +124,7 @@ public class ChatGPTQuestionsService {
     public void queryCurriQuestionsForAllSubtopics() {
         System.out.println("In queryCurriQuestionsForAllSubtopics");
         String purpose = "curri_question";
-        List<CurriTopic> curriSubTopics = curriTopicRepository.findSubtopicsWithLessAIQuestions("gpt-3.5-turbo-0125");
+        List<CurriTopic> curriSubTopics = curriTopicRepository.findSubtopicsWithLessAIQuestions();
         System.out.println("Count: "+curriSubTopics.size());
         for (CurriTopic curriTopic: curriSubTopics) {
             System.out.println("Sutopic "+curriTopic.id);
@@ -137,18 +140,13 @@ public class ChatGPTQuestionsService {
             question = question.replaceAll("subject_replace", curriTopic.getParent().getSubject().getName());
             aiQuery.setSubtopicId(curriTopic.getId());
             aiQuery.setQueryQuestion(question);
-            aiQuery.setAIModel("gpt-3.5-turbo-0125");
+            aiQuery.setAIModel(CURRENT_MODEL);
             aiQuery.setQueryPurpose(purpose);
 
             aiQuery = aiQueryRepo.save(aiQuery);
 
-            String response = gpt3_5Turbo0125Query(question);
+            String response = gpt5MiniQuery(question);
 
-//            while (!isJSONValid(response)) {
-//                response += gpt3_5Turbo0125Query("keep going");
-//            }
-
-//            System.out.println(response);
             aiQuery.setAiResponse(response);
 
             aiQuery = aiQueryRepo.save(aiQuery);
@@ -198,12 +196,12 @@ public class ChatGPTQuestionsService {
 
         aiQuery.setSubtopicId(curriTopic.getId());
         aiQuery.setQueryQuestion(sanitizedQuestion);
-        aiQuery.setAIModel("gpt-3.5-turbo-0125");
+        aiQuery.setAIModel(CURRENT_MODEL);
         aiQuery.setQueryPurpose(purpose);
 
         aiQuery = aiQueryRepo.save(aiQuery);
 
-        String response = gpt3_5Turbo0125Query(sanitizedQuestion);
+        String response = gpt5MiniQuery(sanitizedQuestion);
 
         aiQuery.setAiResponse(response);
 
@@ -251,8 +249,15 @@ public class ChatGPTQuestionsService {
     private String promptTemplate(CurriTopic curriTopic) {
         String question = """
             Create a list of questions in subject: 'subject_replace', on topic: 'topic_name_replace', subtopic: 'subtopic_name_replace'.
-            (InstructionsOnGenerationOfQuestions_subtopic)
-            (InstructionsOnGenerationOfQuestions_topic)
+            ---Specific learning outcomes----
+            (specificLearningOutcomes)
+            ---------------------------------
+            
+            --Suggested Learning experiences--
+            (suggestLearningExperiences)
+            ----------------------------------
+            
+            
             Format your response as a json array of 25 objects with a question with a list of 4 choices,
             3 of the choices being wrong and 1 right choice and an explanation for the right answer.
             Fit the content to Kenyan and target age as age_replace.
@@ -266,8 +271,8 @@ public class ChatGPTQuestionsService {
         if (curriTopic.getParent() != null && curriTopic.getParent().getParent() != null)
             question = """
             'Create a list of questions  subject: 'subject_replace', on topic: 'topic_name_replace', subtopic: 'subtopic_name_replace', sub subtopic: 'sub_subtopic_name_replace'.
-            (InstructionsOnGenerationOfQuestions_subtopic)
-            (InstructionsOnGenerationOfQuestions_topic)
+            (specificLearningOutcomes)
+            (suggestLearningExperiences)
             Format your response as a json array of 25 objects with a question with a list of 4 choices,
             3 of the choices being wrong and 1 right choice and an explanation for the right answer.
             Fit the content to Kenyan and target age as age_replace.
@@ -285,14 +290,14 @@ public class ChatGPTQuestionsService {
         String question = promptTemplate(curriTopic);
 
         if (curriTopic.getInstructionsOnGenerationOfQuestions() == null)
-            question = question.replaceAll("\\(InstructionsOnGenerationOfQuestions_subtopic\\)", "");
+            question = question.replaceAll("\\(specificLearningOutcomes\\)", "");
         else
-            question = question.replaceAll("InstructionsOnGenerationOfQuestions_subtopic", curriTopic.getInstructionsOnGenerationOfQuestions());
+            question = question.replaceAll("specificLearningOutcomes", curriTopic.getInstructionsOnGenerationOfQuestions());
 
         if (curriTopic.getParent().getInstructionsOnGenerationOfQuestions() == null)
-            question = question.replaceAll("\\(InstructionsOnGenerationOfQuestions_topic\\)", "");
+            question = question.replaceAll("\\(suggestLearningExperiences\\)", "");
         else
-            question = question.replaceAll("InstructionsOnGenerationOfQuestions_topic", curriTopic.getParent().getInstructionsOnGenerationOfQuestions());
+            question = question.replaceAll("suggestLearningExperiences", curriTopic.getParent().getInstructionsOnGenerationOfQuestions());
 
         if (curriTopic.getParent().getParent() != null) {
             question = question.replaceAll("sub_subtopic_name_replace", curriTopic.getName());
@@ -476,9 +481,8 @@ public class ChatGPTQuestionsService {
     private String gpt3_5Turbo0125Query(String question) {
         return normalChatGptCall(question, "gpt-3.5-turbo-0125");
     }
-
-    private String gpt40125(String question) {
-        return normalChatGptCall(question, "gpt-4-0125-preview");
+    private String gpt5MiniQuery(String question) {
+        return normalChatGptCall(question, "gpt-5-mini");
     }
 
     private String normalChatGptCall(String question, String model) {
@@ -590,7 +594,7 @@ public class ChatGPTQuestionsService {
 
     @Async
     public void fillAllSubtopicsWithQuestionToMeetMinimum(String model) {
-        List<CurriTopic> subtopics = curriTopicRepository.findSubtopicsWithLessAIQuestions(model);
+        List<CurriTopic> subtopics = curriTopicRepository.findSubtopicsWithLessAIQuestions();
         for (CurriTopic subtopic: subtopics) {
             if (subtopic.getSubject().getName().contains("swahili")) {
                 System.out.println("Ignoring because is a Kiswahili subtopic");
@@ -631,7 +635,6 @@ public class ChatGPTQuestionsService {
 
 
     public void approveQuestionsWithAIBySubtopic(CurriTopic subtopic, SseEmitter emitter) throws IOException {
-        String model = "gpt-3.5-turbo-0125";
         List<CurriQuestion> unapprovedQuestions = curriQuestionRepository.findUnapprovedQuestionsBySubtopic(subtopic.getId(), 15); // Fetch questions needing approval
 
         if (unapprovedQuestions.isEmpty()) {
@@ -653,7 +656,7 @@ public class ChatGPTQuestionsService {
         if (isJSONValid(response)) {
             System.out.println("It is valid json "+subtopic.getId());
             List<QuestionApproval> approvals = parseApprovalResponse(response, subtopic);
-            updateQuestionApprovalStatus(subtopic, approvals, model, emitter);
+            updateQuestionApprovalStatus(subtopic, approvals, CURRENT_MODEL, emitter);
         }
     }
 

@@ -37,10 +37,13 @@ public class ChatGPTNotesService {
     @Value("${ai.api_key}")
     private String chatGPTKey;
 
-//    @Bean
-    public void testNotesGeneration() {
-        generateNotesForSubject("gpt-3.5-turbo-0125", 14, 4);
-    }
+    private final String CURRENT_MODEL = "gpt-5-mini";
+
+
+    //    @Bean
+//    public void testNotesGeneration() {
+//        generateNotesForSubject(CURRENT_MODEL, 14, 4);
+//    }
 
 
     @Async
@@ -61,89 +64,6 @@ public class ChatGPTNotesService {
         response.setStatusCode(200);
         return response;
     }
-
-
-    public void queryContentForAllSubtopics() {
-        String purpose = "content";
-        List<CurriTopic> curriSubTopics = curriTopicRepository.findSubtopicsWithoutAI(purpose);
-        for (CurriTopic curriTopic: curriSubTopics) {
-            AIQuery aiQuery = new AIQuery();
-            String question = """
-                    {
-                        "model": "gpt-3.5-turbo-0125",
-                        "response_format": { "type": "text" },
-                        "messages": [
-                                        
-                          {
-                            "role": "user",
-                            "content": "Create comprehensive notes for subject_replace students on subtopic_name_replace subtopic of topic_name_replace. Format your response in html with div being the parent tag. Would prefer you use definations, ordered lists and examples if possible . Fit the content to kenyan and target age as age_replace."
-                          }
-                        ]
-                      }
-                    """;
-            question = question.replaceAll("subtopic_name_replace", curriTopic.getName());
-            question = question.replaceAll("topic_name_replace", curriTopic.getParent().getName());
-            question = question.replaceAll("age_replace", curriTopic.getParent().getCurriLevel().getAgeEstimate().toString());
-            question = question.replaceAll("subject_replace", curriTopic.getParent().getSubject().getName().toString());
-            aiQuery.setSubtopicId(curriTopic.getId());
-            aiQuery.setQueryQuestion(question);
-            aiQuery.setAIModel("gpt-3.5-turbo-0125");
-            aiQuery.setQueryPurpose(purpose);
-
-            aiQuery = aiQueryRepo.save(aiQuery);
-
-            String response = gpt3_5Turbo0125Query(question);
-            System.out.println(response);
-            aiQuery.setAiResponse(response);
-
-            aiQueryRepo.save(aiQuery);
-            break;
-        }
-    }
-
-
-    //    @Bean
-//    public void queryCurriQuestionsForAllSubtopics() {
-//        System.out.println("In queryCurriQuestionsForAllSubtopics");
-//        String purpose = "curri_question";
-//        List<CurriTopic> curriSubTopics = curriTopicRepository.findSubtopicsWithLessAIQuestions("gpt-3.5-turbo-0125");
-//        System.out.println("Count: "+curriSubTopics.size());
-//        for (CurriTopic curriTopic: curriSubTopics) {
-//            System.out.println("Sutopic "+curriTopic.id);
-////            if(!(curriTopic.getParent().getName().toLowerCase().contains("fraction") || curriTopic.getName().toLowerCase().contains("fraction") ))
-////                continue;
-//            AIQuery aiQuery = new AIQuery();
-//            String question = """
-//                Create a list of questions for subject_replace students on subtopic_name_replace subtopic of topic_name_replace. Format your response as a json array of 25 objects with a question with a list of 4 choices, 3 of the choices being wrong and 1 right choice and an explanation for the right answer. Fit the content to kenyan and target age as age_replace. Specify which is the correct choice. Use only question, choices, correct_choice and explanation as the fields. Don't assign order to the choices.
-//                    """;
-//            question = question.replaceAll("subtopic_name_replace", curriTopic.getName());
-//            question = question.replaceAll("topic_name_replace", curriTopic.getParent().getName());
-//            question = question.replaceAll("age_replace", curriTopic.getParent().getCurriLevel().getAgeEstimate().toString());
-//            question = question.replaceAll("subject_replace", curriTopic.getParent().getSubject().getName());
-//            aiQuery.setSubtopicId(curriTopic.getId());
-//            aiQuery.setQueryQuestion(question);
-//            aiQuery.setAIModel("gpt-3.5-turbo-0125");
-//            aiQuery.setQueryPurpose(purpose);
-//
-//            aiQuery = aiQueryRepo.save(aiQuery);
-//
-//            String response = gpt3_5Turbo0125Query(question);
-//
-////            while (!isJSONValid(response)) {
-////                response += gpt3_5Turbo0125Query("keep going");
-////            }
-//
-////            System.out.println(response);
-//            aiQuery.setAiResponse(response);
-//
-//            aiQuery = aiQueryRepo.save(aiQuery);
-//            if (isJSONValid(response)) {
-//                aiQuery.setMigrated(true);
-//                saveNotes(curriTopic, response, aiQuery.getAIModel());
-//            }
-////            break;
-//        }
-//    }
 
     public void generateNotesForSubtopic(String model, Long subtopic) {
         Optional<CurriTopic> curriTopic = curriTopicRepository.findById(subtopic);
@@ -225,9 +145,18 @@ public class ChatGPTNotesService {
 
     private String notesPromptTemplate(CurriTopic curriTopic) {
         String question = """
-            Create notes in html format(div element being parent, dont use body or html as the holding element, start with div, you can use inline css) for subtopic: 'subtopic_name_replace',  on topic: 'topic_name_replace', subject: 'subject_replace' .
-            (InstructionsOnGenerationOfQuestions_subtopic)
-            (InstructionsOnGenerationOfQuestions_topic)
+            Create notes in html format(div element being parent, dont use body or html as the holding element, 
+            start with div, you can use inline css) for subtopic: 'subtopic_name_replace',  
+            on topic: 'topic_name_replace', subject: 'subject_replace' .
+           
+            ---Specific Learning outcomes---
+            (specificLearningOutcomes)
+            --------------------------------
+            
+            ---Suggested Learning Experiences----
+            (suggestLearningExperiences)
+            -------------------------------------
+            
             Fit the content to Kenyan and target age as age_replace. You can use simple visual expressions where necessary in the html. 
               If the subject in this prompt is a language, focus only on grammatical matters in that language. 
              
@@ -236,8 +165,8 @@ public class ChatGPTNotesService {
         if (curriTopic.getParent() != null && curriTopic.getParent().getParent() != null)
             question = """
             'Create notes in html format(div element being parent,  dont use body or html as the holding element, start with div, you can use inline css. Use maroon as main title color) for sub subtopic: 'sub_subtopic_name_replace', subtopic: 'subtopic_name_replace', topic: 'topic_name_replace', subject: 'subject_replace'.
-            (InstructionsOnGenerationOfQuestions_subtopic) 
-            (InstructionsOnGenerationOfQuestions_topic) 
+            (specificLearningOutcomes) 
+            (suggestLearningExperiences) 
             Fit the content to Kenyan and target age as age_replace.  You can use simple visual expressions where necessary in the html. 
             If the subject in this prompt is a language, focus only on grammatical matters in that language.        
             """;
@@ -248,15 +177,15 @@ public class ChatGPTNotesService {
     private String getNotesGenerationInstructions(CurriTopic curriTopic) {
         String question = notesPromptTemplate(curriTopic);
 
-        if (curriTopic.getInstructionsOnGenerationOfQuestions() == null)
-            question = question.replaceAll("\\(InstructionsOnGenerationOfQuestions_subtopic\\)", "");
+        if (curriTopic.getSpecificLearningOutcomes() == null)
+            question = question.replaceAll("\\(specificLearningOutcomes\\)", "");
         else
-            question = question.replaceAll("InstructionsOnGenerationOfQuestions_subtopic", curriTopic.getInstructionsOnGenerationOfQuestions());
+            question = question.replaceAll("specificLearningOutcomes", curriTopic.getSpecificLearningOutcomes());
 
-        if (curriTopic.getParent() == null || curriTopic.getParent().getInstructionsOnGenerationOfQuestions() == null)
-            question = question.replaceAll("\\(InstructionsOnGenerationOfQuestions_topic\\)", "");
+        if (curriTopic.getParent() == null || curriTopic.getParent().getSuggestLearningExperiences() == null)
+            question = question.replaceAll("\\(suggestLearningExperiences\\)", "");
         else
-            question = question.replaceAll("InstructionsOnGenerationOfQuestions_topic", curriTopic.getParent().getInstructionsOnGenerationOfQuestions());
+            question = question.replaceAll("suggestLearningExperiences", curriTopic.getParent().getSuggestLearningExperiences());
 
         if (curriTopic.getParent() != null && curriTopic.getParent().getParent() != null) {
             question = question.replaceAll("sub_subtopic_name_replace", curriTopic.getName());
@@ -362,10 +291,6 @@ public class ChatGPTNotesService {
     }
     private String gpt5MiniQuery(String question) {
         return normalChatGptCall(question, "gpt-5-mini");
-    }
-
-    private String gpt40125(String question) {
-        return normalChatGptCall(question, "gpt-4-0125-preview");
     }
 
     private String normalChatGptCall(String question, String model) {
@@ -481,65 +406,6 @@ public class ChatGPTNotesService {
         }
         return true;
     }
-
-//    @Async
-//    public void fillAllSubtopicsWithQuestionToMeetMinimum(String model) {
-//        List<CurriTopic> subtopics = curriTopicRepository.findSubtopicsWithLessAIQuestions(model);
-//        for (CurriTopic subtopic: subtopics) {
-//            if (subtopic.getSubject().getName().contains("swahili")) {
-//                System.out.println("Ignoring because is a Kiswahili subtopic");
-//            }else if ((subtopic.getDeleted() != null && subtopic.getDeleted())
-//                    || (subtopic.getParent().getDeleted() != null && subtopic.getParent().getDeleted())) {
-//                System.out.println("Ignoring because is deleted");
-//            }else {
-//                System.out.println("generating for "+subtopic.getName());
-//                generateNotesForSubtopic(model,  subtopic);
-//            }
-//        }
-//    }
-
-
-
-//    public void approveQuestionsWithAIByTopic(Long topicId, SseEmitter emitter) throws IOException {
-//        List<CurriTopic> subtopics = curriTopicRepository.findByParent(topicId);
-//        UniversalResponse response = new UniversalResponse();
-//        response.setStatus("Processing");
-//        response.setMessage("To approve "+subtopics.size()+" subtopics");
-//        response.setStatusCode(100);
-//        response.setResponseType(ResponseType.MESSAGE);
-//        emitter.send(response);
-//        for (CurriTopic subtopic: subtopics) {
-//            approveQuestionsWithAIBySubtopic(subtopic, emitter);
-//        }
-//    }
-//
-//
-//    public void approveQuestionsWithAIBySubtopic(CurriTopic subtopic, SseEmitter emitter) throws IOException {
-//        String model = "gpt-3.5-turbo-0125";
-//        List<CurriQuestion> unapprovedQuestions = curriQuestionRepository.findUnapprovedQuestionsBySubtopic(subtopic.getId(), 15); // Fetch questions needing approval
-//
-//        if (unapprovedQuestions.isEmpty()) {
-//            System.out.println("No questions to approve.");
-//            return;
-//        }
-//
-//        // Build the AI request
-//        String approvalPrompt = buildApprovalPrompt(unapprovedQuestions, subtopic);
-//
-//        String sanitizedPrompt = approvalPrompt.replaceAll("\\r|\\n", " ")
-//                .replace("\"", "\\\"");;
-//
-//
-//        // Send request to AI
-//        String response = gpt3_5Turbo0125Query(sanitizedPrompt);
-//
-//        // Process AI response
-//        if (isJSONValid(response)) {
-//            System.out.println("It is valid json "+subtopic.getId());
-//            List<ChatGPTQuestionsService.QuestionApproval> approvals = parseApprovalResponse(response, subtopic);
-//            updateQuestionApprovalStatus(subtopic, approvals, model, emitter);
-//        }
-//    }
 
     // Escape XML special characters to avoid issues
     private String escapeXml(String input) {

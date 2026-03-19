@@ -38,6 +38,8 @@ public class CurriTopicController {
             topic.setParent(parent);
         }
         topic.setName(topicDto.getName());
+        topic.setSuggestLearningExperiences(topicDto.getSuggestLearningExperiences());
+        topic.setSpecificLearningOutcomes(topicDto.getSpecificLearningOutcomes());
         topic.setNumbering(topicDto.getOrder());
         CurriTopic savedCurriTopic = curriTopicRepository.save(topic);
         if (parent != null) {

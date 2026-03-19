@@ -15,7 +15,7 @@ public class Subject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     public Long id;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     String name;
     @CreationTimestamp
     public Date createdAt;

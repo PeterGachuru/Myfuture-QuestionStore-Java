@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface SubjectLevelRepository extends JpaRepository<SubjectLevel, Long> {
 
-    @Query(nativeQuery = true, value = "select * from subject_level where curri_level = :classlevelId AND subject = :subjectId")
+    @Query(nativeQuery = true, value = "select * from subject_level where curri_level = :classlevelId AND subject = :subjectId AND deleted_flag = 0")
     Optional<SubjectLevel> findByLevelAndSubject(Long classlevelId, Long subjectId);
 
     @Query(nativeQuery = true,

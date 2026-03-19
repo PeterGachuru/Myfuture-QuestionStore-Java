@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee;
 
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,8 +13,10 @@ public interface ContestInviteeRepository extends JpaRepository<ContestInvitee, 
 
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "UPDATE contest_invitee SET score = :score, attempted_at = CURRENT_TIMESTAMP WHERE contest = :contestId AND invitee_id = :studentId ")
+    @Query(nativeQuery = true, value = "UPDATE contest_invitee SET score = :score, attempted = 1, attempted_at = CURRENT_TIMESTAMP WHERE contest = :contestId AND invitee_id = :studentId ")
     void updateScore(@Param("contestId") Long contestId, @Param("studentId") Long studentId, @Param("score") Integer score);
 
     List<ContestInvitee> findByContestOrderByCreatedAtDesc(Long contestId);
+
+    List<ContestInvitee>  findByStudentaccount(IbukaStudentAccount student);
 }

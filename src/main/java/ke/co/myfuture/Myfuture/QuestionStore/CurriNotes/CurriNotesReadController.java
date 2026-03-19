@@ -57,7 +57,7 @@ public class CurriNotesReadController {
         // Extract slug after /read/notes/
         String slug = fullPath.substring(fullPath.indexOf("/read/notes/") + 12);
 
-        System.out.println("Slug retrieved:  "+slug);
+        System.out.println("Slug retrieved:  '"+slug+"'");
 
         Optional<CurriTopic> topicOpt = curriTopicRepository.findBySlug(slug);
 
@@ -71,12 +71,6 @@ public class CurriNotesReadController {
 
         Optional<CurriNotes> notesOpt =
                 notesRepository.findBySubtopicIdAndDeletedFlagFalse(topic.getId());
-
-        if (notesOpt.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            System.out.println("Topic by slug not found");
-            return "error";
-        }
 
 
         if (topic.getCurriLevel().getCurriculum() == 1) {
@@ -124,32 +118,6 @@ public class CurriNotesReadController {
         response.addCookie(cookie);
         return visitorId;
     }
-
-
-    // =============================
-    // OLD URL → REDIRECT TO NEW
-    // =============================
-    @GetMapping("/topic/{topicId}/notes")
-    public String redirectOldUrl(@PathVariable Long topicId,
-                                 HttpServletResponse response) throws IOException {
-
-        Optional<CurriTopic> topicOpt = curriTopicRepository.findById(topicId);
-
-        if (topicOpt.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return "error";
-        }
-
-        CurriTopic topic = topicOpt.get();
-
-        String newUrl = "/read/notes/" + topic.getSlug();
-
-        response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
-        response.setHeader("Location", newUrl);
-
-        return null;
-    }
-
 
     // =============================
     // COMMON DATA LOADER
@@ -204,4 +172,30 @@ public class CurriNotesReadController {
 
         model.addAttribute("allSubjects", subjects);
     }
+
+
+    // =============================
+    // OLD URL → REDIRECT TO NEW
+    // =============================
+    @GetMapping("/topic/{topicId}/notes")
+    public String redirectOldUrl(@PathVariable Long topicId,
+                                 HttpServletResponse response) throws IOException {
+
+        Optional<CurriTopic> topicOpt = curriTopicRepository.findById(topicId);
+
+        if (topicOpt.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return "error";
+        }
+
+        CurriTopic topic = topicOpt.get();
+
+        String newUrl = "/read/notes/" + topic.getSlug();
+
+        response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
+        response.setHeader("Location", newUrl);
+
+        return null;
+    }
+
 }

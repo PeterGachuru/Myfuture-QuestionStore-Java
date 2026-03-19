@@ -17,4 +17,6 @@ public interface QuizDoneRepository extends JpaRepository<QuizDone, Long> {
     List<IbukaStudentAccount> findDistinctStudentIds();
 
     List<QuizDone> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    List<QuizDone> findByStudentOrderByCreatedAtDesc(IbukaStudentAccount student);
 }
