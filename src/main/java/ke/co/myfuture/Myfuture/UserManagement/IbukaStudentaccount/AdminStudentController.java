@@ -1,5 +1,8 @@
 package ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount;
 
+import com.lowagie.text.pdf.PRIndirectReference;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevelService;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInviteeRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Feedbacks.Rating.RatingRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Post.PostRepository;
@@ -26,12 +29,17 @@ public class AdminStudentController {
     private final PostRepository postRepository;
     private final ContestInviteeRepository contestInviteeRepository;
     private final StudySubscriptionRepository studySubscriptionRepository;
+    private final CurriLevelService curriLevelService;
 
     @GetMapping
     public String list(Model model) {
 
         List<IbukaStudentAccount> students =
                 repository.findAllByOrderByIdDesc(PageRequest.of(0,300));
+
+        for (IbukaStudentAccount ibukaStudentAccount: students) {
+            ibukaStudentAccount.setCurriLevel(curriLevelService.getById(ibukaStudentAccount.classlevel));
+        }
 
         model.addAttribute("students", students);
 

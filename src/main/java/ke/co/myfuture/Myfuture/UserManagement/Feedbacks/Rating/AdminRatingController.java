@@ -1,5 +1,7 @@
 package ke.co.myfuture.Myfuture.UserManagement.Feedbacks.Rating;
 
+import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevelService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,13 +11,12 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/admin/ratings")
+@AllArgsConstructor
 public class AdminRatingController {
 
     private final RatingRepository ratingRepository;
+    private final CurriLevelService curriLevelService;
 
-    public AdminRatingController(RatingRepository ratingRepository) {
-        this.ratingRepository = ratingRepository;
-    }
 
     @GetMapping
     public String list(Model model) {

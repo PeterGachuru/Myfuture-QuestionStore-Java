@@ -21,6 +21,9 @@ public class AllTimeScore {
     Long studentId;
     @Column(nullable = false)
     Long classLevelId;
+
+    @Transient
+    String classLevel;
     String school;
     @CreationTimestamp
     Date createdAt;

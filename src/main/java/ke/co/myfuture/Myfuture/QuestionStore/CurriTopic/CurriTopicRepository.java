@@ -1,6 +1,7 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriTopic;
 
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -120,4 +121,6 @@ SELECT * FROM curri_topic  WHERE parent IS NOT NULL AND id IN
 
     @Query(value = "SELECT * FROM curri_topic WHERE slug = :slug LIMIT 1", nativeQuery = true)
     Optional<CurriTopic> findBySlug(@Param("slug") String slug);
+
+    List<CurriTopic> findByDeletedFalseOrderByCreatedAtDesc(PageRequest of);
 }
