@@ -22,5 +22,4 @@ public class PageVisit {
 
     private LocalDateTime visitTime;
 
-    // getters and setters
 }

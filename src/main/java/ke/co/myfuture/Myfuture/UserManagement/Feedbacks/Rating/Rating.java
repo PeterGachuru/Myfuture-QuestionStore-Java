@@ -29,6 +29,7 @@ public class Rating {
     private String message;
 
     private Long appVersion;
+    private Long subtopicId;
 
     @ManyToOne
     IbukaStudentAccount ibukaStudentAccount;

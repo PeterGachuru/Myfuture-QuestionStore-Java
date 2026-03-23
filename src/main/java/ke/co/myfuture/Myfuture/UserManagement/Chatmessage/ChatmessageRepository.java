@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public interface ChatmessageRepository extends JpaRepository<Chatmessage, Long> {
@@ -14,4 +16,13 @@ public interface ChatmessageRepository extends JpaRepository<Chatmessage, Long> 
 
     @Query("SELECT c FROM Chatmessage c ORDER BY c.id DESC")
     List<Chatmessage> findLatestMessages(org.springframework.data.domain.Pageable pageable);
+
+    @Query("""
+    SELECT DATE(e.createdAt), COUNT(e)
+    FROM Chatmessage e
+    WHERE e.createdAt >= :startDate
+    GROUP BY DATE(e.createdAt)
+    ORDER BY DATE(e.createdAt)
+""")
+    List<Object[]> countPerDay(@Param("startDate") Date startDate);
 }

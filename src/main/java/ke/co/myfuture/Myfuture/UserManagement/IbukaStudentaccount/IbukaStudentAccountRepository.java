@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,4 +59,13 @@ public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStuden
     @Transactional
     @Query("UPDATE IbukaStudentAccount s SET s.recentActivity = CURRENT_TIMESTAMP WHERE s.id = :id")
     int updateRecentActivity(@Param("id") Long id);
+
+    @Query("""
+        SELECT DATE(e.createdAt), COUNT(e)
+        FROM IbukaStudentAccount e
+        WHERE e.createdAt >= :startDate
+        GROUP BY DATE(e.createdAt)
+        ORDER BY DATE(e.createdAt)
+    """)
+    List<Object[]> countPerDay(@Param("startDate") Date startDate);
 }

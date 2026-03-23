@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriNotes;
 
+import ke.co.myfuture.Myfuture.HttpAuth.CookieService;
 import ke.co.myfuture.Myfuture.QuestionStore.AI.AICurriNotes.ChatGPTNotesService;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevelRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
@@ -43,6 +44,7 @@ public class CurriNotesReadController {
     private final CurriLevelRepository curriLevelRepository;
 
     private final CurriculumRepository curriculumRepository;
+    private final CookieService cookieService;
 
     // =============================
     // NEW SEO URL
@@ -90,7 +92,7 @@ public class CurriNotesReadController {
         }
 
         loadPageData(model, topic, notesOpt.get());
-        String visitorId = getOrCreateVisitorId(request, response);
+        String visitorId = cookieService.getOrCreateVisitorId(request, response);
         // Save the visit
         PageVisit visit = new PageVisit();
         visit.setTopicId(topic.getId());
@@ -102,22 +104,7 @@ public class CurriNotesReadController {
         return "read/notes/profile";
     }
 
-    private String getOrCreateVisitorId(HttpServletRequest request, HttpServletResponse response) {
-        if (request.getCookies() != null) {
-            for (Cookie c : request.getCookies()) {
-                if ("visitorId".equals(c.getName())) {
-                    return c.getValue();
-                }
-            }
-        }
 
-        String visitorId = UUID.randomUUID().toString();
-        Cookie cookie = new Cookie("visitorId", visitorId);
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60 * 24 * 365); // 1 year
-        response.addCookie(cookie);
-        return visitorId;
-    }
 
     // =============================
     // COMMON DATA LOADER
