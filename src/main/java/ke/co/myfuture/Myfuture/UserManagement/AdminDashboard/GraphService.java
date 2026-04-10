@@ -2,6 +2,7 @@ package ke.co.myfuture.Myfuture.UserManagement.AdminDashboard;
 
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,16 @@ public class GraphService {
 
         for (Object[] row : results) {
             dates.add(row[0].toString());
-            counts.add(((Number) row[1]).intValue());
+
+            Object value = row[1];
+            Number number;
+            if (value instanceof BigDecimal) {
+                number = ((BigDecimal) value);
+            } else {
+                number = ((Number) value);
+            }
+
+            counts.add(number.intValue());
         }
 
         return buildGraph(id, title,

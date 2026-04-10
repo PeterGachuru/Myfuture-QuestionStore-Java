@@ -91,6 +91,11 @@ public class CurriNotesReadController {
 //            return "error";
         }
 
+        if (notesOpt.isEmpty()) {
+            System.out.println("Could not create notes");
+            return "error";
+        }
+
         loadPageData(model, topic, notesOpt.get());
         String visitorId = cookieService.getOrCreateVisitorId(request, response);
         // Save the visit
@@ -131,8 +136,7 @@ public class CurriNotesReadController {
         model.addAttribute("subject", topic.getSubject());
         model.addAttribute("curriculum", curriculumRepository.findById(topic.getCurriLevel().getCurriculum()).get());
 
-        System.out.println("curriculum: "+ curriculumRepository.findById(topic.getCurriLevel().getCurriculum()).get());
-
+//        System.out.println("curriculum: "+ curriculumRepository.findById(topic.getCurriLevel().getCurriculum()).get());
 
         model.addAttribute("allLevels",
                 curriLevelRepository.getAllByCurriculum(topic.getCurriLevel().getCurriculum()));
@@ -184,5 +188,4 @@ public class CurriNotesReadController {
 
         return null;
     }
-
 }

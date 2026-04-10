@@ -43,12 +43,19 @@ public class ReferralController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(value = "share/{code}", produces = "text/html")
-    public ResponseEntity<String> redirectWithPreview(@PathVariable String code) {
+    @GetMapping(value = "track-referral/{code}", produces = "text/html")
+    public ResponseEntity<String> trackReferral(@PathVariable String code) {
         referralService.linkClicked(code);
 
-        // HTML with Open Graph tags for WhatsApp preview
-        String html = """
+
+        return ResponseEntity.ok("Registered");
+    }
+
+
+    @GetMapping(value = "share/{code}", produces = "text/html")
+    public ResponseEntity<String> redirectWithPreview(@PathVariable String code) {
+
+            String html = """
         <!DOCTYPE html>
         <html>
         <head>
@@ -57,13 +64,20 @@ public class ReferralController {
             <meta property="og:image" content="https://myfuture.co.ke/images/launcher-playstore.png" />
             <meta property="og:url" content="https://your-domain.com/referral/share/%s" />
             <meta name="twitter:card" content="summary_large_image" />
-            <meta http-equiv="refresh" content="0;url=https://play.google.com/store/apps/details?id=ke.co.myfuture" />
         </head>
         <body>
             <p>Redirecting to Play Store...</p>
+            <script>
+                // Only real browsers execute this
+                fetch('/referral/track-referral/%s', { method: 'GET' });
+                window.location.href = 'https://play.google.com/store/apps/details?id=ke.co.myfuture';
+            </script>
+            <noscript>
+                <a href="https://play.google.com/store/apps/details?id=ke.co.myfuture">Click here to go to Play Store</a>
+            </noscript>
         </body>
         </html>
-        """.formatted(code);
+        """.formatted(code, code);
 
         return ResponseEntity.ok(html);
     }

@@ -1,6 +1,7 @@
 package ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount;
 
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
+//import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
 import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.Curriculum.Curriculum;
@@ -63,8 +64,8 @@ public class IbukaStudentAccount {
 
     @Column(name = "install_id", nullable = false)
     Long installId;
-    @Transient
-    Install install;
+//    @Transient
+//    Install install;
     @Column(nullable = false)
     Long inid;
 

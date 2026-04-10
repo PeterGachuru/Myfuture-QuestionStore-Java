@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface PostattemptRepository extends JpaRepository<Postattempt, Long> {
@@ -38,4 +39,13 @@ public interface PostattemptRepository extends JpaRepository<Postattempt, Long> 
     List<PostAttemptSummary> summarizeByPostIds();
 
     Long countByPost(Post post);
+
+    @Query(value = """
+        SELECT DATE(created_at), COUNT(*)
+        FROM postattempt
+        WHERE created_at >= :startDate
+        GROUP BY DATE(created_at)
+        ORDER BY DATE(created_at)
+    """, nativeQuery = true)
+        List<Object[]> countAttemptsPerDay(@Param("startDate") Date startDate);
 }

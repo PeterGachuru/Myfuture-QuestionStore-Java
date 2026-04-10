@@ -1,12 +1,16 @@
 package ke.co.myfuture.Myfuture.UserManagement.AdminDashboard;
 
+import ke.co.myfuture.Myfuture.Commonauth.Install.Install2Repository;
 import ke.co.myfuture.Myfuture.UserManagement.Chatmessage.ChatmessageRepository;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInviteeRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestRepository;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisitRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Post.PostRepository;
+import ke.co.myfuture.Myfuture.UserManagement.Post.Postatempt.PostattemptRepository;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizDoneRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Referral.ReferralRepository;
+import ke.co.myfuture.Myfuture.UserManagement.StudySubscription.StudySubscriptionRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +28,6 @@ import java.util.List;
 @RequestMapping("/admin")
 @AllArgsConstructor
 public class AdminDashboard {
-
     private final GraphService graphService;
     private final IbukaStudentAccountRepository ibukaStudentAccountRepository;
     private final ReferralRepository referralRepository;
@@ -33,6 +36,10 @@ public class AdminDashboard {
     private final ChatmessageRepository chatmessageRepository;
     private final PostRepository postRepository;
     private final ContestRepository contestRepository;
+    private final ContestInviteeRepository contestInviteeRepository;
+    private final PostattemptRepository postattemptRepository;
+    private final StudySubscriptionRepository studySubscriptionRepository;
+    private final Install2Repository installRepository;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, HttpSession session) {
@@ -77,6 +84,46 @@ public class AdminDashboard {
         ));
 
         graphs.add(graphService.fromCountPerDay(
+                "activeStudentsChart",
+                "Active Students (DAU)",
+                quizDoneRepository.countActiveStudentsPerDay(startDate),
+                "Date",
+                "Active Users"
+        ));
+
+        graphs.add(graphService.fromCountPerDay(
+                "contestAttemptsChart",
+                "Contest Attempts",
+                contestInviteeRepository.countAttemptsPerDay(startDate),
+                "Date",
+                "Attempts"
+        ));
+
+        graphs.add(graphService.fromCountPerDay(
+                "postAttemptsChart",
+                "Post Attempts",
+                postattemptRepository.countAttemptsPerDay(startDate),
+                "Date",
+                "Attempts"
+        ));
+
+        graphs.add(graphService.fromCountPerDay(
+                "transactionsChart",
+                "Transactions",
+                studySubscriptionRepository.countTransactionsPerDay(startDate),
+                "Date",
+                "Transactions"
+        ));
+
+        graphs.add(graphService.fromCountPerDay(
+                "revenueChart",
+                "Revenue",
+                studySubscriptionRepository.sumTransactionsPerDay(startDate),
+                "Date",
+                "Amount (KES)"
+        ));
+
+        graphs.add(graphService.fromCountPerDay(
                 "visitsChart",
                 "Page Visits",
                 pageVisitRepository.countPerDay(startDateTime),
@@ -106,6 +153,30 @@ public class AdminDashboard {
                 contestRepository.countPerDay(startDate),
                 "Date",
                 "Contests"
+        ));
+
+        graphs.add(graphService.fromCountPerDay(
+                "installsChart",
+                "Total Installs",
+                installRepository.countInstallsPerDay(startDate),
+                "Date",
+                "Installs"
+        ));
+
+        graphs.add(graphService.fromCountPerDay(
+                "installsWithAccountsChart",
+                "Installs (With Account)",
+                installRepository.countInstallsWithAccountsPerDay(startDate),
+                "Date",
+                "Users"
+        ));
+
+        graphs.add(graphService.fromCountPerDay(
+                "conversionChart",
+                "Account Conversion (%)",
+                installRepository.accountConversionPerDay(startDate),
+                "Date",
+                "Percentage (%)"
         ));
 
         for (GraphData graphDataa: graphs)

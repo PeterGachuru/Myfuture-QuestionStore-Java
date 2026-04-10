@@ -139,6 +139,9 @@ public class SitemapService {
                                                             addUrl(xml,
                                                                     BASE_URL + "/read/notes/"
                                                                             + topic.getSlug());
+                                                            addUrl(xml,
+                                                                    BASE_URL + "/read/questions/"
+                                                                            + topic.getSlug());
                                                         }
                                                     });
                                         });

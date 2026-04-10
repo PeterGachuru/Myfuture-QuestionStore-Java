@@ -51,4 +51,14 @@ public interface CurriQuestionRepository extends JpaRepository<CurriQuestion, Lo
 
     @Query(value = "SELECT * FROM curri_question WHERE subtopic = :subtopicId AND  reviewed = '0' limit :limit", nativeQuery = true)
     List<CurriQuestion> findUnapprovedQuestionsBySubtopic(Long subtopicId, Integer limit);
+
+
+    @Query("""
+        SELECT q FROM CurriQuestion q
+        WHERE q.subtopic.id = :subtopicId
+        AND q.deleted = false 
+        ORDER BY q.id ASC
+    """)
+    List<CurriQuestion> findBySubtopic(@Param("subtopicId") Long subtopicId);
+
 }

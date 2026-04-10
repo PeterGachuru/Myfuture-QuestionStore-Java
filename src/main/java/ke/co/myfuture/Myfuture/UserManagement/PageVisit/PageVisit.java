@@ -19,6 +19,7 @@ public class PageVisit {
     private Long topicId;
 
     private String visitorId;
+    private String accessedUri;
 
     private LocalDateTime visitTime;
 

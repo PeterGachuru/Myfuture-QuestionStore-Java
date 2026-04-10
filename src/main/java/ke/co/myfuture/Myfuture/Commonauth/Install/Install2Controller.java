@@ -74,7 +74,7 @@ public class Install2Controller {
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Installs retrieved Successfully");
-        response.setEntity(repository.findLatest300());
+        response.setEntity(repository.findLatest500());
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

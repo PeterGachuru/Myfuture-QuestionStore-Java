@@ -30,4 +30,20 @@ public interface QuizDoneRepository extends JpaRepository<QuizDone, Long> {
     ORDER BY DATE(e.createdAt)
 """)
     List<Object[]> countPerDay(@Param("startDate") Date startDate);
+
+    @Query(value = """
+    SELECT DATE(created_at) as day,
+           COUNT(DISTINCT 
+               CASE 
+                   WHEN student_id IS NOT NULL THEN CONCAT('S-', student_id)
+                   ELSE CONCAT('I-', install_id)
+               END
+           ) as active_users
+    FROM quiz_done
+    WHERE created_at >= :startDate
+    AND deleted = false
+    GROUP BY DATE(created_at)
+    ORDER BY DATE(created_at)
+""", nativeQuery = true)
+    List<Object[]> countActiveStudentsPerDay(@Param("startDate") Date startDate);
 }

@@ -36,18 +36,12 @@ public class CurriQuestion {
 
     @CreationTimestamp
     Date createdAt;
-//    public String getCreatedAt() {
-//        return StaticFunctionUtils.simpleDateFormat(createdAt);
-//    }
+
     Date approverRequestDate;
-//    public String getApproverRequestDate() {
-//        return StaticFunctionUtils.simpleDateFormat(approverRequestDate);
-//    }
+
     @UpdateTimestamp
     Date updatedAt;
-//    public String getUpdatedAt() {
-//        return StaticFunctionUtils.simpleDateFormat(updatedAt);
-//    }
+
     @Column(nullable = false)
     Integer imageLevel = 1;
 
@@ -78,9 +72,7 @@ public class CurriQuestion {
     Date deletionDate;
     String approvedBy;
     String deletedBy;
-//    public String getApprovalDate() {
-//        return StaticFunctionUtils.simpleDateFormat(approvalDate);
-//    }
+
 
     @PrePersist
     void init() {

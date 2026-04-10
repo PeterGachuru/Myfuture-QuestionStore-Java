@@ -35,12 +35,6 @@ public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStuden
     List<IbukaStudentAccount> findBySenderIsNull();
 
 
-//    @Query(value = """
-//            SELECT * FROM(SELECT * FROM student_account WHERE name LIKE CONCATE('%',:search,'%') AND classlevel = :classlevel
-//            AND id <> :student_id ORDER BY id DESC) AS m LIMIT :count
-//            """, nativeQuery = true)
-//    List<IbukaStudentAccount> findForContest(Long parentId);
-
     @Transactional
     @Modifying
     @Query(nativeQuery = true, value = """

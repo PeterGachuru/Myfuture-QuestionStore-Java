@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 
 public interface ContestInviteeRepository extends JpaRepository<ContestInvitee, Long> {
@@ -19,4 +20,14 @@ public interface ContestInviteeRepository extends JpaRepository<ContestInvitee, 
     List<ContestInvitee> findByContestOrderByCreatedAtDesc(Long contestId);
 
     List<ContestInvitee>  findByStudentaccount(IbukaStudentAccount student);
+
+    @Query(value = """
+        SELECT DATE(attempted_at), COUNT(*)
+        FROM contest_invitee
+        WHERE (attempted = true OR score > 0 )
+        AND attempted_at >= :startDate
+        GROUP BY DATE(attempted_at)
+        ORDER BY DATE(attempted_at)
+    """, nativeQuery = true)
+    List<Object[]> countAttemptsPerDay(@Param("startDate") Date startDate);
 }
