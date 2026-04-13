@@ -14,9 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +57,7 @@ public class CurriNotesReadController {
         // Extract slug after /read/notes/
         String slug = fullPath.substring(fullPath.indexOf("/read/notes/") + 12);
 
-        System.out.println("Slug retrieved:  '"+slug+"'");
+//        System.out.println("Slug retrieved:  '"+slug+"'");
 
         Optional<CurriTopic> topicOpt = curriTopicRepository.findBySlug(slug);
 
@@ -187,5 +185,11 @@ public class CurriNotesReadController {
         response.setHeader("Location", newUrl);
 
         return null;
+    }
+
+    @PostMapping("regenerate")
+    public void regenerate(@RequestParam() Long subtopic, @RequestParam String key) {
+        if (key.equalsIgnoreCase("peter"))
+            chatGPTNotesService.generateNotesForSubtopic("gpt-3.5-turbo-0125", subtopic);
     }
 }

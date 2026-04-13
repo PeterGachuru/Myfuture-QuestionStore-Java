@@ -91,7 +91,7 @@ public class Clientinformation {
 
     public void printRequestDetails(HttpServletRequest request) {
         // Print HTTP method
-        System.out.println("HTTP Method: " + request.getMethod());
+//        System.out.println("HTTP Method: " + request.getMethod());
 
         // Print full URL
         StringBuffer requestURL = request.getRequestURL();
@@ -103,8 +103,12 @@ public class Clientinformation {
 
         // Print parameters
         Enumeration<String> parameterNames = request.getParameterNames();
-        System.out.println("Parameters:");
+
+        int i = 0;
         while (parameterNames.hasMoreElements()) {
+            if (i++ == 0) {
+                System.out.println("Parameters:");
+            }
             String paramName = parameterNames.nextElement();
             String[] paramValues = request.getParameterValues(paramName);
 

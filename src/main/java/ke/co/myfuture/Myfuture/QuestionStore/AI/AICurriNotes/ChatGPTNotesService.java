@@ -148,6 +148,11 @@ public class ChatGPTNotesService {
             Create notes in html format(div element being parent, dont use body or html as the holding element, 
             start with div, you can use inline css) for subtopic: 'subtopic_name_replace',  
             on topic: 'topic_name_replace', subject: 'subject_replace' .
+            
+            Fit the content to Kenyan and target age as age_replace. You can use simple visual expressions where necessary in the html. 
+              If the subject in this prompt is a language, focus only on grammatical matters in that language. 
+           
+           Please use below only as a guide on what should be contained in the notes, not as the notes themselves. Don't include 'Suggested Learning Experiences' whatsoever.
            
             ---Specific Learning outcomes---
             (specificLearningOutcomes)
@@ -156,9 +161,6 @@ public class ChatGPTNotesService {
             ---Suggested Learning Experiences----
             (suggestLearningExperiences)
             -------------------------------------
-            
-            Fit the content to Kenyan and target age as age_replace. You can use simple visual expressions where necessary in the html. 
-              If the subject in this prompt is a language, focus only on grammatical matters in that language. 
              
             """;
 

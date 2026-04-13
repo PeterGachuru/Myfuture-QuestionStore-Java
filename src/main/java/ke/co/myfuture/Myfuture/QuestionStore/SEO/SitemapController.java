@@ -18,5 +18,9 @@ public class SitemapController {
     public String sitemap() throws IOException {
         return sitemapService.getSitemapContent();
     }
+    @GetMapping(value = "/read/questionssitemap.xml", produces = "application/xml")
+    public String questionsSitemap() throws IOException {
+        return sitemapService.getSitemapContent();
+    }
 }
 

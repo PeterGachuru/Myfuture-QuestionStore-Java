@@ -6,8 +6,6 @@ import ke.co.myfuture.Myfuture.QuestionStore.CurriNotes.CurriNotesRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.Curriculum.CurriculumRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.SubjectRepository;
-import ke.co.myfuture.Myfuture.QuestionStore.SubjectLevel.SubjectLevel;
-import ke.co.myfuture.Myfuture.QuestionStore.SubjectLevel.SubjectLevelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +24,6 @@ public class SitemapService {
 
     private final CurriculumRepository curriculumRepository;
     private final CurriLevelRepository levelRepository;
-    private final SubjectLevelRepository subjectLevelRepository;
     private final SubjectRepository subjectRepository;
     private final CurriTopicRepository topicRepository;
 
@@ -42,14 +39,14 @@ public class SitemapService {
     @Autowired
     SlugForSubjects slugForSubjects;
 
-//     slugForCurriculums.generateMissingSlugs();
-//        slugForClassLevels.generateMissingSlugs();
-//        slugForSubjects.generateMissingSlugs();
+    int urlsAdded = 0;
+    StringBuilder xml;
+    StringBuilder xmlQuestions;
 
-    // ⭐ change to your real domain
     private final String BASE_URL = "https://study.myfuture.co.ke";
 
-    private final Path sitemapFile = Paths.get("readsitemap.xml");
+    private final Path mainSitemapFile = Paths.get("readsitemap.xml");
+    private final Path questionsSitemapFile = Paths.get("questionsreadsitemap.xml");
 
     // Scheduled generation: 20 sec after start, then every 5 hours
     @PostConstruct
@@ -57,7 +54,9 @@ public class SitemapService {
         System.out.println("scheduleSitemapGeneration");
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             try {
+                urlsAdded = 0;
                 generateAndWriteSitemap();
+                System.out.println("Number of urls added to sitemap "+urlsAdded);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -66,46 +65,56 @@ public class SitemapService {
 
     // Generate sitemap XML and write to file
     public void generateAndWriteSitemap() throws IOException {
-
         System.out.println("generateAndWriteSitemap");
-        String xml = generateSitemapXml();
+        generateSitemapXml();
 
         System.out.println("Generated: writing");
-        Files.writeString(sitemapFile, xml, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        Files.writeString(mainSitemapFile, xml.toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        Files.writeString(questionsSitemapFile, xmlQuestions.toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
-        System.out.println("Sitemap written to " + sitemapFile.toAbsolutePath());
+        System.out.println("Sitemap written to " + mainSitemapFile.toAbsolutePath());
+        System.out.println("Sitemap written to " + questionsSitemapFile.toAbsolutePath());
     }
 
     // Serve XML content (read from file)
     public String getSitemapContent() throws IOException {
-        if (!Files.exists(sitemapFile)) {
+        if (!Files.exists(mainSitemapFile)) {
             generateAndWriteSitemap(); // fallback: generate if file missing
         }
-        return Files.readString(sitemapFile);
+        return Files.readString(mainSitemapFile);
+    }
+
+    public String getQuestionsSitemapContent() throws IOException {
+        if (!Files.exists(questionsSitemapFile)) {
+            generateAndWriteSitemap(); // fallback: generate if file missing
+        }
+        return Files.readString(questionsSitemapFile);
     }
 
     public SitemapService(
             CurriculumRepository curriculumRepository,
             CurriLevelRepository levelRepository,
-            SubjectLevelRepository subjectLevelRepository,
             SubjectRepository subjectRepository,
             CurriTopicRepository topicRepository,
             CurriNotesRepository notesRepository) {
-
         this.curriculumRepository = curriculumRepository;
         this.levelRepository = levelRepository;
-        this.subjectLevelRepository = subjectLevelRepository;
         this.subjectRepository = subjectRepository;
         this.topicRepository = topicRepository;
         this.notesRepository = notesRepository;
     }
 
-    public String generateSitemapXml() {
+    public void generateSitemapXml() {
         generateMissingSlugs();
 
-        StringBuilder xml = new StringBuilder();
+        xml = new StringBuilder();
+        xmlQuestions = new StringBuilder();
 
         xml.append("""
+                <?xml version="1.0" encoding="UTF-8"?>
+                <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                """);
+        xmlQuestions.append("""
                 <?xml version="1.0" encoding="UTF-8"?>
                 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
                 """);
@@ -123,7 +132,6 @@ public class SitemapService {
                     // Levels
                     levelRepository.getAllByCurriculum(curriculum.getId())
                             .forEach(level -> {
-
                                 addUrl(xml, BASE_URL + "/read/classlevel/" + level.getSlug());
 
                                 // Subjects
@@ -131,7 +139,6 @@ public class SitemapService {
                                         .forEach(subject -> {
                                             topicRepository.findAllTopicsByClassLevel(level.getId())
                                                     .forEach(topic -> {
-
                                                         Optional<CurriNotes> notesOpt =
                                                                 notesRepository.findBySubtopicIdAndDeletedFlagFalse(topic.getId());
 
@@ -139,7 +146,7 @@ public class SitemapService {
                                                             addUrl(xml,
                                                                     BASE_URL + "/read/notes/"
                                                                             + topic.getSlug());
-                                                            addUrl(xml,
+                                                            addUrl(xmlQuestions,
                                                                     BASE_URL + "/read/questions/"
                                                                             + topic.getSlug());
                                                         }
@@ -149,8 +156,7 @@ public class SitemapService {
                 });
 
         xml.append("</urlset>");
-
-        return xml.toString();
+        xmlQuestions.append("</urlset>");
     }
 
     private void generateMissingSlugs() {
@@ -161,6 +167,7 @@ public class SitemapService {
     }
 
     private void addUrl(StringBuilder xml, String url) {
+        urlsAdded++;
         xml.append("<url>");
         xml.append("<loc>").append(url).append("</loc>");
         xml.append("<changefreq>weekly</changefreq>");

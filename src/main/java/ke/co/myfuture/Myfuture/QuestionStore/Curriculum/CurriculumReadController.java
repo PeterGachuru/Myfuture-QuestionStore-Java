@@ -19,7 +19,7 @@ public class CurriculumReadController {
     // ⭐ Read homepage
     @GetMapping
     public String listCurriculums(Model model) {
-        List<Curriculum> curriculums = curriculumRepository.findAll();
+        List<Curriculum> curriculums = curriculumRepository.findByIdNot(1L);
         model.addAttribute("curriculums", curriculums);
         return "read/index";
     }

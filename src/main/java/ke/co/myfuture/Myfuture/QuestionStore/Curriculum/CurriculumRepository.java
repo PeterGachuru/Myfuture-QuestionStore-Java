@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface CurriculumRepository extends JpaRepository<Curriculum, Long> {
 
+    List<Curriculum> findByIdNot(Long id);
+
     @Query(value = """ 
             SELECT * FROM curriculum WHERE archived = 0 
             ORDER BY id 
