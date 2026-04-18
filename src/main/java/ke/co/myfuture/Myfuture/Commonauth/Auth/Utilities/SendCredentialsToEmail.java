@@ -3,11 +3,11 @@ package ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities;
 
 import org.springframework.mail.javamail.MimeMessageHelper;
 
-import javax.mail.Authenticator;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Authenticator;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
@@ -39,7 +39,7 @@ public class SendCredentialsToEmail {
     //Banner logo path
     static String banner_path = c.getProperties().getProperty("equity_banner_path");
 
-    public void sendMail(String recipient,String uname,String pass) throws javax.mail.MessagingException, IOException {
+    public void sendMail(String recipient,String uname,String pass) throws jakarta.mail.MessagingException, IOException {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
@@ -161,7 +161,7 @@ public class SendCredentialsToEmail {
         System.out.println("Mail Sent successfully to :\n"+recipient);
     }
 
-    public void sendPassWordReset(String recipient,String token) throws javax.mail.MessagingException, IOException {
+    public void sendPassWordReset(String recipient,String token) throws jakarta.mail.MessagingException, IOException {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
@@ -171,8 +171,8 @@ public class SendCredentialsToEmail {
         props.put("mail.smtp.ssl.trust", "*");
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
-        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-            protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+        Session session = Session.getInstance(props, new jakarta.mail.Authenticator() {
+            protected jakarta.mail.PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(sender, password);
             }});
 

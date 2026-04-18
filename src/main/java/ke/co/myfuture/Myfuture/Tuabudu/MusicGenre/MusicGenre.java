@@ -3,7 +3,7 @@ package ke.co.myfuture.Myfuture.Tuabudu.MusicGenre;
 import ke.co.myfuture.Myfuture.Tuabudu.Language.Language;
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 @Entity

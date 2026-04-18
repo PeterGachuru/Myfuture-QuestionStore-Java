@@ -3,17 +3,24 @@ package ke.co.myfuture.Myfuture.HttpAuth.HttpMvcMatchers;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
-public class ImageStoreHttpFilters extends AbstractHttpConfigurer<MyScpHttpFilters, HttpSecurity> {
+public class ImageStoreHttpFilters extends AbstractHttpConfigurer<ImageStoreHttpFilters, HttpSecurity> {
+
     @Override
     public void init(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .mvcMatchers("/images/all").permitAll()
-                        .mvcMatchers("/images/upload").permitAll()
-                        .mvcMatchers("/images/update").permitAll()
-                        .mvcMatchers("/images/get").permitAll()
-                        .mvcMatchers("/images/display/byid").permitAll()
-                        .mvcMatchers("/images/display").permitAll()
-                );
+
+        http.authorizeHttpRequests(auth -> auth
+
+                .requestMatchers("/images/all").permitAll()
+                .requestMatchers("/images/upload").permitAll()
+                .requestMatchers("/images/update").permitAll()
+                .requestMatchers("/images/get").permitAll()
+                .requestMatchers("/images/display/byid").permitAll()
+                .requestMatchers("/images/display").permitAll()
+        );
+    }
+
+    @Override
+    public void configure(HttpSecurity http) {
+        // required override for AbstractHttpConfigurer
     }
 }

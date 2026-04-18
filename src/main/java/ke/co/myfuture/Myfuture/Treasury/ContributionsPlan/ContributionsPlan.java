@@ -5,7 +5,7 @@ import ke.co.myfuture.Myfuture.Treasury.Account.Account;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
 

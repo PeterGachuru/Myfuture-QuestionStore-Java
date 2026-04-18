@@ -4,7 +4,7 @@ import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
 

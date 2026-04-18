@@ -14,8 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpRequestResponseHolder;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import java.util.logging.Level;
 
@@ -23,7 +23,7 @@ import java.util.logging.Level;
 @Component
 //@AllArgsConstructor
 public class SecurityContextRepository implements org.springframework.security.web.context.SecurityContextRepository {
-    private AuthenticationManager authenticationManager;
+    private MyAuthenticationManager myAuthenticationManager;
 
     private static final String EMPTY_CREDENTIALS = "";
     private static final String ANONYMOUS_USER = "anonymousUser";
@@ -71,7 +71,7 @@ public class SecurityContextRepository implements org.springframework.security.w
 
             email = jwtUtil.getEmailFromToken(authToken);
 
-            return (SecurityContext) this.authenticationManager.authenticate(auth);
+            return (SecurityContext) this.myAuthenticationManager.authenticate(auth);
         } else {
             return SecurityContextHolder.getContext();
         }

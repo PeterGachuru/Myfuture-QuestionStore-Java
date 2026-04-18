@@ -2,11 +2,12 @@ package ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.ValidationConstraints;
 
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.exception.InvalidRequestParameterException;
 import lombok.extern.slf4j.Slf4j;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import org.passay.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;

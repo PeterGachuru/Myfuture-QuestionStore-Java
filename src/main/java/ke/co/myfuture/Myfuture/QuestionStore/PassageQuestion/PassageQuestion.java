@@ -4,7 +4,7 @@ import ke.co.myfuture.Myfuture.QuestionStore.Passage.Passage;
 import ke.co.myfuture.Myfuture.QuestionStore.PassageChoice.PassageChoice;
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity

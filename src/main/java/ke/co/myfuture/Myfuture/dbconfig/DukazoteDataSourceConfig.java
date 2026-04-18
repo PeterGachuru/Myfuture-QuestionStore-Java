@@ -1,22 +1,22 @@
 package ke.co.myfuture.Myfuture.dbconfig;
 
-
+import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.jdbc.datasource.init.DataSourceInitializer;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -26,64 +26,105 @@ import java.util.Properties;
         entityManagerFactoryRef = "dukazoteEntityManagerFactory",
         transactionManagerRef = "dukazoteTransactionManager"
 )
-public class DukazoteDataSourceConfig
-{
+public class DukazoteDataSourceConfig {
+
     @Autowired
     private Environment env;
+
+    // =========================
+    // DataSource Properties
+    // =========================
     @Bean
-    @ConfigurationProperties(prefix="datasource.dukazote")
+    @ConfigurationProperties(prefix = "datasource.dukazote")
     public DataSourceProperties dukazoteDataSourceProperties() {
         return new DataSourceProperties();
     }
 
-    @Bean
+    // =========================
+    // DataSource
+    // =========================
+    @Bean(name = "dukazoteDataSource")
     public DataSource dukazoteDataSource() {
-        DataSourceProperties dukazoteDataSourceProperties = dukazoteDataSourceProperties();
+        DataSourceProperties props = dukazoteDataSourceProperties();
+
         return DataSourceBuilder.create()
-                .driverClassName(dukazoteDataSourceProperties.getDriverClassName())
-                .url(dukazoteDataSourceProperties.getUrl())
-                .username(dukazoteDataSourceProperties.getUsername())
-                .password(dukazoteDataSourceProperties.getPassword())
+                .driverClassName(props.getDriverClassName())
+                .url(props.getUrl())
+                .username(props.getUsername())
+                .password(props.getPassword())
                 .build();
     }
 
-    @Bean
-    public PlatformTransactionManager dukazoteTransactionManager()
-    {
-        EntityManagerFactory factory = dukazoteEntityManagerFactory().getObject();
-        return new JpaTransactionManager(factory);
-    }
+    // =========================
+    // EntityManagerFactory
+    // =========================
+    @Bean(name = "dukazoteEntityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean dukazoteEntityManagerFactory() {
 
-    @Bean
-    public LocalContainerEntityManagerFactoryBean dukazoteEntityManagerFactory()
-    {
-        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        LocalContainerEntityManagerFactoryBean factory =
+                new LocalContainerEntityManagerFactoryBean();
+
         factory.setDataSource(dukazoteDataSource());
-        factory.setPackagesToScan(new String[]{"ke.co.myfuture.Myfuture.Dukazote"});
+        factory.setPackagesToScan("ke.co.myfuture.Myfuture.Dukazote");
         factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.implicit_naming_strategy",
-                "org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy");
-        jpaProperties.put("hibernate.physical_naming_strategy",
-                "org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy");
-        jpaProperties.put("hibernate.hbm2ddl.auto", env.getProperty("spring.jpa.hibernate.ddl-auto"));
-        jpaProperties.put("hibernate.show-sql", env.getProperty("spring.jpa.show-sql"));
+
+        jpaProperties.put(
+                "hibernate.implicit_naming_strategy",
+                "org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
+        );
+
+        jpaProperties.put(
+                "hibernate.physical_naming_strategy",
+                "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy"
+        );
+
+        jpaProperties.put(
+                "hibernate.hbm2ddl.auto",
+                env.getProperty("spring.jpa.hibernate.ddl-auto", "none")
+        );
+
+        jpaProperties.put(
+                "hibernate.show-sql",
+                env.getProperty("spring.jpa.show-sql", "false")
+        );
+
         factory.setJpaProperties(jpaProperties);
 
         return factory;
     }
 
+    // =========================
+    // Transaction Manager
+    // =========================
+    @Bean(name = "dukazoteTransactionManager")
+    public PlatformTransactionManager dukazoteTransactionManager() {
+
+        EntityManagerFactory emf =
+                dukazoteEntityManagerFactory().getObject();
+
+        return new JpaTransactionManager(emf);
+    }
+
+    // =========================
+    // DB Initializer (optional)
+    // =========================
     @Bean
-    public DataSourceInitializer dukazoteDataSourceInitializer()
-    {
-        DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
-        dataSourceInitializer.setDataSource(dukazoteDataSource());
-        ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-//        databasePopulator.addScript(new ClassPathResource("dukazote-data.sql"));
-        dataSourceInitializer.setDatabasePopulator(databasePopulator);
-        dataSourceInitializer.setEnabled(env.getProperty("datasource.dukazote.initialize", Boolean.class, false));
-        return dataSourceInitializer;
+    public DataSourceInitializer dukazoteDataSourceInitializer() {
+
+        DataSourceInitializer initializer = new DataSourceInitializer();
+        initializer.setDataSource(dukazoteDataSource());
+
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        // populator.addScript(new ClassPathResource("dukazote-data.sql"));
+
+        initializer.setDatabasePopulator(populator);
+
+        initializer.setEnabled(
+                env.getProperty("datasource.dukazote.initialize", Boolean.class, false)
+        );
+
+        return initializer;
     }
 }
-

@@ -5,7 +5,7 @@ import ke.co.myfuture.Myfuture.Treasury.Demands.Demand;
 import ke.co.myfuture.Myfuture.Treasury.Loan.Loan;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Data

@@ -1,7 +1,7 @@
 package ke.co.myfuture.Myfuture.Commonauth.Auth.Data;
 
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequest {
 

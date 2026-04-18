@@ -3,7 +3,7 @@ package ke.co.myfuture.Myfuture.QuestionStore.CurriJobapprove;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestionApprove.CurriQuestionApprove;
 import ke.co.myfuture.Myfuture.QuestionStore.Users.Users;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 @Entity
 public class CurriJobapprove {

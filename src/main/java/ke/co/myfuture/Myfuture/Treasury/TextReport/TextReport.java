@@ -4,7 +4,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity

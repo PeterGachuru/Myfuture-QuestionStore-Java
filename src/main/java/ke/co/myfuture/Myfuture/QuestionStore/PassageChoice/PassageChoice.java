@@ -3,7 +3,7 @@ package ke.co.myfuture.Myfuture.QuestionStore.PassageChoice;
 import ke.co.myfuture.Myfuture.QuestionStore.PassageQuestion.PassageQuestion;
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Data

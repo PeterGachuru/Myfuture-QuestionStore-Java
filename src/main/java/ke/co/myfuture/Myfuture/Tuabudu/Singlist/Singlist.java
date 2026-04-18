@@ -3,7 +3,7 @@ package ke.co.myfuture.Myfuture.Tuabudu.Singlist;
 import ke.co.myfuture.Myfuture.Tuabudu.Song.Song;
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity

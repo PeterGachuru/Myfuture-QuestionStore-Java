@@ -1,16 +1,18 @@
 package ke.co.myfuture.Myfuture.NonJdbc;
 
 import com.lowagie.text.DocumentException;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
+import java.io.IOException;
+
 @Service
 public class PdfService {
-    public byte[] convertHtmlToPdf(String htmlContent) throws DocumentException {
+    public byte[] convertHtmlToPdf(String htmlContent) throws DocumentException, com.itextpdf.text.DocumentException, IOException {
         String xhtml ="<!DOCTYPE html>" + htmlToXhtml(htmlContent);
         System.out.println("==================================Html to convert=================");
         System.out.println(xhtml);

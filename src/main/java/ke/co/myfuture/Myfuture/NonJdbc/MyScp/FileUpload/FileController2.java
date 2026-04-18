@@ -2,7 +2,7 @@ package ke.co.myfuture.Myfuture.NonJdbc.MyScp.FileUpload;
 
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.EntityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.json.JSONException;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

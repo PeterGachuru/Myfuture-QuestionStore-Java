@@ -2,7 +2,7 @@ package ke.co.myfuture.Myfuture.QuestionStore.Permissions;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Data

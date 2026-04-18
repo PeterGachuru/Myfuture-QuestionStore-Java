@@ -36,7 +36,7 @@ public class PeriodicContributionAnalysisController {
     }
 
     @GetMapping("generatepdf")
-    public ResponseEntity<byte[]>  generatePdfFile(@RequestParam("planId") Long planId) throws IOException, DocumentException {
+    public ResponseEntity<byte[]>  generatePdfFile(@RequestParam("planId") Long planId) throws IOException, DocumentException, com.itextpdf.text.DocumentException {
         List<Long> incomeAccountsForPlan = repository.getAccountIdsForPlan(planId);
         for (Long id: incomeAccountsForPlan)
             service.calculate(id);

@@ -5,7 +5,7 @@ import ke.co.myfuture.Myfuture.Tuabudu.Language.Language;
 import ke.co.myfuture.Myfuture.Tuabudu.Singer.Singer;
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity

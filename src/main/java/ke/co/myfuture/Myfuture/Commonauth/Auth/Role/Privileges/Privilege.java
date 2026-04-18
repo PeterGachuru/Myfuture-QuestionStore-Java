@@ -4,7 +4,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Role.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @AllArgsConstructor

@@ -2,7 +2,7 @@ package ke.co.myfuture.Myfuture.QuestionStore.Sendid;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Data

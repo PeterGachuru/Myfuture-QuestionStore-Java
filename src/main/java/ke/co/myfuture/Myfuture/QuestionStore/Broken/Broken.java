@@ -3,7 +3,7 @@ package ke.co.myfuture.Myfuture.QuestionStore.Broken;
 import ke.co.myfuture.Myfuture.QuestionStore.BrokenChoice.BrokenChoice;
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity

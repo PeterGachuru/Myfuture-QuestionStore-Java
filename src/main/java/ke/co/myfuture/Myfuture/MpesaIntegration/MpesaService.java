@@ -3,8 +3,8 @@ package ke.co.myfuture.Myfuture.MpesaIntegration;
 import ke.co.myfuture.Myfuture.UserManagement.StudySubscription.StudySubscriptionService;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import java.util.Base64;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.util.Base64Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
@@ -29,7 +29,8 @@ public class MpesaService {
     public String getAccessToken() {
         String url = mpesaProperties.getOauthUrl();
         String credentials = mpesaProperties.getConsumerKey() + ":" + mpesaProperties.getConsumerSecret();
-        String basicAuth = "Basic " + Base64Utils.encodeToString(credentials.getBytes());
+        String basicAuth = "Basic " + java.util.Base64.getEncoder()
+                .encodeToString(credentials.getBytes());
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", basicAuth);

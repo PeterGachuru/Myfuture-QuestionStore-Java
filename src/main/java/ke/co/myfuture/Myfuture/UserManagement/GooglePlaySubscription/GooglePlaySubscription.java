@@ -3,7 +3,7 @@ package ke.co.myfuture.Myfuture.UserManagement.GooglePlaySubscription;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 @Entity

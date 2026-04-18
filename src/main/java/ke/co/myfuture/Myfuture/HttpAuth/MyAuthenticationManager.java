@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Log
 @Component
 @RequiredArgsConstructor
-public class AuthenticationManager implements org.springframework.security.authentication.AuthenticationManager {
+public class MyAuthenticationManager implements org.springframework.security.authentication.AuthenticationManager {
     private final UserService userService;
 
     private final JWTUtil jwtUtil;

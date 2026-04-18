@@ -3,7 +3,7 @@ package ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestion;
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Data

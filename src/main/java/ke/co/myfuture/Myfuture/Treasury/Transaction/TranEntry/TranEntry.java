@@ -6,7 +6,7 @@ import ke.co.myfuture.Myfuture.Treasury.Transaction.Transaction;
 import lombok.Data;
 import lombok.ToString;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Data

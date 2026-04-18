@@ -2,7 +2,7 @@ package ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizQuestion;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 @Entity

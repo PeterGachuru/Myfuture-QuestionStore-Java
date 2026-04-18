@@ -1,7 +1,7 @@
 package ke.co.myfuture.Myfuture.NonJdbc.MyScp.FileUpload;
 
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;

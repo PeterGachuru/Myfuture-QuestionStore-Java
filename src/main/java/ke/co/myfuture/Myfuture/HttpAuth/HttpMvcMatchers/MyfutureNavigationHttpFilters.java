@@ -5,21 +5,36 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 public class MyfutureNavigationHttpFilters extends AbstractHttpConfigurer<MyfutureNavigationHttpFilters, HttpSecurity> {
+
     @Override
     public void init(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .mvcMatchers("/curriculums/all/minimal").permitAll()
-                        .mvcMatchers("/curriculums/all").permitAll()
-                        .mvcMatchers("/classlevel/getbyid").permitAll()
-                        .mvcMatchers("/topic/get/by/subjectandclass").permitAll()
-                        .mvcMatchers("/topic/get/by/parent").permitAll()
-                        .mvcMatchers("/topic/get/by/id").permitAll()
-                        .mvcMatchers("/reports/load").permitAll()
-                        .mvcMatchers("/users/all-accounts").permitAll()
-                        .mvcMatchers("/topic/update").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
-                        .mvcMatchers("/questionstore/questions/approve").hasAnyAuthority(AccessRight.APPROVE_QUESTION.toString())
-                        .mvcMatchers("/questionstore/questions/delete").hasAnyAuthority(AccessRight.DELETE_QUESTION.toString())
-                );
+
+        http.authorizeHttpRequests(auth -> auth
+
+                // Public endpoints
+                .requestMatchers("/curriculums/all/minimal").permitAll()
+                .requestMatchers("/curriculums/all").permitAll()
+                .requestMatchers("/classlevel/getbyid").permitAll()
+                .requestMatchers("/topic/get/by/subjectandclass").permitAll()
+                .requestMatchers("/topic/get/by/parent").permitAll()
+                .requestMatchers("/topic/get/by/id").permitAll()
+                .requestMatchers("/reports/load").permitAll()
+                .requestMatchers("/users/all-accounts").permitAll()
+
+                // Protected endpoints
+                .requestMatchers("/topic/update")
+                .hasAuthority(AccessRight.MODIFY_TOPIC.name())
+
+                .requestMatchers("/questionstore/questions/approve")
+                .hasAuthority(AccessRight.APPROVE_QUESTION.name())
+
+                .requestMatchers("/questionstore/questions/delete")
+                .hasAuthority(AccessRight.DELETE_QUESTION.name())
+        );
+    }
+
+    @Override
+    public void configure(HttpSecurity http) {
+        // required override for AbstractHttpConfigurer
     }
 }

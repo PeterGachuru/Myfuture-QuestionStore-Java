@@ -5,7 +5,7 @@ import ke.co.myfuture.Myfuture.QuestionStore.Users.Users;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity

@@ -2,8 +2,8 @@ package ke.co.myfuture.Myfuture;
 
 import okhttp3.*;
 import org.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -215,7 +215,7 @@ public class ArticleGenerator {
             boolean isJSONValid= isJSONValid(response.toString());
             if(isJSONValid) {
                 System.out.println("Is valid json");
-                org.springframework.boot.configurationprocessor.json.JSONObject jsonObject = new org.springframework.boot.configurationprocessor.json.JSONObject(response.toString());
+                JSONObject jsonObject = new JSONObject(response.toString());
                 String responseString = ((JSONObject) jsonObject.getJSONArray("choices").get(0)).getJSONObject("message").getString("content");
                 System.out.println(responseString);
 
@@ -249,7 +249,7 @@ public class ArticleGenerator {
             new JSONObject(json);
         } catch (JSONException e) {
             try {
-                new org.springframework.boot.configurationprocessor.json.JSONArray(json);
+                new JSONArray(json);
             } catch (JSONException ne) {
                 return false;
             }

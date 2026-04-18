@@ -2,7 +2,7 @@ package ke.co.myfuture.Myfuture.Treasury.Products.LoanProduct;
 
 import lombok.Data;
 
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 
 @Data
 public class LoanProductRequestDTO {

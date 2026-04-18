@@ -3,8 +3,8 @@ package ke.co.myfuture.Myfuture.Commonauth.Auth.UserPasswords;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import lombok.*;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @Entity

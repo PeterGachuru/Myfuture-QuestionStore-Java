@@ -5,25 +5,59 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 public class AuthenticationHttpFilters extends AbstractHttpConfigurer<AuthenticationHttpFilters, HttpSecurity> {
+
     @Override
     public void init(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .mvcMatchers("/authentication/login").permitAll()
-                        .mvcMatchers("/users/deleted-accounts").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
-                        .mvcMatchers("/users/locked-accounts").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
-                        .mvcMatchers("/users/analytics").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
-                        .mvcMatchers("/powers/active-roles").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
-                        .mvcMatchers("/powers/all-roles").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
-                        .mvcMatchers("/powers/create-role").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
-                        .mvcMatchers("/powers/update-role").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
-                        .mvcMatchers("/users/create-user").hasAnyAuthority(AccessRight.CREATE_USER.toString())
-                        .mvcMatchers("/users/register").permitAll()
-                        .mvcMatchers("/users/update-user/:id").hasAnyAuthority(AccessRight.CREATE_USER.toString())
-                        .mvcMatchers("/powers/activate-role").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
-                        .mvcMatchers("/users/all-accounts").hasAnyAuthority(AccessRight.MODIFY_TOPIC.toString())
-                        .mvcMatchers("/authentication/loginByRefreshToken").permitAll()
-//                        .anyRequest().authenticated()
-                );
+
+        http.authorizeHttpRequests(auth -> auth
+
+                // Public endpoints
+                .requestMatchers("/authentication/login").permitAll()
+                .requestMatchers("/users/register").permitAll()
+                .requestMatchers("/authentication/loginByRefreshToken").permitAll()
+
+                // User management
+                .requestMatchers("/users/deleted-accounts")
+                .hasAuthority(AccessRight.MODIFY_TOPIC.name())
+
+                .requestMatchers("/users/locked-accounts")
+                .hasAuthority(AccessRight.MODIFY_TOPIC.name())
+
+                .requestMatchers("/users/analytics")
+                .hasAuthority(AccessRight.MODIFY_TOPIC.name())
+
+                .requestMatchers("/users/all-accounts")
+                .hasAuthority(AccessRight.MODIFY_TOPIC.name())
+
+                // Role / power management
+                .requestMatchers("/powers/active-roles")
+                .hasAuthority(AccessRight.MODIFY_TOPIC.name())
+
+                .requestMatchers("/powers/all-roles")
+                .hasAuthority(AccessRight.MODIFY_TOPIC.name())
+
+                .requestMatchers("/powers/create-role")
+                .hasAuthority(AccessRight.MODIFY_TOPIC.name())
+
+                .requestMatchers("/powers/update-role")
+                .hasAuthority(AccessRight.MODIFY_TOPIC.name())
+
+                .requestMatchers("/powers/activate-role")
+                .hasAuthority(AccessRight.MODIFY_TOPIC.name())
+
+                // User creation
+                .requestMatchers("/users/create-user")
+                .hasAuthority(AccessRight.CREATE_USER.name())
+
+                // FIX: Spring does NOT support ":id"
+                // Use wildcard instead
+                .requestMatchers("/users/update-user/**")
+                .hasAuthority(AccessRight.CREATE_USER.name())
+        );
+    }
+
+    @Override
+    public void configure(HttpSecurity http) {
+        // required override for AbstractHttpConfigurer (safe empty)
     }
 }

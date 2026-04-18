@@ -3,10 +3,10 @@ package ke.co.myfuture.Myfuture.Commonauth.Utils;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import java.util.Date;
 
 @Embeddable

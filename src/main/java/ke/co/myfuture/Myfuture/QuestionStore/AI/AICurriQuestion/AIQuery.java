@@ -4,7 +4,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Data
 @Entity

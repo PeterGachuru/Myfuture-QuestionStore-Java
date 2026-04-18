@@ -1,17 +1,14 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '2.7.10'
-	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'org.springframework.boot' version '3.2.5'
+	id 'io.spring.dependency-management' version '1.1.4'
 }
 
 group = 'co.ke.myfuture'
-version = '1'
-sourceCompatibility = '17'
+version = '1.0.0'
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
 }
 
 bootJar {
@@ -23,133 +20,77 @@ repositories {
 	maven {
 		url 'https://repo.e-iceblue.com/nexus/content/groups/public/'
 	}
+	maven {
+		url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/"
+	}
 }
-
-bootRun {
-	jvmArgs = ['-Dfile.encoding=UTF-8']
-	sourceResources sourceSets.main
-}
-
 
 dependencies {
-	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.2'
+
+	// 🌐 Core Spring Boot
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'com.auth0:java-jwt:3.18.1'
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.security:spring-security-web'
-	implementation 'org.springframework.security:spring-security-config'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.jetbrains:annotations:24.0.0'
-	implementation 'junit:junit:4.13.1'
-	implementation 'junit:junit:4.13.1'
-	implementation 'junit:junit:4.13.1'
-    implementation 'org.jetbrains:annotations:24.0.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0' // Change the version if needed
-	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0' // Change the version if needed
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.projectlombok:lombok:1.18.30'
-	testImplementation 'com.h2database:h2:2.2.220'
-    testImplementation 'junit:junit:4.13.1'
-	testImplementation 'junit:junit:4.13.1'
-	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-common', version: '1.8.20'
-//Thanks for using https://jar-download.com
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2',
-			// Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:
-			'org.bouncycastle:bcprov-jdk15on:1.60',
-			'io.jsonwebtoken:jjwt-jackson:0.11.2' // or 'io.jsonwebtoken:jjwt-gson:0.11.2' for gson
-	implementation 'org.springframework.boot:spring-boot-starter-mail:2.5.3'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	// 🧠 Validation (Jakarta)
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// 🗄️ Database
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+	// 🔐 JWT (cleaned)
+	implementation 'com.auth0:java-jwt:4.4.0'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	// 📦 Utilities
+	implementation 'org.modelmapper:modelmapper:3.2.0'
+	implementation 'com.google.guava:guava:33.0.0-jre'
+	implementation 'org.apache.commons:commons-lang3:3.14.0'
+	implementation 'org.jsoup:jsoup:1.17.2'
+	implementation 'com.google.code.gson:gson:2.10.1'
+
+	// 📄 File processing
+	implementation 'org.apache.poi:poi-ooxml:5.2.5'
+	implementation 'com.opencsv:opencsv:5.9'
+
+	implementation 'org.passay:passay:1.6.4'
+	implementation 'org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22'
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-	testImplementation 'org.mariadb.jdbc:mariadb-java-client'
-	testImplementation 'org.springframework.security:spring-security-test'
-	implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
 
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	// 🔐 Encryption
+	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 
-	implementation 'org.springframework.boot:spring-boot-starter-mail:3.0.4'
-	implementation 'org.modelmapper:modelmapper:3.1.1'
-	implementation('com.google.guava:guava:31.1-jre')
-	implementation 'com.auth0:java-jwt:4.3.0'
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	implementation 'javax.validation:validation-api:2.0.1.Final'
-	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	implementation group: 'org.passay', name: 'passay', version: '1.6.2'
-	implementation 'com.sun.mail:javax.mail:1.6.2'
-	implementation 'org.springframework.boot:spring-boot-configuration-processor'
-	implementation 'org.apache.commons:commons-lang3:3.12.0'
-	implementation 'com.prowidesoftware:pw-swift-core:SRU2021-9.2.11'
-	implementation group: 'org.xhtmlrenderer', name: 'flying-saucer-pdf-openpdf', version: '9.1.22'
-	implementation 'org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22'
-	implementation 'com.itextpdf:itextpdf:5.5.13.1'
+	// 📊 Reporting / PDF
+	implementation 'net.sf.jasperreports:jasperreports:6.21.0'
+	implementation 'com.itextpdf:itextpdf:5.5.13.3'
 
-	implementation group: 'com.opencsv', name: 'opencsv', version: '5.7.1'
-	implementation 'org.jsoup:jsoup:1.14.3'
-//	implementation 'e-iceblue:spire.pdf:9.6.2'
-
-	implementation 'org.jasypt:jasypt:1.9.3'
-	implementation 'org.yaml:snakeyaml:1.29'
-
-	implementation 'net.sf.jasperreports:jasperreports:6.17.0'
-	implementation 'net.sf.jasperreports:jasperreports-fonts:6.17.0'
-	implementation 'com.lowagie:itext:2.1.7'
-
-	implementation "org.apache.httpcomponents:httpclient:4.5.14"
-	implementation('jcifs:jcifs:1.3.17') {
-		exclude group: 'javax.servlet', module: 'servlet-api'
-	}
-	implementation 'org.bouncycastle:bcpkix-jdk15on:1.69'
-	implementation 'org.bouncycastle:bcprov-jdk15on:1.69'
-
-	// https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-client
-	implementation group: 'org.eclipse.jetty', name: 'jetty-client', version: '12.0.7'
-
-
-	implementation 'org.apache.tika:tika-core:2.9.0'
-	implementation 'org.apache.tika:tika-parsers:3.0.0-BETA'
-	implementation 'com.jcraft:jsch:0.1.55'
-	implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.5'
-	implementation 'com.jcraft:jsch:0.1.55'
-//	implementation group: 'org.gradle', name: 'api', version: '1.0'
-    implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.5'
-	implementation 'com.opencsv:opencsv:5.5.2' // Use the latest version available
-
-	implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
-//	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-//	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-	implementation 'com.google.http-client:google-http-client-jackson2:1.41.5'
-
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-	implementation 'com.google.api-client:google-api-client:1.32.1'
-	implementation 'com.google.oauth-client:google-oauth-client:1.32.1'
-	implementation 'com.google.auth:google-auth-library-oauth2-http:1.15.0'
-
-	implementation 'com.google.api-client:google-api-client:1.34.0'
-
-	// OkHttp for HTTP requests
+	// 🌍 HTTP clients
 	implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+	implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
 
-	// org.json for JSON parsing
+	// 🧾 JSON
 	implementation 'org.json:json:20240303'
 
+	// ☁️ Google APIs
+	implementation 'com.google.api-client:google-api-client:2.2.0'
+	implementation 'com.google.auth:google-auth-library-oauth2-http:1.23.0'
+
+	// 🔧 Dev tools
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// 🧪 Testing
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
-test {
-	// Configure test options if needed
-	include '**/*Tests.class' // Include only test classes with names ending in 'Test'
-	exclude '**/IntegrationTest.class' // Exclude integration tests
-	useJUnitPlatform()
-}
-
-

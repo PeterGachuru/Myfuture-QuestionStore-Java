@@ -1,6 +1,8 @@
 package ke.co.myfuture.Myfuture.Treasury.Account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.Treasury.ContributionsPlan.ContributionsPlan;
 import ke.co.myfuture.Myfuture.Treasury.PeriodicContributionAnalysis.PeriodicContributionAnalysis;
@@ -8,8 +10,6 @@ import ke.co.myfuture.Myfuture.Treasury.Person.Person;
 import ke.co.myfuture.Myfuture.Treasury.PersonGroup.PeopleGroup;
 import lombok.Data;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 

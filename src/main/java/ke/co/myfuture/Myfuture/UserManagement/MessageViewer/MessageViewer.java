@@ -5,7 +5,7 @@ import ke.co.myfuture.Myfuture.UserManagement.Sender.Sender;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
