@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <h2>Visitors with Multiple Visits</h2>
+
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>Visitor ID</th>
+            <th>Visit Count</th>
+            <th>Last Visit</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="v : ${visitors}">
+            <td>
+                <a th:href="@{/admin/page-visits/{id}(id=${v.visitorId})}"
+                   th:text="${v.visitorId}"></a>
+            </td>
+            <td th:text="${v.visitCount}"></td>
+            <td th:text="${#temporals.format(v.lastVisitTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+</body>
+</html>

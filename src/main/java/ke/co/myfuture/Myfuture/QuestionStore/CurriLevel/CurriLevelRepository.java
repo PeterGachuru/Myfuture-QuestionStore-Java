@@ -44,4 +44,6 @@ public interface CurriLevelRepository extends JpaRepository<CurriLevel, Long> {
         ORDER BY cl.numbering
         """, nativeQuery = true)
     List<Long> classesAround(Long classlevel);
+
+    List<CurriLevel> findByCurriculumNotOrderByCurriculumAscNumberingAsc(Long curriculum);
 }

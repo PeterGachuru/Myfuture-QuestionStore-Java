@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - MyFuture CBC App</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}">
+
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fdf6f8;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        :root {
+            --primary: #800020;
+            --secondary: #ffb703;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 30px 20px;
+            background: white;
+            border-radius: 10px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-top: 30px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        a {
+            color: var(--primary);
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Privacy Policy</h1>
+    <p>MyFuture CBC Revision App</p>
+</header>
+
+<div class="container">
+
+    <p><span class="highlight">MyFuture CBC Revision App</span> is a product of <span class="highlight">Ibuka Technologies </span>, an online education platform based in Kenya.</p>
+
+    <p>We respect your privacy and are committed to protecting your personal data. This policy explains what data we collect and how we use it.</p>
+
+    <h2>Information We Collect</h2>
+    <p>The app supports two types of users: parents/guardians and learners.</p>
+
+    <h3>From Parents/Guardians:</h3>
+    <ul>
+        <li>Phone number</li>
+        <li>County of origin</li>
+        <li>Email (optional)</li>
+        <li>Password</li>
+    </ul>
+
+    <p>Phone number and password are required for login and account recovery.</p>
+
+    <h3>From Learners:</h3>
+    <ul>
+        <li>Name</li>
+        <li>County</li>
+        <li>Academic details (CBC level/class)</li>
+        <li>Performance data (quiz scores, activity)</li>
+    </ul>
+
+    <h2>How We Use Data</h2>
+    <ul>
+        <li>Provide personalized learning content</li>
+        <li>Track academic progress</li>
+        <li>Enable competitions and rankings</li>
+        <li>Communicate updates</li>
+    </ul>
+
+    <h2>Public Information</h2>
+    <p>Some learner information (name, county, scores) may be visible to other users for rankings, contests, and collaboration features.</p>
+
+    <h2>Children’s Privacy</h2>
+    <p>Parents/Guardians control learner accounts. A learner’s data is only created through a parent/guardian account.</p>
+
+    <h2>Third-Party Services</h2>
+    <p>We use tools like Firebase Analytics to understand app usage. This may include:</p>
+    <ul>
+        <li>Pages visited</li>
+        <li>Time spent in app</li>
+        <li>Device interaction data</li>
+    </ul>
+
+    <h2>Data Minimization</h2>
+    <p>We only collect data necessary to provide our services, in line with Kenya’s Data Protection Act.</p>
+
+    <h2>Data Sharing</h2>
+    <p>We do not sell or share personal data with third parties, except as required for app functionality described above.</p>
+
+    <h2>User Rights</h2>
+    <ul>
+        <li>Request access to your data</li>
+        <li>Request correction of your data</li>
+        <li>Request deletion of your data</li>
+    </ul>
+
+    <h2>Data Retention</h2>
+    <p>We retain user data for up to 7 years after inactivity, unless deletion is requested earlier.</p>
+
+    <h2>Data Security</h2>
+    <ul>
+        <li><b>Encryption:</b> Data is encrypted during transmission (SSL)</li>
+        <li><b>Secure Servers:</b> Access is restricted and monitored</li>
+        <li><b>Access Control:</b> Users control their own data</li>
+    </ul>
+
+    <h2>Business Changes</h2>
+    <p>If ownership changes, users will be informed and data protection will remain a priority.</p>
+
+    <h2>Contact Us</h2>
+    <p>
+        Email: <a href="mailto:admin@ibukatech.com">admin@ibukatech.com</a><br>
+        Website: <a th:href="@{/}">myfuture.co.ke</a>
+    </p>
+
+</div>
+
+<footer>
+    <p>© 2026 MyFuture App | Privacy First</p>
+</footer>
+
+</body>
+</html>

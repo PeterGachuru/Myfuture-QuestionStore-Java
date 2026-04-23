@@ -1,5 +1,8 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriNotes;
 
+import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
+import ke.co.myfuture.Myfuture.Commonauth.Install.Install2Repository;
+import ke.co.myfuture.Myfuture.Commonauth.Install.WebInstallService;
 import ke.co.myfuture.Myfuture.HttpAuth.CookieService;
 import ke.co.myfuture.Myfuture.QuestionStore.AI.AICurriNotes.ChatGPTNotesService;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevelRepository;
@@ -8,22 +11,20 @@ import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.Curriculum.CurriculumRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.SubjectRepository;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisit;
 import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisitRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/read")
@@ -43,6 +44,7 @@ public class CurriNotesReadController {
 
     private final CurriculumRepository curriculumRepository;
     private final CookieService cookieService;
+    private final WebInstallService installService;
 
     // =============================
     // NEW SEO URL
@@ -94,7 +96,7 @@ public class CurriNotesReadController {
             return "error";
         }
 
-        loadPageData(model, topic, notesOpt.get());
+        loadPageData(request, model, topic, notesOpt.get());
         String visitorId = cookieService.getOrCreateVisitorId(request, response);
         // Save the visit
         PageVisit visit = new PageVisit();
@@ -102,7 +104,30 @@ public class CurriNotesReadController {
         visit.setVisitorId(visitorId);
         visit.setVisitTime(LocalDateTime.now());
         pageVisitRepository.save(visit);
+        // Count visits
+        int visitCount = pageVisitRepository.countByVisitorId(visitorId);
+
+// Check login (if using session)
+        Object user = request.getSession().getAttribute("user");
+        boolean loggedIn = user != null;
+
+// Decide if content should be limited
+        boolean restrictContent = !loggedIn && visitCount > 3;
+
+        model.addAttribute("restrictContent", restrictContent);
+        model.addAttribute("visitCount", visitCount);
         model.addAttribute("visitorId", visitorId);
+
+        Install install = installService.getOrCreateInstall(request, response);
+
+        model.addAttribute("installId", install.getId());
+
+        IbukaStudentAccount student =
+                (IbukaStudentAccount) request.getSession().getAttribute("student");
+
+        if (loggedIn && student == null) {
+            return "redirect:/students/select";
+        }
 
         return "read/notes/profile";
     }
@@ -112,7 +137,7 @@ public class CurriNotesReadController {
     // =============================
     // COMMON DATA LOADER
     // =============================
-    private void loadPageData(Model model,
+    private void loadPageData(HttpServletRequest request, Model model,
                               CurriTopic topic,
                               CurriNotes notes) {
 
@@ -160,6 +185,12 @@ public class CurriNotesReadController {
 
 
         model.addAttribute("allSubjects", subjects);
+
+        Object user = request.getSession().getAttribute("user");
+        boolean loggedIn = user != null;
+
+        model.addAttribute("loggedIn", loggedIn);
+        model.addAttribute("currentUser", user); // 👈 IMPORTANT
     }
 
 

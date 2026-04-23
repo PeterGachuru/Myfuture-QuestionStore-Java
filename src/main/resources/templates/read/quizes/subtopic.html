@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${level.name} + ' ' + ${subject.name} + ' ' + ${topic.name} + ' Quiz | Ibuka Learning App'"></title>
+
+    <!-- SEO -->
+    <meta name="description"
+          th:content="'Practice ' + ${level.name} + ' ' + ${subject.name} + ' ' + ${topic.name} + ' quiz. Improve your marks with MCQs, explanations and revision tools.'">
+
+    <meta name="keywords"
+          th:content="${level.name} + ', ' + ${subject.name} + ', ' + ${topic.name} + ', quizzes, KCSE, CBC, revision, past papers, Kenya education'">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Open Graph -->
+    <meta property="og:title" th:content="${level.name} + ' ' + ${subject.name} + ' Quiz'">
+    <meta property="og:description"
+          th:content="'Practice ' + ${topic.name} + ' quiz questions and improve your performance.'">
+
+    <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+        }
+
+        /* LAYOUT */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: #fff;
+            padding: 15px;
+            border-right: 1px solid #eee;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            color: #800000;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 8px;
+            border-radius: 6px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .sidebar a:hover {
+            background: #fff3e0;
+            color: #800000;
+        }
+
+        .sidebar a.active {
+            background: #800000;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* CONTENT */
+        .content {
+            flex: 1;
+            padding: 20px;
+            background: #fff;
+        }
+
+        /* HEADER */
+        h1 {
+            color: #800000;
+            font-size: 22px;
+        }
+
+        .breadcrumb {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 10px;
+        }
+
+        .breadcrumb a {
+            color: #1565C0;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* BUTTONS */
+        .button-wrapper {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 10px 16px;
+            font-size: 15px;
+            color: #fff;
+            background-color: #ff6600;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .download-btn:hover {
+            background-color: #e65c00;
+        }
+
+        /* QUESTIONS */
+        .question {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #fafafa;
+            border-left: 4px solid #800000;
+            border-radius: 6px;
+        }
+
+        .question p {
+            font-size: 16px;
+        }
+
+        /* CHOICES */
+        .choice {
+            cursor: pointer;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin: 6px 0;
+            border-radius: 6px;
+            transition: 0.2s;
+            background: #fff;
+        }
+
+        .choice:hover {
+            background: #f1f5fb;
+        }
+
+        .correct {
+            background: #c8f7c5;
+            border-color: #2e7d32;
+        }
+
+        .wrong {
+            background: #f7c5c5;
+            border-color: #c62828;
+        }
+
+        .explanation {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff3e0;
+            border-radius: 6px;
+        }
+
+        /* BACK LINK */
+        .backlink {
+            display: inline-block;
+            margin: 10px;
+            color: #1565C0;
+            text-decoration: none;
+        }
+
+        .backlink:hover {
+            text-decoration: underline;
+        }
+
+        /* FOOTER */
+        .footer-links {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer-section h3 {
+            color: #800000;
+        }
+
+        .footer-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .footer-items a {
+            background: #fff3e0;
+            color: #800000;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h3>Topics</h3>
+
+        <ul>
+            <li th:each="parent : ${parentTopics}">
+                <strong th:text="${parent.name}"></strong>
+                <ul>
+                    <li th:each="child : ${parent.children}">
+                        <a th:href="@{/read/questions/{slug}(slug=${child.slug})}"
+                           th:text="${child.name}"
+                           th:classappend="${child.id} == ${topic.id} ? 'active' : ''">
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- BREADCRUMB -->
+        <div class="breadcrumb">
+            <a th:href="@{/read/notes/{slug}(slug=${topic.slug})}">📘 Notes</a>
+            &raquo;
+            <span th:text="${topic.name} + ' Quiz'"></span>
+        </div>
+
+        <!-- CTA -->
+        <div class="button-wrapper">
+            <a class="download-btn"
+               href="https://share.myfuture.co.ke/referral/share/studyWeb"
+               target="_blank">
+                📱 Download Myfuture CBC Revision App
+            </a>
+        </div>
+
+        <!-- TITLE -->
+        <h1 th:text="${level.name} + ' ' + ${subject.name} + ' – ' + ${topic.name} + ' Quiz'"></h1>
+
+        <!-- QUESTIONS -->
+        <div th:each="q, qStat : ${questions}" class="question">
+
+            <p>
+                <strong th:text="${qStat.index + 1} + '. ' + ${q.string}"></strong>
+            </p>
+
+            <div th:each="c : ${q.choices}"
+                 class="choice"
+                 th:attr="data-correct=${c.correct}"
+                 onclick="selectChoice(this)">
+                <span th:text="${c.value}"></span>
+            </div>
+
+            <div class="explanation">
+                <strong>Explanation:</strong>
+                <p th:utext="${q.explanation}"></p>
+            </div>
+
+        </div>
+
+        <!-- BACK -->
+        <div class="button-wrapper">
+            <a class="backlink"
+               th:href="@{/read/notes/{slug}(slug=${topic.slug})}">
+                ← Back to Notes
+            </a>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer-links">
+
+            <div class="footer-section">
+                <h3>More Topics</h3>
+
+                <div class="footer-items">
+                    <a th:each="parent : ${parentTopics}"
+                       th:href="@{/read/questions/{slug}(slug=${parent.slug})}"
+                       th:text="${parent.name}">
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function selectChoice(element) {
+        let parent = element.parentElement;
+        let choices = parent.querySelectorAll('.choice');
+        let explanation = parent.querySelector('.explanation');
+
+        choices.forEach(c => {
+            let isCorrect = c.getAttribute('data-correct') === 'true';
+
+            if (isCorrect) {
+                c.classList.add('correct');
+            } else if (c === element) {
+                c.classList.add('wrong');
+            }
+
+            c.onclick = null;
+        });
+
+        explanation.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

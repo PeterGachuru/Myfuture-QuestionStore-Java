@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <h2>User Ratings</h2>
+
+    <p>Latest 300 ratings</p>
+
+    <table class="admin-table">
+
+        <thead>
+        <tr>
+            <th>Student</th>
+            <th>Rating</th>
+            <th>Version</th>
+            <th>Message</th>
+            <th>Source</th>
+            <th>Created</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="r : ${ratings}">
+
+            <td>
+                <a th:href="@{/admin/students/{id}(id=${r.ibukaStudentAccount?.id})}" th:text="${r.ibukaStudentAccount?.name}"></a>
+            </td>
+
+            <td>
+
+            <span class="stars">
+
+            <span th:each="i : ${#numbers.sequence(1, r.rating)}">⭐</span>
+
+            </span>
+
+            </td>
+            <td th:text="${r.appVersion}"></td>
+
+            <td th:text="${r.message}"></td>
+
+            <td th:text="${r.source}"></td>
+
+
+            <td th:text="${#dates.format(r.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+<style>
+
+    .admin-table{
+    width:100%;
+    border-collapse:collapse;
+    }
+
+    .admin-table th{
+    background:#2c3e50;
+    color:black;
+    padding:10px;
+    }
+
+    .admin-table td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    }
+
+    .stars{
+    font-size:18px;
+    }
+
+    .btn-delete{
+    background:#e74c3c;
+    color:white;
+    border:none;
+    padding:6px 12px;
+    cursor:pointer;
+    }
+
+</style>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <h2>Page Visits</h2>
+    <p>Latest 300 page visits</p>
+
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Topic ID</th>
+            <th>Visitor ID</th>
+            <th>Visit Time</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="v : ${visits}">
+            <td th:text="${v.id}"></td>
+            <td>
+                <a th:href="@{/admin/topics/{id}(id=${v.topicId})}" th:text="${v.topicId}"></a>
+            </td>
+            <td th:text="${v.visitorId}"></td>
+            <td th:text="${#temporals.format(v.visitTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+<style>
+    .admin-table{
+    width:100%;
+    border-collapse:collapse;
+    }
+    .admin-table th{
+    background:#2c3e50;
+    color:black;
+    padding:10px;
+    }
+    .admin-table td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    }
+    .admin-table tr:hover{
+    background:#f5f5f5;
+    }
+</style>
+
+</body>
+</html>

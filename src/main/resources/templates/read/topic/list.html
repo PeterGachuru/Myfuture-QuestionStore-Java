@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="'Topics for ' + ${subject.name} + ' - ' + ${level.name}">Topics</title>
+</head>
+<body>
+
+<h1>Topics for <span th:text="${subject.name}"></span> - Level <span th:text="${level.name}"></span></h1>
+
+<!-- Back link -->
+<p>
+    <a th:href="@{/read/classlevel/{levelId}(levelId=${level.id})}">← Back to Level Profile</a>
+</p>
+
+<hr/>
+
+<ul>
+    <li th:each="parent : ${parentTopics}">
+        <strong>
+            <span th:href="@{/read/topic/{id}(id=${parent.id})}" th:text="${parent.name}"></span>
+        </strong>
+
+        <!-- Children topics -->
+        <ul th:if="${parent.children}">
+            <li th:each="child : ${parent.children}">
+                <a th:href="@{/read/topic/{id}/notes(id=${child.id})}" th:text="${child.name}"></a>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<p th:if="${#lists.isEmpty(parentTopics)}">
+    No topics available.
+</p>
+
+</body>
+</html>

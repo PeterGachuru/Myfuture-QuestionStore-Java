@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style th:replace="admin/layout :: styles"></style>
+</head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+
+<div th:replace="admin/layout :: sidebar"></div>
+
+
+<div id="content" class="content">
+
+    <h2>Admin Dashboard</h2>
+
+
+    <div th:each="g : ${graphs}" style="margin-bottom: 40px;">
+
+        <h3 th:text="${g.title}"></h3>
+
+        <canvas th:id="${g.id}" width="400" height="150"></canvas>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+
+            (function () {
+                const canvasId = [[${g.id}]];
+                const ctx = document.getElementById(canvasId).getContext('2d');
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [[${g.xValues}]],
+                        datasets: [{
+                            label: [[${g.yLabel}]],
+                            data: [[${g.yValues}]],
+                            fill: false,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: [[${g.xLabel}]]
+                                }
+                            },
+                            y: {
+                                min: [[${g.minY}]],
+                                max: [[${g.maxY}]],
+                                title: {
+                                    display: true,
+                                    text: [[${g.yLabel}]]
+                                }
+                            }
+                        }
+                    }
+                });
+            })();
+
+            /*]]>*/
+        </script>
+
+    </div>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+</body>
+
+</html>

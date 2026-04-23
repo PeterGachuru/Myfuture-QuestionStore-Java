@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="contests">
+
+    <h3>Contests</h3>
+
+    <table class="admin-table">
+
+        <tr>
+            <th>S/N</th>
+            <th>Contest</th>
+            <th>Score</th>
+            <th>Attempted</th>
+            <th>Date</th>
+        </tr>
+
+        <tr th:each="c, stat : ${contests}">
+            <td th:text="${stat.index + 1}"></td>
+            <td th:text="${c.contest}"></td>
+            <td th:text="${c.score}"></td>
+            <td th:text="${c.attempted}"></td>
+            <td th:text="${#dates.format(c.createdAt,'yyyy-MM-dd')}"></td>
+        </tr>
+
+    </table>
+
+</div>
+</body>
+</html>

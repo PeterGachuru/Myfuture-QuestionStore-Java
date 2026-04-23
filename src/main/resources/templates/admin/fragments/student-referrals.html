@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="referrals">
+
+    <h3>Referrals</h3>
+
+    <table class="admin-table">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Referrer Code</th>
+            <th>Referrer Student</th>
+            <th>New User</th>
+            <th>New User Email</th>
+            <th>Referrer Email</th>
+            <th>Install</th>
+            <th>Action</th>
+            <th>Created</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="r : ${referrals}">
+
+            <td th:text="${r.id}"></td>
+
+            <td th:text="${r.referrerCode}"></td>
+
+            <!-- Referrer Student -->
+
+            <td>
+
+                <a th:if="${r.referrerStudentId != null}"
+                   th:href="@{/admin/students/{id}(id=${r.referrerStudentId})}"
+                   th:text="${r.referrerStudentId}">
+                </a>
+            </td>
+
+            <!-- New User -->
+
+            <td>
+
+                <a th:if="${r.newUserId != null}"
+                   th:href="@{/admin/students/{id}(id=${r.newUserId})}"
+                   th:text="${r.newUserId}">
+                </a>
+
+            </td>
+
+            <td th:text="${r.newUserEmail}"></td>
+
+            <td th:text="${r.referrerEmail}"></td>
+
+            <!-- Install -->
+
+            <td>
+
+                <a th:href="@{/admin/installs/{id}(id=${r.installId})}"
+                   th:text="${r.installId}">
+                </a>
+
+            </td>
+
+            <td th:text="${r.referralAction}"></td>
+
+            <td th:text="${#dates.format(r.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+
+        </tr>
+
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>

@@ -26,6 +26,8 @@ public interface PageVisitRepository extends JpaRepository<PageVisit, Long> {
     """)
     List<VisitorSummary> findVisitorsWithMultipleVisits();
 
+    int countByVisitorId(String visitorId);
+
     List<PageVisit> findByVisitorIdOrderByVisitTimeDesc(String visitorId);
 
     @Query(value = """

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <h2>Deletion Requests</h2>
+
+    <p>Latest 300 requests</p>
+
+    <table class="admin-table">
+
+        <thead>
+
+        <tr>
+            <th>ID</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Details</th>
+            <th>Reason</th>
+            <th>Requested</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        <tr th:each="req : ${requests}">
+
+            <td th:text="${req.id}"></td>
+
+            <td th:text="${req.phoneNumber}"></td>
+
+            <td th:text="${req.emailAddress}"></td>
+
+            <td th:text="${req.detailsToDelete}"></td>
+
+            <td th:text="${req.reasonForDeletion}"></td>
+
+            <td th:text="${#dates.format(req.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+
+            <td>
+
+<span th:if="${req.dateDeleted != null}" class="badge done">
+Deleted
+</span>
+
+                <span th:unless="${req.dateDeleted != null}" class="badge pending">
+Pending
+</span>
+
+            </td>
+
+            <td>
+
+                <a th:if="${req.dateDeleted == null}"
+                   th:href="@{/admin/deletion-requests/mark-deleted/{id}(id=${req.id})}">
+
+                    <button class="btn-delete">Mark Deleted</button>
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+
+<style>
+
+    .admin-table{
+    width:100%;
+    border-collapse:collapse;
+    }
+
+    .admin-table th{
+    background:#2c3e50;
+    color:white;
+    padding:10px;
+    }
+
+    .admin-table td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    }
+
+    .badge{
+    padding:4px 10px;
+    border-radius:4px;
+    font-size:12px;
+    }
+
+    .badge.done{
+    background:#27ae60;
+    color:white;
+    }
+
+    .badge.pending{
+    background:#e67e22;
+    color:white;
+    }
+
+    .btn-delete{
+    background:#e74c3c;
+    color:white;
+    border:none;
+    padding:6px 12px;
+    cursor:pointer;
+    }
+
+</style>
+
+</body>
+</html>

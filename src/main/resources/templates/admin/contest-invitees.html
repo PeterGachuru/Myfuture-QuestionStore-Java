@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+<body>
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+    <h2>Invitees for Contest <span th:text="${contest.id}"></span></h2>
+
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>S/N</th>
+            <th>Invitee</th>
+            <th>Score</th>
+            <th>Attempted</th>
+            <th>Self Invited</th>
+            <th>Created At</th>
+            <th>Attempted At</th>
+            <th>Updated At</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="i, stat : ${invitees}">
+            <td th:text="${stat.index + 1}"></td>
+            <td>
+                <a th:href="@{/admin/students/{id}(id=${i.studentaccount.id})}"
+                   th:text="${i.studentaccount.name}"></a>
+            </td>
+            <td th:text="${i.score}"></td>
+            <td th:text="${i.attempted} ? 'Yes' : 'No'"></td>
+            <td th:text="${i.selfInvited} ? 'Yes' : 'No'"></td>
+            <td th:text="${#dates.format(i.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${i.attemptedAt != null} ? ${#dates.format(i.attemptedAt,'yyyy-MM-dd HH:mm')} : '-'"></td>
+            <td th:text="${#dates.format(i.updatedAt,'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+</body>
+</html>

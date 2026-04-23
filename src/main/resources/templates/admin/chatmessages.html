@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+
+<div id="content" class="content">
+
+    <h2>Latest Chat Messages</h2>
+
+    <p>Showing latest 300 messages</p>
+
+    <table class="admin-table">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Group</th>
+            <th>Sender</th>
+            <th>Message</th>
+            <th>Install</th>
+            <th>Created</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="msg : ${messages}">
+
+            <td th:text="${msg.id}"></td>
+
+            <td th:text="${msg.cgroup != null ? msg.cgroup.id : ''}"></td>
+
+            <td th:text="${msg.sender != null ? msg.sender.id : ''}"></td>
+
+            <td th:text="${msg.message}"></td>
+
+            <td th:text="${msg.installId}"></td>
+
+            <td th:text="${#dates.format(msg.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+
+            <td>
+                <span th:if="${msg.beenRead}" class="badge active">Read</span>
+                <span th:unless="${msg.beenRead}" class="badge disabled">Unread</span>
+            </td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<div th:replace="admin/layout :: scripts"></div>
+
+
+<style>
+
+    .admin-table{
+    width:100%;
+    border-collapse:collapse;
+    }
+
+    .admin-table th{
+    background:#2c3e50;
+    color:white;
+    padding:10px;
+    }
+
+    .admin-table td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    }
+
+    .badge{
+    padding:4px 10px;
+    border-radius:4px;
+    font-size:12px;
+    }
+
+    .badge.active{
+    background:#2ecc71;
+    color:white;
+    }
+
+    .badge.disabled{
+    background:#e74c3c;
+    color:white;
+    }
+
+</style>
+
+</body>
+</html>

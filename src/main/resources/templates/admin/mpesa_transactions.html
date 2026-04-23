@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <h2>Mpesa Transactions</h2>
+    <p>Latest 300 transactions</p>
+
+    <table class="admin-table">
+
+        <thead>
+        <tr>
+            <th>S/N</th>
+            <th>ID</th>
+            <th>Phone</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Receipt</th>
+            <th>Account Ref</th>
+            <th>Transaction Ref</th>
+            <th>Description</th>
+            <th>Created</th>
+            <th>Completed</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="t, stat : ${transactions}">
+
+            <td th:text="${stat.index + 1}"></td>
+
+            <td th:text="${t.id}"></td>
+
+            <td th:text="${t.phoneNumber}"></td>
+
+            <td th:text="${t.amount}"></td>
+
+            <td>
+
+<span th:if="${t.status == 'SUCCESS'}" class="status-success">
+SUCCESS
+</span>
+
+                <span th:if="${t.status == 'FAILED'}" class="status-failed">
+FAILED
+</span>
+
+                <span th:if="${t.status == 'PENDING'}" class="status-pending">
+PENDING
+</span>
+
+            </td>
+
+            <td th:text="${t.mpesaReceiptNumber}"></td>
+
+            <td th:text="${t.accountReference}"></td>
+
+            <td th:text="${t.transactionReferenceId}"></td>
+            <td th:text="${t.callbackDescription}"></td>
+
+            <td th:text="${#temporals.format(t.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+
+            <td th:text="${t.completedAt != null ? #temporals.format(t.completedAt,'yyyy-MM-dd HH:mm') : '-'}"></td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+<style>
+
+    .admin-table{
+    width:100%;
+    border-collapse:collapse;
+    }
+
+    .admin-table th{
+    background:#2c3e50;
+    color:black;
+    padding:10px;
+    }
+
+    .admin-table td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    }
+
+    .admin-table tr:hover{
+    background:#f5f5f5;
+    }
+
+    /* status colors */
+
+    .status-success{
+    background:#2ecc71;
+    color:white;
+    padding:4px 8px;
+    border-radius:4px;
+    font-weight:bold;
+    }
+
+    .status-failed{
+    background:#e74c3c;
+    color:white;
+    padding:4px 8px;
+    border-radius:4px;
+    font-weight:bold;
+    }
+
+    .status-pending{
+    background:#f39c12;
+    color:white;
+    padding:4px 8px;
+    border-radius:4px;
+    font-weight:bold;
+    }
+
+</style>
+
+</body>
+</html>

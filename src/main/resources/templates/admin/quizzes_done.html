@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <h2>Quizzes Done</h2>
+    <p>Latest 300 quiz attempts</p>
+
+    <table class="admin-table">
+
+        <thead>
+        <tr>
+            <th>S/N</th>
+            <th>ID</th>
+            <th>Student</th>
+            <th>Contest</th>
+            <th>Category</th>
+            <th>Subject</th>
+            <th>Questions</th>
+            <th>Score</th>
+            <th>Overall</th>
+            <th>Status</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Created</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="q, stat : ${quizzes}">
+
+            <td th:text="${stat.index + 1}"></td>
+
+            <td th:text="${q.id}"></td>
+
+            <td>
+                <a th:if="${q.student != null}"
+                   th:href="@{/admin/students/{id}(id=${q.student.id})}"
+                   th:text="${q.student.id}">
+                </a>
+            </td>
+
+            <td>
+                <a th:if="${q.contest != null}"
+                   th:href="@{/admin/contests/{id}(id=${q.contest.id})}"
+                   th:text="${q.contest.id}">
+                </a>
+            </td>
+
+            <td th:text="${q.category}"></td>
+
+            <td th:text="${q.subjectId}"></td>
+
+            <td th:text="${q.questionsCount}"></td>
+
+            <td th:text="${q.score}"></td>
+
+            <td th:text="${q.overall}"></td>
+
+            <td>
+                <span th:if="${q.deleted}" class="status-deleted">DELETED</span>
+                <span th:unless="${q.deleted}" class="status-active">ACTIVE</span>
+            </td>
+
+            <td th:text="${#dates.format(q.startDate,'yyyy-MM-dd HH:mm')}"></td>
+
+            <td th:text="${q.endDate != null ? #dates.format(q.endDate,'yyyy-MM-dd HH:mm') : '-'}"></td>
+
+            <td th:text="${#dates.format(q.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+<style>
+
+    .admin-table{
+    width:100%;
+    border-collapse:collapse;
+    }
+
+    .admin-table th{
+    background:#2c3e50;
+    color:black;
+    padding:10px;
+    }
+
+    .admin-table td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    }
+
+    .admin-table tr:hover{
+    background:#f5f5f5;
+    }
+
+    .status-active{
+    background:#2ecc71;
+    color:white;
+    padding:4px 8px;
+    border-radius:4px;
+    font-weight:bold;
+    }
+
+    .status-deleted{
+    background:#e74c3c;
+    color:white;
+    padding:4px 8px;
+    border-radius:4px;
+    font-weight:bold;
+    }
+
+</style>
+
+</body>
+</html>

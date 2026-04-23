@@ -1,0 +1,218 @@
+production: true
+
+custommail:
+  sendurl: http://localhost:8090
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: INFO
+    org.hibernate.orm.jdbc.bind: INFO
+
+server:
+  port: 2024
+
+  tomcat:
+    access-log-enabled: true
+    uri-encoding: UTF-8
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+#KAFKA PROPERTIES
+auto:
+  create:
+    topics:
+      enable: 'true'
+topic:
+  name:
+    producer: application.mails
+multipart:
+  enabled: 'true'
+spring:
+  data:
+    jpa:
+      repositories:
+        enabled: false
+  http:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+    multipart:
+      max-request-size: 500MB
+      max-file-size: '500MB'
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+  mail:
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: 'true'
+          ssl:
+            trust: '*'
+          auth: 'true'
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+    host: mail.ibukatech.com
+    username: no-reply@ibukatech.com
+    protocol: smtp
+    password: MunenePE.1
+    port: '587'
+
+  jpa:
+    generate-ddl: true
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+  servlet:
+    multipart:
+      max-file-size: 200MB
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  application:
+    useOTP: false
+    otpProd: false
+    otpTestMail: no-reply@ibukatech.com
+    name: Ibuka Technologies
+    enableEmail: true
+
+datasource:
+  tuabudu:
+    url: jdbc:mariadb://localhost:3306/tuabudu
+    password: root
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: root
+  ibukagpts:
+    url: jdbc:mariadb://localhost:3306/ibuka_gpts
+    password: root
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: root
+  images:
+    password: root
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: root
+    url: jdbc:mariadb://localhost:3306/myfutureimages
+  oldmyfuture:
+    url: jdbc:mariadb://localhost:3306/leadtool_myfuturemain
+    password: root
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: root
+  students:
+    username: root
+    driver-class-name: org.mariadb.jdbc.Driver
+    password: root
+    url: jdbc:mariadb://localhost:3306/myfuture_student_management
+  leadbysms:
+    url: jdbc:mariadb://localhost:3306/leadbysms
+    driver-class-name: org.mariadb.jdbc.Driver
+    password: root
+    username: root
+  treasury:
+    url: jdbc:mariadb://localhost:3306/treasury?useUnicode=true&characterEncoding=utf8
+    driver-class-name: org.mariadb.jdbc.Driver
+    password: root
+    username: root
+  dukazote:
+    username: root
+    url: jdbc:mariadb://localhost:3306/dukazote
+    driver-class-name: org.mariadb.jdbc.Driver
+    password: root
+  mpesa:
+    username: root
+    url: jdbc:mariadb://localhost:3306/mpesa
+    driver-class-name: org.mariadb.jdbc.Driver
+    password: root
+  questions:
+    password: root
+    url: jdbc:mariadb://localhost:3306/myfuture_question_store
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: root
+  commonauth:
+    username: root
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/commonauth
+    password: root
+
+
+users:
+  app:
+    jwtSecret: 23efcc8cb45c9ef9e4e6a6bb5cfba75e4ca37475d021e0cc3c33b638694575b811555affb5d5a983fb99bfdc937bc6da9dafc5b524ee847a170cfd12d696ee2a
+    jwtExpirationMs: 86400000
+
+sftp:
+  host: 127.0.0.1
+  port: 22
+  username: peter
+  password: root
+
+report:
+  logo: C:/Users/USER/personal/My-Future/app/src/main/launcher-playstore.png
+  path: C:\Users\USER\personal\Myfuture-QuestionStore-Java\reports
+  appname: My Future CBC Revision
+
+auth:
+  auth2ClientId: 115276398054-vme2sl4kjku58f2gnl7fr8esvvdgm7re.apps.googleusercontent.com
+
+organisation:
+  emailOrganizationName: Myfuture KCPE CBC Revision App
+  emailSalutation: Dear,
+  emailOrganizationPhone: '+254111723106'
+  emailOrganizationMail: myfuturekcpe@gmail.com
+  company_logo_path: C:/Users/USER/personal/My-Future/app/src/main/launcher-playstore.png
+  from_mail: no-reply@myfuture.co.ke
+  emailMessage: Find the attached information from our partnership
+  emailRemarks: Thank You.
+  emailRegards: Regards Myfuture KCPE CBC Revision App
+  emailOrganizationWebsite: https://myfuture.co.ke
+  image_banner: C:/Users/USER/personal/My-Future/app/src/main/launcher-playstore.png
+  enableMaker: "true"
+  superUserEmail: info@myfuture.co.ke
+  superUserFirstName: Admin
+  superUserLastName: Admin
+  superUserUserName: Maker
+  superUserPhone: 071xxxxxxx
+  superUserSolCode: 000
+  superUserPassword: 12345678
+
+ai:
+  api_key: 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
+openai:
+  api:
+    url: https://api.openai.com/v1/chat/completions
+    key: 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
+
+mpesa:
+  consumer:
+    key: your-consumer-key
+    secret: your-consumer-secret
+  shortcode: your-shortcode
+  passkey: your-passkey
+  callback:
+    url: https://your-callback-url.com
+  environment: sandbox # or production
+
+  sandbox:
+    oauth: https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials
+    stk: https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest
+
+  production:
+    oauth: https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials
+    stk: https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest

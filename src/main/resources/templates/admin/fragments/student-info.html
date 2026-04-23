@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<div th:fragment="info">
+
+    <table class="admin-table">
+
+        <tr>
+            <th>ID</th>
+            <td th:text="${student.id}"></td>
+        </tr>
+
+        <tr>
+            <th>Name</th>
+            <td th:text="${student.name}"></td>
+        </tr>
+
+        <tr>
+            <th>School</th>
+            <td th:text="${student.school}"></td>
+        </tr>
+
+        <tr>
+            <th>Class Level</th>
+            <td th:text="${student.classlevel}"></td>
+        </tr>
+
+        <tr>
+            <th>Total Score</th>
+            <td th:text="${student.totalScore}"></td>
+        </tr>
+
+        <tr>
+            <th>Credits</th>
+            <td th:text="${student.creditsBalance}"></td>
+        </tr>
+
+        <tr>
+            <th>Parent Username</th>
+            <td th:text="${student.parentUsername}"></td>
+        </tr>
+
+        <tr>
+            <th>Install ID</th>
+            <td th:text="${student.installId}"></td>
+        </tr>
+
+        <tr>
+            <th>Created</th>
+            <td th:text="${#dates.format(student.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+
+    </table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+<body>
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+    <h2>Contests</h2>
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>S/N</th>
+            <th>ID</th>
+            <th>Creator</th>
+            <th>Invites Count</th>
+            <th>Class Level ID</th>
+            <th>Subject ID</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="c, stat : ${contests}">
+            <td th:text="${stat.index + 1}"></td>
+            <td>
+                <a th:href="@{/admin/contests/{id}/invitees(id=${c.id})}" th:text="${c.id}"></a>
+            </td>
+            <td>
+                <a
+                        th:href="@{/admin/students/{id}(id=${c.creator.id})}"
+                        th:text="${c.creator.name}">
+                </a>
+            </td>
+            <td th:text="${c.invitesCount}"></td>
+            <td th:text="${c.classlevelId}"></td>
+            <td th:text="${c.subjectId}"></td>
+            <td th:text="${#dates.format(c.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${#dates.format(c.updatedAt,'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+</body>
+</html>

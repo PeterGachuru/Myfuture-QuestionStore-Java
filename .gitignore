@@ -4,7 +4,6 @@ HELP.md
 build/
 backups/
 cmdcommands/
-src/main/resources/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/

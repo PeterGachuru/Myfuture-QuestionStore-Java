@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <h2>STK Subscription Requests</h2>
+    <p>Latest 300 requests</p>
+
+    <table class="admin-table">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Phone Number</th>
+            <th>Email</th>
+            <th>Amount</th>
+            <th>Days</th>
+            <th>Subscription</th>
+            <th>Status</th>
+            <th>Install</th>
+            <th>Transaction Code</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Created At</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="r : ${requests}">
+            <td th:text="${r.id}"></td>
+            <td th:text="${r.phoneNumber}"></td>
+            <td th:text="${r.emailAddress}"></td>
+            <td th:text="${r.payAmount}"></td>
+            <td th:text="${r.numberOfDays}"></td>
+
+            <td>
+                <a th:if="${r.subscription != null}"
+                   th:href="@{/admin/subscriptions/{id}(id=${r.subscription.id})}"
+                   th:text="${r.subscription.subscriptionType}"></a>
+            </td>
+
+            <td th:text="${r.status}"></td>
+
+            <td>
+                <a th:href="@{/admin/installs/{id}(id=${r.installId})}" th:text="${r.installId}"></a>
+            </td>
+
+            <td th:text="${r.transactionCode}"></td>
+            <td th:text="${#dates.format(r.startDate,'yyyy-MM-dd')}"></td>
+            <td th:text="${#dates.format(r.endDate,'yyyy-MM-dd')}"></td>
+            <td th:text="${#dates.format(r.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+<style>
+
+    .admin-table{
+    width:100%;
+    border-collapse:collapse;
+    }
+
+    .admin-table th{
+    background:#2c3e50;
+    color:white;
+    padding:10px;
+    }
+
+    .admin-table td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    }
+
+    .admin-table tr:hover{
+    background:#f5f5f5;
+    }
+
+</style>
+
+</body>
+</html>

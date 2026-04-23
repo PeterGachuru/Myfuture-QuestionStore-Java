@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="ratings">
+
+    <h3>Ratings</h3>
+
+    <table class="admin-table">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Rating</th>
+            <th>Message</th>
+            <th>Source</th>
+            <th>Student</th>
+            <th>Version</th>
+            <th>Created</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="r : ${ratings}">
+
+            <td th:text="${r.id}"></td>
+
+            <td>
+
+<span class="stars">
+
+<span th:each="i : ${#numbers.sequence(1, r.rating)}">⭐</span>
+
+</span>
+
+            </td>
+
+            <td th:text="${r.message}"></td>
+
+            <td th:text="${r.source}"></td>
+
+            <td th:text="${r.ibukaStudentAccount != null ? r.ibukaStudentAccount.id : ''}"></td>
+
+            <td th:text="${r.appVersion}"></td>
+
+            <td th:text="${#dates.format(r.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+
+        </tr>
+
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>

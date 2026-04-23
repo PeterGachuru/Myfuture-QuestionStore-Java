@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Curriculums, Past Papers, Notes & Quizzes | Ibuka Learning App</title>
+
+    <!-- SEO Meta -->
+    <meta name="description" content="Access curriculums, past papers, revision notes, and quizzes for students in Kenya. Improve your performance with Ibuka Learning App.">
+    <meta name="keywords" content="curriculums Kenya, past papers Kenya, revision notes, quizzes, KCSE, CBC, study materials, Ibuka Learning App">
+    <meta name="author" content="Ibuka Learning App">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Open Graph (for sharing) -->
+    <meta property="og:title" content="Curriculums, Past Papers, Notes & Quizzes">
+    <meta property="og:description" content="Explore curriculums, past papers, notes and quizzes to boost your learning.">
+    <meta property="og:type" content="website">
+
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #fff;
+        }
+
+        h1 {
+            color: #800000; /* Maroon */
+        }
+
+        h2 {
+            color: #ff6600; /* Orange */
+            margin-top: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #800000;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: #ff6600;
+        }
+
+        ul {
+            padding: 0;
+            list-style-type: none;
+        }
+
+        li {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 4px solid #800000;
+            background-color: #fafafa;
+        }
+
+        .cta {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #800000;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .cta a {
+            color: #ffcc80;
+            font-weight: bold;
+        }
+
+        .cta a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Curriculums, Past Papers, Notes & Quizzes</h1>
+<h2>Explore Learning Materials for KCSE, CBC & More</h2>
+
+<p>
+    Browse available curriculums with access to <strong>past papers</strong>,
+    <strong>revision notes</strong>, and <strong>quizzes</strong> to help you succeed in your studies.
+</p>
+
+<ul>
+    <li th:each="curriculum : ${curriculums}">
+        <a th:href="@{/read/{slug}(slug=${curriculum.slug})}">
+            <span th:text="${curriculum.fullname}"></span>
+        </a>
+    </li>
+</ul>
+
+<p th:if="${#lists.isEmpty(curriculums)}">
+    No curriculums available at the moment.
+</p>
+
+<!-- Call to Action -->
+<div class="cta">
+    📱 Get the full experience with quizzes, notes, and past papers on our mobile app! <br><br>
+    <a href="https://play.google.com/store/apps/details?id=ke.co.myfuture" target="_blank">
+        Download Myfuture CBC Revision App on Google Play
+    </a>
+</div>
+
+</body>
+</html>

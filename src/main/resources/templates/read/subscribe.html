@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Subscription Plans | Myfuture CBC Revision</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body { font-family: Arial; background:#fafafa; margin:0; }
+        .container { max-width:700px; margin:auto; padding:20px; }
+
+        h2 { text-align:center; color:#800000; }
+
+        .plan {
+            border:1px solid #ddd;
+            padding:15px;
+            margin-bottom:10px;
+            border-radius:10px;
+            background:#fff;
+            cursor:pointer;
+        }
+
+        .plan:hover { background:#fff3e0; }
+
+        .plan-price { float:right; color:#800000; font-weight:bold; }
+
+        .payment-box {
+            display:none;
+            margin-top:20px;
+            padding:15px;
+            background:#fff;
+            border-radius:10px;
+            border:1px solid #eee;
+        }
+
+        input, button {
+            width:100%;
+            padding:12px;
+            margin-top:10px;
+            border-radius:6px;
+        }
+
+        .pay-btn { background:#800000; color:white; border:none; }
+
+        .status-box {
+            text-align:center;
+            margin-top:20px;
+            display:none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Choose Subscription</h2>
+
+    <!-- PLANS -->
+    <div th:each="plan : ${plans}"
+         class="plan"
+         th:onclick="'selectPlan(' + ${plan.days} + ',' + ${plan.price} + ')'">
+
+        <span th:text="${plan.name}"></span>
+        <span class="plan-price">Ksh <span th:text="${plan.price}"></span></span>
+    </div>
+
+    <!-- PAYMENT -->
+    <div id="paymentBox" class="payment-box">
+
+        <h3 id="selectedPlan"></h3>
+
+        <input type="text" id="phone" placeholder="07XXXXXXXX">
+
+        <button class="pay-btn" onclick="payMpesa()">Pay with M-Pesa</button>
+
+        <p id="msg"></p>
+    </div>
+
+    <!-- STATUS -->
+    <div id="statusBox" class="status-box">
+        <h3 id="statusText"></h3>
+    </div>
+
+</div>
+
+<script>
+    let selectedDays = 0;
+    let selectedPrice = 0;
+
+    // Generate installId (WEB VERSION)
+    function getInstallId() {
+        let installId = localStorage.getItem("installId");
+        if (!installId) {
+            installId = Date.now(); // simple unique ID
+            localStorage.setItem("installId", installId);
+        }
+        return installId;
+    }
+
+    function selectPlan(days, price) {
+        selectedDays = days;
+        selectedPrice = price;
+
+        document.getElementById("paymentBox").style.display = "block";
+        document.getElementById("selectedPlan").innerText =
+            days + " Days - Ksh " + price;
+    }
+
+    function payMpesa() {
+
+        let phone = document.getElementById("phone").value.trim();
+
+        if (phone.length !== 10) {
+            alert("Enter valid phone number");
+            return;
+        }
+
+        let fullPhone = "254" + phone.substring(1);
+
+        let now = new Date();
+        let end = new Date();
+        end.setDate(now.getDate() + selectedDays);
+
+        let payload = {
+            phoneNumber: fullPhone,
+            payAmount: selectedPrice,
+            numberOfDays: selectedDays,
+            subscriptionType: "DAYS_" + selectedDays,
+            status: "PENDING",
+            installId: getInstallId(),
+            emailAddress: "web@myfuture.co.ke", // optional (or from session)
+            startDate: now.toISOString(),
+            endDate: end.toISOString()
+        };
+
+        document.getElementById("msg").innerText = "Sending STK Push...";
+
+        fetch("/myfuture/subscriptions/mpesastk", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("msg").innerText =
+                "Check your phone for STK push...";
+
+            startPolling(data.id); // 🔥 use your backend ID
+        })
+        .catch(() => {
+            alert("Failed to start payment");
+        });
+    }
+
+    function startPolling(id) {
+
+        document.getElementById("statusBox").style.display = "block";
+        document.getElementById("statusText").innerText = "Waiting for payment...";
+
+        let interval = setInterval(() => {
+
+            fetch("/myfuture/subscriptions/mpesastk/status/" + id)
+                .then(res => res.json())
+                .then(data => {
+
+                    if (data.status === "SUCCESS") {
+                        clearInterval(interval);
+                        document.getElementById("statusText").innerText =
+                            "✅ Payment Successful";
+                    }
+
+                    if (data.status === "FAILED") {
+                        clearInterval(interval);
+                        document.getElementById("statusText").innerText =
+                            "❌ Payment Failed";
+                    }
+
+                });
+
+        }, 5000);
+    }
+</script>
+
+</body>
+</html>

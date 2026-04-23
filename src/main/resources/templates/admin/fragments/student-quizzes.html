@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="quizzes">
+
+    <h3>Quizzes Done</h3>
+
+    <table class="admin-table">
+
+        <tr>
+            <th>S/N</th>
+            <th>Score</th>
+            <th>Overall</th>
+            <th>Subject</th>
+            <th>Questions</th>
+            <th>Created</th>
+        </tr>
+
+        <tr th:each="q, stat : ${quizzes}">
+            <td th:text="${stat.index + 1}"></td>
+            <td th:text="${q.score}"></td>
+            <td th:text="${q.overall}"></td>
+            <td th:text="${q.subjectId}"></td>
+            <td th:text="${q.questionsCount}"></td>
+            <td th:text="${#dates.format(q.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+
+    </table>
+
+</div>
+</body>
+</html>

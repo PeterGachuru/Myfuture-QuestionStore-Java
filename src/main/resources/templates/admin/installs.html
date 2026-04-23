@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <h2>App Installs</h2>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Platform</th>
+            <th>Version</th>
+            <th>Email</th>
+            <th>Account ID</th>
+            <th>Created At</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="install : ${installs}">
+            <td th:text="${install.id}"></td>
+            <td th:text="${install.platform}"></td>
+            <td th:text="${install.version}"></td>
+            <td th:text="${install.accountEmail}"></td>
+            <td th:text="${install.accountId}"></td>
+            <td th:text="${#dates.format(install.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+            <td>
+                <a th:href="@{'/admin/installs/' + ${install.id}}" class="btn">View</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+<style>
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .table th, .table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .table th {
+        background: #2c3e50;
+        color: white;
+    }
+
+    .btn {
+        padding: 6px 12px;
+        background: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+</style>
+
+</body>
+</html>

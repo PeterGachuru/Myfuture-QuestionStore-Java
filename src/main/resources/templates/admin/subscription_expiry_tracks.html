@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <h2>Subscription Expiry Tracks</h2>
+    <p>Latest 300 expiry records</p>
+
+    <table class="admin-table">
+
+        <thead>
+        <tr>
+            <th>S/N</th>
+            <th>ID</th>
+            <th>Parent ID</th>
+            <th>Parent Username</th>
+            <th>Install ID</th>
+            <th>Status</th>
+            <th>Expiry Date</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="t, stat : ${tracks}"
+            th:classappend="${t.expiryDate != null and t.expiryDate.time > T(java.lang.System).currentTimeMillis()} ? 'active-row' : 'expired-row'">
+
+            <!-- Serial Number -->
+            <td th:text="${stat.index + 1}"></td>
+
+            <td th:text="${t.id}"></td>
+
+            <td>
+                <a th:href="@{/admin/students/{id}(id=${t.parent})}" th:text="${t.parent}"></a>
+            </td>
+
+            <td th:text="${t.parentUsername}"></td>
+
+            <td>
+                <a th:href="@{/admin/installs/{id}(id=${t.installId})}" th:text="${t.installId}"></a>
+            </td>
+
+            <td>
+        <span th:if="${t.expiryDate != null and t.expiryDate.time > T(java.lang.System).currentTimeMillis()}"
+              class="status-active">
+            ACTIVE
+        </span>
+
+                <span th:unless="${t.expiryDate != null and t.expiryDate.time > T(java.lang.System).currentTimeMillis()}"
+                      class="status-expired">
+            EXPIRED
+        </span>
+            </td>
+
+            <td th:text="${#dates.format(t.expiryDate,'yyyy-MM-dd')}"></td>
+            <td th:text="${#dates.format(t.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${#dates.format(t.updatedAt,'yyyy-MM-dd HH:mm')}"></td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+<style>
+
+    .admin-table{
+    width:100%;
+    border-collapse:collapse;
+    }
+
+    .admin-table th{
+    background:#2c3e50;
+    color:white;
+    padding:10px;
+    }
+
+    .admin-table td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    }
+
+    .admin-table tr:hover{
+    background:#f5f5f5;
+    }
+
+    /* Status styles */
+
+    .status-active{
+    background:#2ecc71;
+    color:white;
+    padding:4px 8px;
+    border-radius:4px;
+    font-weight:bold;
+    }
+
+    .status-expired{
+    background:#e74c3c;
+    color:white;
+    padding:4px 8px;
+    border-radius:4px;
+    font-weight:bold;
+    }
+
+    /* Row highlight */
+
+    .active-row{
+    background:#f1fff4;
+    }
+
+    .expired-row{
+    background:#fff5f5;
+    }
+
+</style>
+
+</body>
+</html>

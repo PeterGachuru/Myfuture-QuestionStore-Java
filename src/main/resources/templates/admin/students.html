@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <h2>Students</h2>
+
+    <p>Latest 300 student accounts</p>
+
+    <table class="admin-table">
+
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>School</th>
+            <th>Class</th>
+            <th>Curriculum</th>
+            <th>Total Score</th>
+            <th>Credits</th>
+            <th>Parent</th>
+            <th>Sender</th>
+            <th>Install</th>
+            <th>Created</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="s : ${students}">
+
+            <td>
+                <a
+                   th:href="@{/admin/students/{id}(id=${s.id})}"
+                   th:text="${s.name}">
+                </a>
+            </td>
+
+            <td th:text="${s.school}"></td>
+
+            <td th:text="${s.curriLevel.name}"></td>
+
+            <td th:text="${s.curriculum}"></td>
+
+            <td th:text="${s.totalScore}"></td>
+
+            <td th:text="${s.creditsBalance}"></td>
+
+
+            <!-- Parent -->
+
+            <td>
+                <a th:href="@{/admin/users/{id}(id=${s.parent})}"
+                   th:text="${s.parentUsername}">
+                </a>
+            </td>
+
+            <!-- Sender -->
+
+            <td>
+                <a th:if="${s.sender != null}"
+                   th:href="@{/admin/senders/{id}(id=${s.sender.id})}"
+                   th:text="${s.sender.id}">
+                </a>
+            </td>
+
+
+            <!-- Install -->
+
+            <td>
+                <a th:href="@{/admin/installs/{id}(id=${s.installId})}"
+                   th:text="${s.installId}">
+                </a>
+            </td>
+
+
+            <td th:text="${#dates.format(s.createdAt,'yyyy-MM-dd')}"></td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+<style>
+
+    .admin-table{
+    width:100%;
+    border-collapse:collapse;
+    }
+
+    .admin-table th{
+    background:#2c3e50;
+    color:black;
+    padding:10px;
+    }
+
+    .admin-table td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    }
+
+    .admin-table tr:hover{
+    background:#f5f5f5;
+    }
+
+</style>
+
+</body>
+</html>

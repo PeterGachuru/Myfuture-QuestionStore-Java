@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="posts">
+
+    <h3>Posts</h3>
+
+    <table class="admin-table">
+
+        <tr>
+            <th>S/N</th>
+            <th>Question ID</th>
+            <th>Created</th>
+        </tr>
+
+        <tr th:each="p, stat : ${posts}">
+            <td th:text="${stat.index + 1}"></td>
+            <td th:text="${p.questionid}"></td>
+            <td th:text="${#dates.format(p.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+
+    </table>
+
+</div>
+</body>
+</html>

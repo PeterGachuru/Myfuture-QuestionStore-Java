@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <h2>Study Subscriptions</h2>
+    <p>Latest 300 subscriptions</p>
+
+    <table class="admin-table">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Phone Number</th>
+            <th>Email</th>
+            <th>Install ID</th>
+            <th>In ID</th>
+            <th>Subscription Type</th>
+            <th>Amount</th>
+            <th>Payment Processor</th>
+            <th>Transaction Code</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Expiry Track</th>
+            <th>Created At</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="s : ${subscriptions}">
+            <td th:text="${s.id}"></td>
+            <td th:text="${s.phoneNumber}"></td>
+            <td th:text="${s.emailAddress}"></td>
+            <td>
+                <a th:href="@{/admin/installs/{id}(id=${s.installId})}" th:text="${s.installId}"></a>
+            </td>
+            <td th:text="${s.inid}"></td>
+            <td th:text="${s.subscriptionType}"></td>
+            <td th:text="${s.payAmount}"></td>
+            <td th:text="${s.paymentProcessor}"></td>
+            <td th:text="${s.transactionCode}"></td>
+            <td th:text="${#dates.format(s.startDate,'yyyy-MM-dd')}"></td>
+            <td th:text="${#dates.format(s.endDate,'yyyy-MM-dd')}"></td>
+            <td>
+                <a th:if="${s.expiryTrack != null}"
+                   th:href="@{/admin/subscription-expiry-track/{id}(id=${s.expiryTrack.id})}"
+                   th:text="${s.expiryTrack.id}"></a>
+            </td>
+            <td th:text="${#dates.format(s.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+<style>
+    .admin-table{
+    width:100%;
+    border-collapse:collapse;
+    }
+
+    .admin-table th{
+    background:#2c3e50;
+    color:black;
+    padding:10px;
+    }
+
+    .admin-table td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    }
+
+    .admin-table tr:hover{
+    background:#f5f5f5;
+    }
+</style>
+
+</body>
+</html>

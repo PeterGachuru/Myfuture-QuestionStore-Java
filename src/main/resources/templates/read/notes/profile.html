@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${level.name} + ' ' + ${subject.name} + ' ' + ${topic.name} + ' Notes | Ibuka Learning App'"></title>
+
+    <!-- SEO -->
+    <meta name="description"
+          th:content="'Read ' + ${level.name} + ' ' + ${subject.name} + ' ' + ${topic.name} + ' notes. Simple, clear revision notes, quizzes and past papers for KCSE & CBC students.'">
+
+    <meta name="keywords"
+          th:content="${level.name} + ', ' + ${subject.name} + ', notes, past papers, quizzes, KCSE, CBC, revision Kenya'">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/favicon.ico}">
+
+    <link rel="stylesheet" th:href="@{/css/footer.css}" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+        }
+
+        /* HEADER */
+        .page-header {
+            margin-bottom: 15px;
+        }
+
+        .page-header h1 {
+            color: #800000;
+            margin-bottom: 5px;
+            font-size: 22px;
+        }
+
+        .breadcrumbs {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 5px;
+        }
+
+        /* LAYOUT */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: #fff;
+            padding: 15px;
+            overflow-y: auto;
+            border-right: 1px solid #eee;
+        }
+
+        .sidebar h3 {
+            color: #800000;
+            margin-top: 0;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 8px;
+            border-radius: 6px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .sidebar a:hover {
+            background-color: #fff3e0;
+            color: #800000;
+        }
+
+        .sidebar a.active {
+            background-color: #800000;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* CONTENT */
+        .content {
+            flex: 1;
+            padding: 20px;
+            background: #fff;
+        }
+
+        /* BUTTONS */
+        .button-wrapper {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .quiz-btn {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: #800000;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .quiz-btn:hover {
+            background-color: #660000;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: #ff6600;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .download-btn:hover {
+            background-color: #e65c00;
+        }
+
+        /* NOTES */
+        .notes-content {
+            line-height: 1.7;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        /* RATING */
+        .rating-box {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .stars span {
+            font-size: 28px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        /* FOOTER LINKS */
+        .footer-links {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer-section {
+            margin-bottom: 20px;
+        }
+
+        .footer-section h3 {
+            color: #800000;
+        }
+
+        .footer-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+        }
+
+        .footer-items a {
+            background: #fff3e0;
+            color: #800000;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        /* MOBILE */
+        .menu-btn {
+            display: none;
+            font-size: 22px;
+            background: none;
+            border: none;
+            padding: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                height: 100%;
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: 0.3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .menu-btn {
+                display: block;
+            }
+
+            .container {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <style>
+        .fade-content {
+            max-height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .fade-content::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 120px;
+            width: 100%;
+            background: linear-gradient(transparent, white);
+        }
+
+        /* Overlay */
+        .login-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(255,255,255,0.85);
+        }
+
+        .overlay-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .overlay-login-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 16px;
+            background: #800000;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<button class="menu-btn" onclick="toggleSidebar()">☰ Topics</button>
+
+<div class="container">
+
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="sidebar">
+
+        <h3>Topics</h3>
+
+        <ul>
+            <li th:each="parent : ${parentTopics}">
+                <strong th:text="${parent.name}"></strong>
+
+                <ul>
+                    <li th:each="child : ${parent.children}">
+                        <a th:href="@{/read/notes/{slug}(slug=${child.slug})}"
+                           th:text="${child.name}"
+                           th:classappend="${child.id} == ${topic.id} ? 'active' : ''">
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- HEADER -->
+        <div class="page-header">
+
+            <div class="breadcrumbs">
+                <span th:text="${curriculum.name}"></span> →
+                <span th:text="${level.name}"></span> →
+                <span th:text="${subject.name}"></span> →
+                <span th:text="${topic.name}"></span>
+            </div>
+
+            <h1 th:text="${topic.name} + ' Notes, Quizzes & Revision'"></h1>
+
+            <button id="regenBtn"
+                    onclick="regenerateNotes()"
+                    style="display:none; font-size: 11px; padding: 4px 8px;">
+                🔄 Regenerate
+            </button>
+
+        </div>
+
+        <hr/>
+
+        <!-- BUTTONS -->
+        <div class="button-wrapper">
+
+            <a class="quiz-btn"
+               th:href="@{/read/questions/{slug}(slug=${topic.slug})}">
+                📝 Practice Quiz
+            </a>
+
+            <a class="download-btn"
+               href="https://share.myfuture.co.ke/referral/share/studyWeb"
+               target="_blank">
+                📱 Download Myfuture CBC App From Playstore
+            </a>
+
+        </div>
+
+        <div style="text-align:right; margin-bottom:10px;">
+
+            <!-- NOT LOGGED IN -->
+            <div th:if="${!loggedIn}">
+                <a href="/read/login"
+                   style="padding:8px 14px; background:#800000; color:white; border-radius:6px; text-decoration:none;">
+                    🔐 Login to track your progress
+                </a>
+            </div>
+
+            <!-- LOGGED IN -->
+            <div th:if="${loggedIn}" style="text-align:right;">
+
+    <span>
+        👤 <span th:text="${currentUser.name}"></span>
+    </span>
+
+                <br/>
+
+                <span th:if="${session.student != null}" style="font-size:13px; color:#555;">
+        🎓 <span th:text="${session.student.name}"></span>
+    </span>
+
+            </div>
+
+        </div>
+
+        <p style="color:#666; font-size:14px; text-align:center;">
+            📘 Revision Notes • 📝 Quizzes • 📄 Past Papers available in app
+        </p>
+
+        <!-- NOTES -->
+        <div th:if="${notes != null}" style="position:relative;">
+
+            <div th:classappend="${restrictContent} ? 'fade-content' : ''"
+                 class="notes-content"
+                 th:utext="${notes.content}">
+            </div>
+
+            <!-- Overlay -->
+            <div th:if="${restrictContent}" class="login-overlay">
+                <div class="overlay-box">
+                    <h3>📘 Continue Reading</h3>
+                    <p>Login to unlock full notes, track scores & compete with others</p>
+
+                    <a href="/read/login" class="overlay-login-btn">Login</a>
+                </div>
+            </div>
+
+        </div>
+
+        <div th:if="${notes == null}">
+            <p>No notes available for this subtopic yet.</p>
+        </div>
+
+        <hr/>
+
+        <!-- RATING -->
+        <div class="rating-box">
+            <h3>Rate these notes</h3>
+
+            <div class="stars">
+                <span onclick="rate(1)">⭐</span>
+                <span onclick="rate(2)">⭐</span>
+                <span onclick="rate(3)">⭐</span>
+                <span onclick="rate(4)">⭐</span>
+                <span onclick="rate(5)">⭐</span>
+            </div>
+
+            <textarea id="feedbackMessage"
+                      placeholder="Write your feedback (required)..."
+                      rows="3"
+                      style="width:100%; margin-top:10px;"></textarea>
+
+            <button onclick="submitRating()">Submit</button>
+
+            <p id="ratingStatus" style="color:green;"></p>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer-links">
+
+            <div class="footer-section">
+                <h3 th:text="'Subjects in ' + ${level.name}"></h3>
+
+                <div class="footer-items">
+                    <a th:each="sub : ${allSubjects}"
+                       th:href="@{/read/notes/{firstSubtopicSlug}(firstSubtopicSlug=${sub.firstSubtopicSlug})}"
+                       th:text="${sub.name}">
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3 th:text="'Class Levels in ' + ${curriculum.name}"></h3>
+
+                <div class="footer-items">
+                    <a th:each="lvl : ${allLevels}"
+                       th:href="@{/read/classlevel/{slug}(slug=${lvl.slug})}"
+                       th:text="${lvl.name}">
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("open");
+    }
+</script>
+
+<script>
+    let selectedRating = 0;
+    let isSubmitting = false;
+
+    function rate(value) {
+        selectedRating = value;
+        document.getElementById("ratingStatus").innerText =
+            "You selected " + value + " stars";
+    }
+
+function submitRating() {
+
+    if (isSubmitting) return;
+
+    if (selectedRating === 0) {
+        alert("Please select a rating");
+        return;
+    }
+
+    const message = document.getElementById("feedbackMessage").value.trim();
+
+    // 🚫 NEW: block empty feedback
+    if (message.length === 0) {
+        alert("Please write your feedback before submitting");
+        return;
+    }
+
+    const payload = {
+        rating: selectedRating,
+        message: message,
+        subtopicId: [[${topic.id}]]
+    };
+
+    isSubmitting = true;
+
+    const btn = document.querySelector(".rating-box button");
+    btn.disabled = true;
+    btn.innerText = "Submitting...";
+
+    fetch("/read/notes/rate", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("Failed");
+        return res;
+    })
+    .then(() => {
+        document.getElementById("ratingStatus").innerText =
+            "Thanks for your feedback 🙌";
+
+        selectedRating = 0;
+        document.getElementById("feedbackMessage").value = "";
+    })
+    .catch(() => {
+        alert("Failed to submit rating");
+    })
+    .finally(() => {
+        isSubmitting = false;
+        btn.disabled = false;
+        btn.innerText = "Submit";
+    });
+}
+</script>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const adminKey = urlParams.get("adminKey");
+
+    if (adminKey) {
+        document.getElementById("regenBtn").style.display = "inline-block";
+    }
+
+    function regenerateNotes() {
+        if (!adminKey) return alert("Unauthorized");
+
+        fetch(`/read/regenerate?subtopic=[[${topic.id}]]&key=${adminKey}`, {
+            method: "POST"
+        })
+        .then(() => alert("Regeneration started"));
+    }
+</script>
+
+</body>
+</html>
