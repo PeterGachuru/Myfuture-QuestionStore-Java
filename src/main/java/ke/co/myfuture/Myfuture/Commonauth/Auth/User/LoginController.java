@@ -1,13 +1,14 @@
 package ke.co.myfuture.Myfuture.Commonauth.Auth.User;
 
 
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordResetService;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.ExceptionLogger;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.LoginUserRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.UpdatePasswordRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.AuthEntityResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.LoginResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Otp.OtpService;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordReset;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordResetDTO;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.OtpRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.OtpResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.JwtStatusContext;
@@ -30,6 +31,8 @@ import java.util.regex.Pattern;
 public class LoginController {
     @Autowired
     UserService userService;
+    @Autowired
+    PasswordResetService passwordResetService;
     private final OtpService otpService;
 //    private final AuditTrailProvider audit;
 
@@ -94,7 +97,7 @@ public class LoginController {
     public ResponseEntity<AuthEntityResponse> updatePassword(@RequestBody UpdatePasswordRequest body) {
         AuthEntityResponse response;
         if (!Objects.isNull(body.getPassword()) && passwordPattern.matcher(body.getPassword()).find()) {
-            response = this.userService.updateUserPassword(body.getEmail(), body.getPreviousPassword(), body.getPassword());
+            response = this.passwordResetService.updateUserPassword(body.getEmail(), body.getPreviousPassword(), body.getPassword());
         } else {
             response = new AuthEntityResponse();
             response.setMessage("Password requirements: Minimum 12 characters, at least one uppercase letter, one lowercase letter, one number and one special character");
@@ -105,8 +108,8 @@ public class LoginController {
     }
 
     @PostMapping("requestPasswordChange")
-    public ResponseEntity<?> updatePassword(@RequestBody PasswordReset passwordReset) {
-        return ResponseEntity.ok().body(this.userService.passwordResetRequest(passwordReset));
+    public ResponseEntity<?> updatePassword(@RequestBody PasswordResetDTO passwordResetDTO) {
+        return ResponseEntity.ok().body(this.passwordResetService.passwordResetRequest(passwordResetDTO));
     }
 
     @PostMapping("otp")

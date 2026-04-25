@@ -4,9 +4,11 @@ custommail:
   sendurl: http://localhost:8090
 logging:
   level:
-    org.springframework.security: DEBUG
     org.hibernate.SQL: INFO
     org.hibernate.orm.jdbc.bind: INFO
+    org.springframework: INFO
+    org.springframework.security: INFO
+    org.springframework.web: INFO
 
 server:
   port: 2024
@@ -34,6 +36,22 @@ topic:
 multipart:
   enabled: 'true'
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 310630401123-4k3qmp2rfjd7sg0s6751unrsdfodjbln.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
+
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
   data:
     jpa:
       repositories:

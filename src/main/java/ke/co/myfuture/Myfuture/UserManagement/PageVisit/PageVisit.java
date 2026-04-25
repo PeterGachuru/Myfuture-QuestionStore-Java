@@ -20,7 +20,8 @@ public class PageVisit {
 
     private String visitorId;
     private String accessedUri;
+    private String userAgent;
+    private String ipAddress;
 
     private LocalDateTime visitTime;
-
 }

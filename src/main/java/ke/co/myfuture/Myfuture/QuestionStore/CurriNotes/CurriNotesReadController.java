@@ -45,6 +45,7 @@ public class CurriNotesReadController {
     private final CurriculumRepository curriculumRepository;
     private final CookieService cookieService;
     private final WebInstallService installService;
+    private final Integer VISITCOUNT_BEFORE_CLOSE = 100;
 
     // =============================
     // NEW SEO URL
@@ -103,6 +104,18 @@ public class CurriNotesReadController {
         visit.setTopicId(topic.getId());
         visit.setVisitorId(visitorId);
         visit.setVisitTime(LocalDateTime.now());
+        visit.setAccessedUri(request.getRequestURI() +
+                (request.getQueryString() != null ? "?" + request.getQueryString() : ""));
+        // ✅ Get User-Agent
+        String userAgent = request.getHeader("User-Agent");
+        visit.setUserAgent(userAgent);
+
+// (Optional but very useful)
+        String ipAddress = request.getHeader("X-Forwarded-For");
+        if (ipAddress == null || ipAddress.isEmpty()) {
+            ipAddress = request.getRemoteAddr();
+        }
+        visit.setIpAddress(ipAddress);
         pageVisitRepository.save(visit);
         // Count visits
         int visitCount = pageVisitRepository.countByVisitorId(visitorId);
@@ -112,15 +125,16 @@ public class CurriNotesReadController {
         boolean loggedIn = user != null;
 
 // Decide if content should be limited
-        boolean restrictContent = !loggedIn && visitCount > 3;
+        boolean restrictContent = !loggedIn && visitCount > VISITCOUNT_BEFORE_CLOSE;
 
         model.addAttribute("restrictContent", restrictContent);
         model.addAttribute("visitCount", visitCount);
         model.addAttribute("visitorId", visitorId);
 
-        Install install = installService.getOrCreateInstall(request, response);
+        if (installService.getInstallId(request) != null) {
+            model.addAttribute("installId", installService.getInstallId(request).getId());
+        }
 
-        model.addAttribute("installId", install.getId());
 
         IbukaStudentAccount student =
                 (IbukaStudentAccount) request.getSession().getAttribute("student");
@@ -190,6 +204,7 @@ public class CurriNotesReadController {
         boolean loggedIn = user != null;
 
         model.addAttribute("loggedIn", loggedIn);
+        System.out.println("User: "+user);
         model.addAttribute("currentUser", user); // 👈 IMPORTANT
     }
 

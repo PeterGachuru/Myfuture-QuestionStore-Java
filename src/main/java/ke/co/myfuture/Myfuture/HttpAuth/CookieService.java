@@ -1,5 +1,7 @@
 package ke.co.myfuture.Myfuture.HttpAuth;
 
+import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.Cookie;
@@ -7,12 +9,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
+
+import ke.co.myfuture.Myfuture.Commonauth.Install.WebInstallService;
+
 @Service
+@AllArgsConstructor
 public class CookieService {
+    private final WebInstallService installService;
     public String getOrCreateVisitorId(HttpServletRequest request, HttpServletResponse response) {
         if (request.getCookies() != null) {
             for (Cookie c : request.getCookies()) {
                 if ("visitorId".equals(c.getName())) {
+                    Install install = installService.getOrCreateInstall(request, response);
                     return c.getValue();
                 }
             }
@@ -34,7 +42,6 @@ public class CookieService {
                 }
             }
         }
-
         return null;
     }
 }

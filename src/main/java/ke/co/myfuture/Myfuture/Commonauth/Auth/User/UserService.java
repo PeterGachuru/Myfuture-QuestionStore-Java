@@ -11,7 +11,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.UsersResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Otp.OtpService;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.RoleConfig.RoleConfig;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.RoleConfig.RoleConfigRepository;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordReset;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordResetDTO;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordResetRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordResetService;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.UserPasswords.UserPassword;
@@ -76,7 +76,6 @@ public class UserService {
     UserPasswordRepo userPasswordRepo;
 
     @Autowired
-
     private CustomMailSender customMailSender;
     @Value("${production}")
     private boolean inProd;
@@ -107,7 +106,7 @@ public class UserService {
       return loginByGoogle(googleSignInData);
     }
 
-    private  AtomicReference<LoginResponse> loginResponse(String email) {
+    public AtomicReference<LoginResponse> loginResponse(String email) {
         UserData userData = getUserDetails(email).getUser();
         LoginSession authResponse = loginBuilder(userData);
         AtomicReference<LoginResponse> response = new AtomicReference<>();
@@ -275,6 +274,10 @@ public class UserService {
                 List<UserPassword> userPasswords = new ArrayList<>();
                 userPasswords.add(userPassword);
 
+                user = userRepository.save(user);
+                userPassword.setUser(user);
+                user = userRepository.save(user);
+
                 user.setPasswords(userPasswords);
 
                 try {
@@ -290,8 +293,6 @@ public class UserService {
 //                                "Your Myfuture password is: " + password + "  Do not share your password with anyone",
 //                                "Myfuture password");
 //                    }
-
-                    user = userRepository.save(user);
 
                     UserRole usr = new UserRole();
                     usr.setRole(roleConfig);
@@ -407,63 +408,6 @@ public class UserService {
         }, () -> {
             /* todo:: User not found  */
             response.set(AuthEntityResponse.builder().message("User not found").statusCode(HttpStatus.BAD_REQUEST.value()).build());
-        });
-
-        return response.get();
-    }
-
-    public AuthEntityResponse updateUserPassword(@NonNull String email, @NonNull String previousPassword,
-                                                 @NonNull String password) {
-        AtomicReference<AuthEntityResponse> response = new AtomicReference<>();
-
-        this.userRepository.findByEmail(email).ifPresentOrElse(userData -> {
-            if (Objects.equals(userData.getStatus(), "Active")) {
-
-                if (passwordUtil.matches(previousPassword.trim(),
-                        userData.getPasswords().get(userData.getPasswords().size() - 1).getPassword())) {
-
-                    List<UserPassword> passwords = userData.getPasswords();
-                    String encodedPassword = passwordUtil.encode(password);
-
-                    boolean passwordExists =
-                            passwords.stream().anyMatch(userPassword -> userPassword.getPassword().equals(encodedPassword));
-
-                    if (passwordExists) {
-                        response.set(AuthEntityResponse.builder().message("New password cannot equal old password!").statusCode(HttpStatus.FORBIDDEN.value()).build());
-                        return;
-                    } else {
-                        UserPassword userPassword = new UserPassword();
-                        userPassword.setPassword(encodedPassword);
-
-                        if (passwords.size() == 12) {
-                            passwords.remove(0);
-                        }
-
-                        passwords.add(userPassword);
-                        userData.setPasswords(passwords);
-                    }
-
-                    userData.setFirstLogin(0);
-                    userRepository.save(userData);
-
-                    response.set(AuthEntityResponse.builder().message("Password updated successfully !").statusCode(HttpStatus.OK.value()).build());
-//                    audit.log("USERS ACCOUNT", "Updating own password");
-                } else {
-                    response.set(AuthEntityResponse.builder().message("The previous  password you provided is " +
-                            "incorrect !").statusCode(HttpStatus.BAD_REQUEST.value()).build());
-                }
-
-            } else {
-
-
-                response.set(AuthEntityResponse.builder().message(String.format("Account with the email %s is not " +
-                        "active ", email)).statusCode(HttpStatus.BAD_REQUEST.value()).build());
-
-            }
-        }, () -> {
-            /* todo:: User not found  */
-            response.set(AuthEntityResponse.builder().message(String.format("Account with the email %s not found ",
-                    email)).statusCode(HttpStatus.BAD_REQUEST.value()).build());
         });
 
         return response.get();
@@ -814,54 +758,9 @@ public class UserService {
         log.info("Your OTP is: {}", otp);
 //        audit.log("AUTHENTICATION", "Requesting a new OTP");
         if (inProd) {
-           this.mailService2.sendEmail(userDetails.getUsername(), "Your OTP is: " + otp, "Recon Master OTP");
+           this.mailService2.sendEmail(userDetails.getUsername(), "Your OTP is: " + otp, "Ibuka Technologies OTP");
         }
         return jwt;
-    }
-
-    public UniversalResponse passwordResetRequest(PasswordReset passwordReset) {
-
-        if (!isValidEmail(passwordReset.getEmail())) return null;
-        String resetCode = otpService.generateOTP();
-        passwordReset.setOtp(resetCode);
-
-        String subject = "Password Reset Code - Ibuka Technologies";
-        String htmlContent = generateEmailContent(resetCode);
-
-        Boolean status = customMailSender.sendEmail(subject,
-                htmlContent,
-                new String[]{passwordReset.getEmail()}, new String[]{}, new String[]{}, "Ibuka Technologies");
-
-        if (status) {
-            passwordResetRepository.save(passwordReset);
-            return new UniversalResponse(200, "Sent password reset email");
-        }
-        return new UniversalResponse(500, "Server error");
-
-    }
-
-    private String generateEmailContent(String resetCode) {
-        return "<!DOCTYPE html>" +
-                "<html>" +
-                "<head><style>" +
-                "body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }" +
-                ".container { background: white; padding: 20px; border-radius: 5px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }" +
-                "h2 { color: #2C3E50; }" +
-                "p { font-size: 16px; }" +
-                ".code { font-size: 24px; font-weight: bold; color: #e74c3c; background: #f8d7da; padding: 10px; border-radius: 5px; display: inline-block; }" +
-                "</style></head>" +
-                "<body>" +
-                "<div class='container'>" +
-                "<h2>Password Reset Request</h2>" +
-                "<p>Hello,</p>" +
-                "<p>We received a request to reset your password for your Ibuka Technologies account. Use the following code to reset your password:</p>" +
-                "<p class='code'>" + resetCode + "</p>" +
-                "<p>If you did not request this, please ignore this email.</p>" +
-                "<p>Thank you,</p>" +
-                "<p><strong>Ibuka Technologies Team</strong></p>" +
-                "</div>" +
-                "</body>" +
-                "</html>";
     }
 
     public void logOut() {

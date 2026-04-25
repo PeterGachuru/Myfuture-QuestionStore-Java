@@ -2,7 +2,6 @@ package ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,7 +11,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Data
-public class PasswordReset {
+public class PasswordResetDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)

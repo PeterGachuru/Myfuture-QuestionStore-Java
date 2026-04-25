@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.Commonauth.Auth.User;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
@@ -20,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(nativeQuery = true, value = "select email from user")
     List<String> getAllEmailAddresses();
+
+    List<User> findByDeletedDateIsNullOrderByIdDesc(PageRequest of);
 
     interface Analytics {
         String getStatus();

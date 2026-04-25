@@ -20,6 +20,9 @@
             <th>Topic ID</th>
             <th>Visitor ID</th>
             <th>Visit Time</th>
+            <th>Ip Address</th>
+            <th>Uri</th>
+            <th>User Agent</th>
         </tr>
         </thead>
 
@@ -31,6 +34,11 @@
             </td>
             <td th:text="${v.visitorId}"></td>
             <td th:text="${#temporals.format(v.visitTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:text="${v.ipAddress}"></td>
+            <td>
+                <a th:href="${v.accessedUri}" th:text="${v.accessedUri}"></a>
+            </td>
+            <td th:text="${v.userAgent}"></td>
         </tr>
         </tbody>
     </table>

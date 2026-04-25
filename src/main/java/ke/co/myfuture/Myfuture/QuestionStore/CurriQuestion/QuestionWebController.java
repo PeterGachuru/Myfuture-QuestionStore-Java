@@ -69,6 +69,15 @@ public class QuestionWebController {
         visit.setVisitTime(LocalDateTime.now());
         visit.setAccessedUri(request.getRequestURI() +
                 (request.getQueryString() != null ? "?" + request.getQueryString() : ""));
+        // (Optional but very useful)
+        String ipAddress = request.getHeader("X-Forwarded-For");
+        if (ipAddress == null || ipAddress.isEmpty()) {
+            ipAddress = request.getRemoteAddr();
+        }
+        visit.setIpAddress(ipAddress);
+        pageVisitRepository.save(visit);
+        // Count visits
+        int visitCount = pageVisitRepository.countByVisitorId(visitorId);
         pageVisitRepository.save(visit);
         model.addAttribute("visitorId", visitorId);
 

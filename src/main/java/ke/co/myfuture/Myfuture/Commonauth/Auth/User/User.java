@@ -22,11 +22,6 @@ import java.util.List;
 @EqualsAndHashCode(of = {"id"})
 @DynamicUpdate
 @Entity
-//@Table(name = "user_config", uniqueConstraints = {
-//        @UniqueConstraint(name = "user_id", columnNames = {"id"}),
-//        @UniqueConstraint(name = "user_email", columnNames = {"email"}),
-//})
-
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

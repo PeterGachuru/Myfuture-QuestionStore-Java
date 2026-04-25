@@ -1,7 +1,11 @@
 package ke.co.myfuture.Myfuture.Commonauth.WebAdminAuth;
 
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.LoginResponse;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserService;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,19 +15,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin")
+@AllArgsConstructor
 public class AdminAuthController {
 
     private final UserService userService;
-
-    public AdminAuthController(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserRepository userRepository;
 
     @GetMapping("/login")
     public String loginPage(HttpSession session) {
-
         if (session.getAttribute("user") != null) {
             return "redirect:/admin/dashboard";
         }
@@ -50,5 +53,16 @@ public class AdminAuthController {
         model.addAttribute("error", response.getMessage());
 
         return "admin/login";
+    }
+
+    @GetMapping("/users")
+    public String listUsers(Model model) {
+
+        List<User> users =
+                userRepository.findByDeletedDateIsNullOrderByIdDesc(PageRequest.of(0,300));
+
+        model.addAttribute("users", users);
+
+        return "admin/users";
     }
 }

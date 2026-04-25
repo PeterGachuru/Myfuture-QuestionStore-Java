@@ -341,7 +341,7 @@
             <div th:if="${loggedIn}" style="text-align:right;">
 
     <span>
-        👤 <span th:text="${currentUser.name}"></span>
+        👤 <span th:text="${currentUser?.firstName}"></span>
     </span>
 
                 <br/>

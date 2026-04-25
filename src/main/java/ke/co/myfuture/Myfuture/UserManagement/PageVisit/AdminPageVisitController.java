@@ -9,7 +9,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin/page-visits")
 public class AdminPageVisitController {
-
     private final PageVisitRepository repository;
 
     public AdminPageVisitController(PageVisitRepository repository) {
@@ -18,7 +17,7 @@ public class AdminPageVisitController {
 
     // 1. List visitors with multiple visits
     @GetMapping
-    public String listVisitors(Model model) {
+    public String listVisitors(Model model, @RequestParam(required = false) Boolean all) {
         List<VisitorSummary> visitors = repository.findVisitorsWithMultipleVisits();
         model.addAttribute("visitors", visitors);
         return "admin/page_visitors";
@@ -27,7 +26,12 @@ public class AdminPageVisitController {
     // 2. View visits for one visitor
     @GetMapping("/{visitorId}")
     public String visitorDetails(@PathVariable String visitorId, Model model) {
-        List<PageVisit> visits = repository.findByVisitorIdOrderByVisitTimeDesc(visitorId);
+        List<PageVisit> visits;
+        if (visitorId.equalsIgnoreCase("all")) {
+            visits = repository.findAllByOrderByVisitTimeDesc(PageRequest.of(0,500));
+        } else {
+            visits = repository.findByVisitorIdOrderByVisitTimeDesc(visitorId);
+        }
         model.addAttribute("visits", visits);
         model.addAttribute("visitorId", visitorId);
         return "admin/page_visits";

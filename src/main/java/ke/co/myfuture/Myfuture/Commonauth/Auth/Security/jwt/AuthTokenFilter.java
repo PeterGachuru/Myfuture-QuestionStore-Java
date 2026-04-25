@@ -114,9 +114,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 ignored.printStackTrace();
             }
         }
-        log.debug("Before filterchain");
+//        System.out.println("Before filterchain");
+        System.out.println(request.getRequestURI() +
+                (request.getQueryString() != null ? "?" + request.getQueryString() : ""));
         filterChain.doFilter(request, response);
-        log.debug("After filterchain");
+//        System.out.println("After filterchain");
     }
 
     private UserDetails dataToUserDetails(UserData userData) {

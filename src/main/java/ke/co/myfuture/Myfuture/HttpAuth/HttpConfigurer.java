@@ -7,6 +7,7 @@ import ke.co.myfuture.Myfuture.HttpAuth.HttpMvcMatchers.DukazoteHttpFilters;
 import ke.co.myfuture.Myfuture.HttpAuth.HttpMvcMatchers.ImageStoreHttpFilters;
 import ke.co.myfuture.Myfuture.HttpAuth.HttpMvcMatchers.MyfutureNavigationHttpFilters;
 import ke.co.myfuture.Myfuture.HttpAuth.HttpMvcMatchers.TreasuryHttpFilters;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -26,13 +27,11 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
 @EnableWebSecurity
+@AllArgsConstructor
 public class HttpConfigurer {
-
+    private final CustomOAuth2UserService customOAuth2UserService;
     private final SecurityContextRepository securityContextRepository;
-
-    public HttpConfigurer(SecurityContextRepository securityContextRepository) {
-        this.securityContextRepository = securityContextRepository;
-    }
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -90,10 +89,23 @@ public class HttpConfigurer {
                         authenticationJwtTokenFilter(),
                         UsernamePasswordAuthenticationFilter.class
                 )
+                .oauth2Login(oauth -> oauth
+                        .loginPage("/read/login")
+
+                        .successHandler(oAuth2LoginSuccessHandler)
+
+                        .userInfoEndpoint(user -> user
+                                .userService(customOAuth2UserService)
+                        )
+                )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/read/login")
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/**").permitAll()
 //                        .anyRequest().permitAll()
                 );
 

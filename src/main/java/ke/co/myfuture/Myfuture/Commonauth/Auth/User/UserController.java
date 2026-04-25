@@ -33,7 +33,10 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<AuthEntityResponse> createRegister(@RequestBody UserCreateRequest body) {
         AuthEntityResponse response = new AuthEntityResponse();
-        if (!body.getEmail().contains("@")) return null;
+        if (!body.getEmail().contains("@")) {
+            return ResponseEntity.badRequest()
+                    .body(new AuthEntityResponse(400, "Invalid email"));
+        }
 
         response = this.userService.createUser(body);
 

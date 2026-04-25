@@ -31,6 +31,7 @@ public class Install2Controller {
 
     @PutMapping("update")
     public ResponseEntity<?> update(@RequestBody InstallUpdate installUpdate) {
+        System.out.println("InstallUpdate: "+installUpdate);
         Optional<Install> install = repository.findById(installUpdate.getInstallId());
         if (install.isPresent()) {
             if (installUpdate.getFcmToken() != null) {

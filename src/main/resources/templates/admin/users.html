@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <h2>Users</h2>
+
+    <p>Latest 300 users</p>
+
+    <table class="admin-table">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>County</th>
+            <th>Status</th>
+            <th>Logged In</th>
+            <th>Created</th>
+            <th>Last Login</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="u : ${users}">
+
+            <td th:text="${u.id}"></td>
+
+            <td>
+                <span th:text="${u.fullName != null ? u.fullName : u.firstName + ' ' + u.lastName}"></span>
+            </td>
+
+            <td th:text="${u.email}"></td>
+
+            <td th:text="${u.phoneNumber}"></td>
+
+            <td th:text="${u.county}"></td>
+
+            <td>
+                <span th:text="${u.status}"></span>
+            </td>
+
+            <td>
+                <span th:text="${u.isLoggedIn == 1 ? 'Yes' : 'No'}"></span>
+            </td>
+
+            <td th:text="${#dates.format(u.creationDate,'yyyy-MM-dd HH:mm')}"></td>
+
+            <td th:text="${u.lastLogin != null ? #dates.format(u.lastLogin,'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+<style>
+
+    .admin-table{
+        width:100%;
+        border-collapse:collapse;
+    }
+
+    .admin-table th{
+        background:#2c3e50;
+        color:black;
+        padding:10px;
+    }
+
+    .admin-table td{
+        padding:8px;
+        border-bottom:1px solid #ddd;
+    }
+
+    .status-active{
+        color:green;
+        font-weight:bold;
+    }
+
+    .status-inactive{
+        color:red;
+    }
+
+</style>
+
+</body>
+</html>
