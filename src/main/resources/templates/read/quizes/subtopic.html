@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${level.name} + ' ' + ${subject.name} + ' ' + ${topic.name} + ' Quiz | Ibuka Learning App'"></title>
+    <title th:text="${level.name} + ' ' + ${subject.name} + ' ' + ${topic.name} + ' Quiz | Myfuture CBC Revision App'"></title>
 
     <!-- SEO -->
     <meta name="description"
@@ -210,6 +210,62 @@
                 border-bottom: 1px solid #eee;
             }
         }
+
+        .blur-content {
+    filter: blur(6px);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Overlay */
+.overlay-block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255,255,255,0.85);
+}
+
+.overlay-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.overlay-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 16px;
+    background: #800000;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+        .quiz-preview {
+    max-height: 500px;   /* 👈 controls how many questions are visible */
+    overflow: hidden;
+    position: relative;
+}
+
+/* Fade effect at bottom */
+.quiz-preview::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 120px;
+    width: 100%;
+    background: linear-gradient(transparent, white);
+}
     </style>
 </head>
 
@@ -259,22 +315,58 @@
         <h1 th:text="${level.name} + ' ' + ${subject.name} + ' – ' + ${topic.name} + ' Quiz'"></h1>
 
         <!-- QUESTIONS -->
-        <div th:each="q, qStat : ${questions}" class="question">
+        <div style="position:relative;">
 
-            <p>
-                <strong th:text="${qStat.index + 1} + '. ' + ${q.string}"></strong>
-            </p>
+            <!-- QUESTIONS CONTENT -->
+            <div th:classappend="
+                ${restrictForSubscription} ? 'blur-content quiz-preview' :
+                (${restrictContent} ? 'quiz-preview' : '')">
 
-            <div th:each="c : ${q.choices}"
-                 class="choice"
-                 th:attr="data-correct=${c.correct}"
-                 onclick="selectChoice(this)">
-                <span th:text="${c.value}"></span>
+                <div th:each="q, qStat : ${questions}" class="question">
+
+                    <p>
+                        <strong th:text="${qStat.index + 1} + '. ' + ${q.string}"></strong>
+                    </p>
+
+                    <div th:each="c : ${q.choices}"
+                         class="choice"
+                         th:attr="data-correct=${c.correct}"
+                         onclick="selectChoice(this)">
+                        <span th:text="${c.value}"></span>
+                    </div>
+
+                    <div class="explanation">
+                        <strong>Explanation:</strong>
+                        <p th:utext="${q.explanation}"></p>
+                    </div>
+
+                </div>
+
             </div>
 
-            <div class="explanation">
-                <strong>Explanation:</strong>
-                <p th:utext="${q.explanation}"></p>
+            <!-- OVERLAY -->
+            <div th:if="${restrictContent}" class="overlay-block">
+                <div class="overlay-box">
+
+                    <!-- NOT LOGGED IN -->
+                    <div th:if="${!loggedIn}">
+                        <h3>🔐 Login Required</h3>
+                        <p>Login to attempt quizzes and track your performance</p>
+
+                        <a href="/read/login" class="overlay-btn">Login</a>
+                    </div>
+
+                    <!-- LOGGED IN BUT NO SUBSCRIPTION -->
+                    <div th:if="${restrictForSubscription}">
+                        <h3>🔒 Subscription Required</h3>
+                        <p>Your subscription is not active. Subscribe to continue practicing.</p>
+
+                        <a href="/subscribe" class="overlay-btn">
+                            💳 Get Subscription
+                        </a>
+                    </div>
+
+                </div>
             </div>
 
         </div>

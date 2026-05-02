@@ -9,14 +9,16 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.LoginSession;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.UserCreateRequest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordResetDTO;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.PasswordReset.PasswordResetService;
-import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserService;
 import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
+import ke.co.myfuture.Myfuture.Commonauth.Install.InstallService;
 import ke.co.myfuture.Myfuture.Commonauth.Install.WebInstallService;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevelRepository;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
+import ke.co.myfuture.Myfuture.UserManagement.SubscriptionPlan.SubscriptionPlan;
+import ke.co.myfuture.Myfuture.UserManagement.SubscriptionPlan.SubscriptionPlanRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -25,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -36,8 +37,10 @@ public class ReadAuthController {
     private final PasswordResetService passwordResetService;
     private final IbukaStudentAccountRepository ibukaStudentAccountRepository;
     private final CurriLevelRepository curriLevelRepository;
+    private final SubscriptionPlanRepository subscriptionPlanRepository;
 
-    private final WebInstallService installService;
+    private final WebInstallService webInstallService;
+    private final InstallService installService;
 
     @GetMapping("/login")
     public String loginPage(HttpSession session) {
@@ -53,19 +56,24 @@ public class ReadAuthController {
             @RequestParam String email,
             @RequestParam String password,
             Model model,
-            HttpSession session) {
+            HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 
-        LoginResponse response =
+        LoginResponse loginResponse =
                 userService.authenticateUser(email, password);
 
-        if (response.getStatusCode() == 200) {
+        if (loginResponse.getStatusCode() == 200) {
 
-            session.setAttribute("user", response.getUser());
+            session.setAttribute("user", loginResponse.getUser());
+
+            Install install = webInstallService.getOrCreateInstall(request, response);
+            if (install.getAccountEmail() == null) {
+                installService.addAccountDetails(install, loginResponse.getUser());
+            }
 
             return "redirect:/read/students/select";
         }
 
-        model.addAttribute("error", response.getMessage());
+        model.addAttribute("error", loginResponse.getMessage());
 
         return "read/login";
     }
@@ -104,21 +112,23 @@ public class ReadAuthController {
     @PostMapping("/register")
     public String registerUser(
             @ModelAttribute("user") UserCreateRequest userRequest,
-            Model model) {
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
         if (userRequest.getEmail() == null || !userRequest.getEmail().contains("@")) {
             model.addAttribute("error", "Invalid email address");
             return "read/register";
         }
 
-        AuthEntityResponse response = userService.createUser(userRequest);
+        AuthEntityResponse createUserResponse = userService.createUser(userRequest);
 
-        if (response.getStatusCode() == 200) {
+        if (createUserResponse.getStatusCode() == 200) {
             model.addAttribute("success", "Account created successfully. Please login.");
             return "read/login";
         }
 
-        model.addAttribute("error", response.getMessage());
+        model.addAttribute("error", createUserResponse.getMessage());
         return "read/register";
     }
 
@@ -150,8 +160,10 @@ public class ReadAuthController {
             return "redirect:/read/login";
         }
 
-
-        Install install = installService.getOrCreateInstall(request, response);
+        Install install = webInstallService.getOrCreateInstall(request, response);
+        if (install.getAccountEmail() == null) {
+            installService.addAccountDetails(install, user);
+        }
 
         model.addAttribute("installId", install.getId());
 
@@ -198,7 +210,7 @@ public class ReadAuthController {
 
         LoginSession user = (LoginSession) request.getSession().getAttribute("user");
 
-        Install install = installService.getOrCreateInstall(request, response);
+        Install install = webInstallService.getOrCreateInstall(request, response);
 
         System.out.println("User: "+user);
 
@@ -223,19 +235,25 @@ public class ReadAuthController {
     }
 
     @GetMapping("/subscribe")
-    public String subscribePage(HttpSession session, Model model) {
+    public String subscribePage(HttpSession session, Model model,
+                                HttpServletRequest request,
+                                HttpServletResponse response) {
+        Install install = webInstallService.getOrCreateInstall(request, response);
+        LoginSession user = (LoginSession) request.getSession().getAttribute("user");
 
-        if (session.getAttribute("user") == null) {
+        if (install.getAccountEmail() == null) {
+            installService.addAccountDetails(install, user);
+        }
+
+        if (user == null) {
             return "redirect:/read/students/select";
         }
 
-        model.addAttribute("plans", List.of(
-                Map.of("name","2 Days","days",2,"price",10),
-                Map.of("name","7 Days","days",7,"price",29),
-                Map.of("name","30 Days","days",30,"price",99),
-                Map.of("name","90 Days","days",90,"price",250),
-                Map.of("name","365 Days","days",365,"price",800)
-        ));
+        List<SubscriptionPlan> plans = subscriptionPlanRepository.findByActiveTrue();
+
+        model.addAttribute("plans", plans);
+        model.addAttribute("installId", install.getId());
+        model.addAttribute("userEmail", user.getEmail());
 
         return "read/subscribe";
     }

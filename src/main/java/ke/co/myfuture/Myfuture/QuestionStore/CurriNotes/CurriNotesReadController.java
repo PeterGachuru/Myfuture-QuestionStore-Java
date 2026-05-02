@@ -1,7 +1,9 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriNotes;
 
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.LoginSession;
 import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
 import ke.co.myfuture.Myfuture.Commonauth.Install.Install2Repository;
+import ke.co.myfuture.Myfuture.Commonauth.Install.InstallService;
 import ke.co.myfuture.Myfuture.Commonauth.Install.WebInstallService;
 import ke.co.myfuture.Myfuture.HttpAuth.CookieService;
 import ke.co.myfuture.Myfuture.QuestionStore.AI.AICurriNotes.ChatGPTNotesService;
@@ -14,6 +16,7 @@ import ke.co.myfuture.Myfuture.QuestionStore.Subject.SubjectRepository;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisit;
 import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisitRepository;
+import ke.co.myfuture.Myfuture.UserManagement.SubscriptionExpiryTrack.SubscriptionExpiryTrackRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +26,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,8 +48,11 @@ public class CurriNotesReadController {
 
     private final CurriculumRepository curriculumRepository;
     private final CookieService cookieService;
-    private final WebInstallService installService;
-    private final Integer VISITCOUNT_BEFORE_CLOSE = 100;
+    private final WebInstallService webInstallService;
+    private final InstallService installService;
+
+    private final SubscriptionExpiryTrackRepository subscriptionRepo;
+    public final static Integer VISITCOUNT_BEFORE_CLOSE = 5;
 
     // =============================
     // NEW SEO URL
@@ -121,23 +128,43 @@ public class CurriNotesReadController {
         int visitCount = pageVisitRepository.countByVisitorId(visitorId);
 
 // Check login (if using session)
-        Object user = request.getSession().getAttribute("user");
+        LoginSession user = (LoginSession) request.getSession().getAttribute("user");
         boolean loggedIn = user != null;
-
-// Decide if content should be limited
-        boolean restrictContent = !loggedIn && visitCount > VISITCOUNT_BEFORE_CLOSE;
-
-        model.addAttribute("restrictContent", restrictContent);
-        model.addAttribute("visitCount", visitCount);
-        model.addAttribute("visitorId", visitorId);
-
-        if (installService.getInstallId(request) != null) {
-            model.addAttribute("installId", installService.getInstallId(request).getId());
-        }
-
 
         IbukaStudentAccount student =
                 (IbukaStudentAccount) request.getSession().getAttribute("student");
+
+        boolean hasActiveSubscription = false;
+
+        if (loggedIn && student != null) {
+            hasActiveSubscription =
+                    subscriptionRepo.existsByParentUsernameAndExpiryDateAfter(
+                            user.getEmail(),
+                            new Date()
+                    );
+        }
+
+        boolean restrictForGuest = !loggedIn && visitCount > VISITCOUNT_BEFORE_CLOSE;
+        boolean restrictForSubscription = loggedIn && !hasActiveSubscription;
+
+// final restriction
+        boolean restrictContent = restrictForGuest || restrictForSubscription;
+
+        model.addAttribute("restrictContent", restrictContent);
+        model.addAttribute("restrictForSubscription", restrictForSubscription);
+        model.addAttribute("hasActiveSubscription", hasActiveSubscription);
+
+        model.addAttribute("visitCount", visitCount);
+        model.addAttribute("visitorId", visitorId);
+
+        if (webInstallService.getInstallId(request) != null) {
+            model.addAttribute("installId", webInstallService.getInstallId(request).getId());
+            Install install = webInstallService.getInstallId(request);
+            if (install.getAccountEmail() == null) {
+                installService.addAccountDetails(install, user);
+            }
+        }
+
 
         if (loggedIn && student == null) {
             return "redirect:/students/select";

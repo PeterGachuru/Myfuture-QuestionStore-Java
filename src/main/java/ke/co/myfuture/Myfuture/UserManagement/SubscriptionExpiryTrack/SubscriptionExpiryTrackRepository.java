@@ -5,12 +5,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface SubscriptionExpiryTrackRepository extends JpaRepository<SubscriptionExpiryTrack, Long> {
     Optional<SubscriptionExpiryTrack> findByParent(Long parent);
+
+    boolean existsByParentUsernameAndExpiryDateAfter(String parentUsername, Date now);
 
     Optional<SubscriptionExpiryTrack> findByParentUsername(String parentUsername);
 

@@ -32,8 +32,7 @@
         <tbody>
 
         <tr th:each="t, stat : ${tracks}"
-            th:classappend="${t.expiryDate != null and t.expiryDate.time > T(java.lang.System).currentTimeMillis()} ? 'active-row' : 'expired-row'">
-
+            th:classappend="${t.expiryDate != null and t.expiryDate.after(new java.util.Date())} ? 'active-row' : 'expired-row'">
             <!-- Serial Number -->
             <td th:text="${stat.index + 1}"></td>
 
@@ -50,15 +49,15 @@
             </td>
 
             <td>
-        <span th:if="${t.expiryDate != null and t.expiryDate.time > T(java.lang.System).currentTimeMillis()}"
-              class="status-active">
-            ACTIVE
-        </span>
+            <span th:if="${t.expiryDate != null and t.expiryDate.after(new java.util.Date())}"
+                  class="status-active">
+                ACTIVE
+            </span>
 
-                <span th:unless="${t.expiryDate != null and t.expiryDate.time > T(java.lang.System).currentTimeMillis()}"
-                      class="status-expired">
-            EXPIRED
-        </span>
+                        <span th:unless="${t.expiryDate != null and t.expiryDate.after(new java.util.Date())}"
+                              class="status-expired">
+                EXPIRED
+            </span>
             </td>
 
             <td th:text="${#dates.format(t.expiryDate,'yyyy-MM-dd')}"></td>
@@ -84,7 +83,7 @@
 
     .admin-table th{
     background:#2c3e50;
-    color:white;
+    color:black;
     padding:10px;
     }
 

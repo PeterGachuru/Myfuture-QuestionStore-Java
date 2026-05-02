@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${level.name} + ' ' + ${subject.name} + ' ' + ${topic.name} + ' Notes | Ibuka Learning App'"></title>
+    <title th:text="${level.name} + ' ' + ${subject.name} + ' ' + ${topic.name} + ' Notes | Myfuture CBC Revision App'"></title>
 
     <!-- SEO -->
     <meta name="description"
@@ -208,53 +208,53 @@
     </style>
     <style>
         .fade-content {
-            max-height: 250px;
-            overflow: hidden;
-            position: relative;
-        }
+             max-height: 550px;   /* 👈 MUCH better default */
+             overflow: hidden;
+             position: relative;
+         }
 
-        .fade-content::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 120px;
-            width: 100%;
-            background: linear-gradient(transparent, white);
-        }
+         .fade-content::after {
+             content: "";
+             position: absolute;
+             bottom: 0;
+             left: 0;
+             height: 120px;
+             width: 100%;
+             background: linear-gradient(transparent, white);
+         }
 
-        /* Overlay */
-        .login-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+         /* Overlay */
+         .login-overlay {
+             position: absolute;
+             top: 0;
+             left: 0;
+             right: 0;
+             bottom: 0;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+             display: flex;
+             align-items: center;
+             justify-content: center;
 
-            background: rgba(255,255,255,0.85);
-        }
+             background: rgba(255,255,255,0.85);
+         }
 
-        .overlay-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
+         .overlay-box {
+             background: white;
+             padding: 20px;
+             border-radius: 10px;
+             text-align: center;
+             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+         }
 
-        .overlay-login-btn {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 10px 16px;
-            background: #800000;
-            color: white;
-            border-radius: 6px;
-            text-decoration: none;
-        }
+         .overlay-login-btn {
+             display: inline-block;
+             margin-top: 10px;
+             padding: 10px 16px;
+             background: #800000;
+             color: white;
+             border-radius: 6px;
+             text-decoration: none;
+         }
     </style>
 </head>
 
@@ -369,10 +369,25 @@
             <!-- Overlay -->
             <div th:if="${restrictContent}" class="login-overlay">
                 <div class="overlay-box">
-                    <h3>📘 Continue Reading</h3>
-                    <p>Login to unlock full notes, track scores & compete with others</p>
 
-                    <a href="/read/login" class="overlay-login-btn">Login</a>
+                    <!-- NOT LOGGED IN -->
+                    <div th:if="${!loggedIn}">
+                        <h3>📘 Continue Reading</h3>
+                        <p>Login to unlock full notes, track scores & compete with others</p>
+
+                        <a href="/read/login" class="overlay-login-btn">Login</a>
+                    </div>
+
+                    <!-- LOGGED IN BUT NO SUBSCRIPTION -->
+                    <div th:if="${restrictForSubscription}">
+                        <h3>🔒 Subscription Required</h3>
+                        <p>Your subscription is not active. Subscribe to continue learning.</p>
+
+                        <a href="/read/subscribe" class="overlay-login-btn">
+                            💳 Get Subscription
+                        </a>
+                    </div>
+
                 </div>
             </div>
 

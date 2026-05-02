@@ -5,46 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
-        body { font-family: Arial; background:#fafafa; margin:0; }
-        .container { max-width:700px; margin:auto; padding:20px; }
-
-        h2 { text-align:center; color:#800000; }
-
-        .plan {
-            border:1px solid #ddd;
-            padding:15px;
-            margin-bottom:10px;
-            border-radius:10px;
-            background:#fff;
-            cursor:pointer;
+        body {
+            font-family: Arial;
+            background: #fafafa;
+            margin: 0;
         }
 
-        .plan:hover { background:#fff3e0; }
+        .container {
+            max-width: 750px;
+            margin: auto;
+            padding: 20px;
+        }
 
-        .plan-price { float:right; color:#800000; font-weight:bold; }
+        h2 {
+            text-align: center;
+            color: #800000;
+        }
+
+        .info-box {
+            background: #fff;
+            border-left: 5px solid #800000;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+
+        .info-box a {
+            color: #800000;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .info-box a:hover {
+            text-decoration: underline;
+        }
+
+        .plan {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .plan:hover {
+            background: #fff3e0;
+        }
+
+        .plan-price {
+            float: right;
+            color: #800000;
+            font-weight: bold;
+        }
 
         .payment-box {
-            display:none;
-            margin-top:20px;
-            padding:15px;
-            background:#fff;
-            border-radius:10px;
-            border:1px solid #eee;
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #eee;
         }
 
         input, button {
-            width:100%;
-            padding:12px;
-            margin-top:10px;
-            border-radius:6px;
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 6px;
         }
 
-        .pay-btn { background:#800000; color:white; border:none; }
+        .pay-btn {
+            background: #800000;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .pay-btn:hover {
+            background: #a00000;
+        }
 
         .status-box {
-            text-align:center;
-            margin-top:20px;
-            display:none;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
         }
     </style>
 </head>
@@ -53,15 +99,37 @@
 
 <div class="container">
 
-    <h2>Choose Subscription</h2>
+    <h2>Choose Subscription Plan</h2>
+
+    <!-- INFO SECTION -->
+    <div class="info-box">
+        <p>
+            Your subscription gives you full access to all learning materials, quizzes, and performance tracking
+            on both the web platform and the mobile app.
+        </p>
+
+        <p>
+            📱 You can also use your subscription on the mobile app:
+            <a href="https://play.google.com/store/apps/details?id=ke.co.myfuture" target="_blank">
+                Myfuture CBC Revision app
+            </a>
+        </p>
+
+        <p>
+            Once you subscribe, your account will be automatically activated across all devices linked to your email.
+        </p>
+    </div>
 
     <!-- PLANS -->
     <div th:each="plan : ${plans}"
          class="plan"
-         th:onclick="'selectPlan(' + ${plan.days} + ',' + ${plan.price} + ')'">
+         th:onclick="'selectPlan(' + ${plan.durationDays} + ',' + ${plan.price} + ')'">
 
         <span th:text="${plan.name}"></span>
-        <span class="plan-price">Ksh <span th:text="${plan.price}"></span></span>
+
+        <span class="plan-price">
+            Ksh <span th:text="${plan.price}"></span>
+        </span>
     </div>
 
     <!-- PAYMENT -->
@@ -83,19 +151,12 @@
 
 </div>
 
-<script>
+<script th:inline="javascript">
     let selectedDays = 0;
     let selectedPrice = 0;
 
-    // Generate installId (WEB VERSION)
-    function getInstallId() {
-        let installId = localStorage.getItem("installId");
-        if (!installId) {
-            installId = Date.now(); // simple unique ID
-            localStorage.setItem("installId", installId);
-        }
-        return installId;
-    }
+    const installId = [[${installId}]];
+    const userEmail = [[${userEmail}]];
 
     function selectPlan(days, price) {
         selectedDays = days;
@@ -127,8 +188,9 @@
             numberOfDays: selectedDays,
             subscriptionType: "DAYS_" + selectedDays,
             status: "PENDING",
-            installId: getInstallId(),
-            emailAddress: "web@myfuture.co.ke", // optional (or from session)
+            platformSource: "study.myfuture.co.ke",
+            installId: installId,
+            emailAddress: userEmail,
             startDate: now.toISOString(),
             endDate: end.toISOString()
         };
@@ -137,7 +199,7 @@
 
         fetch("/myfuture/subscriptions/mpesastk", {
             method: "POST",
-            headers: {"Content-Type":"application/json"},
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify(payload)
         })
         .then(res => res.json())
@@ -145,7 +207,7 @@
             document.getElementById("msg").innerText =
                 "Check your phone for STK push...";
 
-            startPolling(data.id); // 🔥 use your backend ID
+            startPolling(data.id);
         })
         .catch(() => {
             alert("Failed to start payment");

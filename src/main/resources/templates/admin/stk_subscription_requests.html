@@ -24,6 +24,7 @@
             <th>Days</th>
             <th>Subscription</th>
             <th>Status</th>
+            <th>Source</th>
             <th>Install</th>
             <th>Transaction Code</th>
             <th>Start Date</th>
@@ -48,6 +49,7 @@
             </td>
 
             <td th:text="${r.status}"></td>
+            <td th:text="${r.platformSource}"></td>
 
             <td>
                 <a th:href="@{/admin/installs/{id}(id=${r.installId})}" th:text="${r.installId}"></a>
@@ -76,7 +78,7 @@
 
     .admin-table th{
     background:#2c3e50;
-    color:white;
+    color:black;
     padding:10px;
     }
 

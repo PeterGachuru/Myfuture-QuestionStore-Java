@@ -1,10 +1,13 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion;
 
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.LoginSession;
 import ke.co.myfuture.Myfuture.HttpAuth.CookieService;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisit;
 import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisitRepository;
+import ke.co.myfuture.Myfuture.UserManagement.SubscriptionExpiryTrack.SubscriptionExpiryTrackRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,8 +20,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import static ke.co.myfuture.Myfuture.QuestionStore.CurriNotes.CurriNotesReadController.VISITCOUNT_BEFORE_CLOSE;
 
 @Controller
 @RequestMapping("/read")
@@ -28,6 +34,7 @@ public class QuestionWebController {
     private final CurriQuestionRepository questionRepository;
     private final PageVisitRepository pageVisitRepository;
     private final CookieService cookieService;
+    private final SubscriptionExpiryTrackRepository subscriptionRepo;
 
     // SEO-friendly URL
     @GetMapping("/questions/**")
@@ -78,8 +85,37 @@ public class QuestionWebController {
         pageVisitRepository.save(visit);
         // Count visits
         int visitCount = pageVisitRepository.countByVisitorId(visitorId);
-        pageVisitRepository.save(visit);
         model.addAttribute("visitorId", visitorId);
+
+
+        LoginSession user = (LoginSession) request.getSession().getAttribute("user");
+        boolean loggedIn = user != null;
+
+        IbukaStudentAccount student =
+                (IbukaStudentAccount) request.getSession().getAttribute("student");
+
+        boolean hasActiveSubscription = false;
+
+        if (loggedIn && student != null) {
+            hasActiveSubscription =
+                    subscriptionRepo.existsByParentUsernameAndExpiryDateAfter(
+                            user.getEmail(),
+                            new Date()
+                    );
+        }
+
+// Restriction logic
+        boolean restrictForSubscription = loggedIn && !hasActiveSubscription;
+
+// (Optional: if you also want guest limiting like notes page)
+        boolean restrictForGuest = !loggedIn && visitCount > VISITCOUNT_BEFORE_CLOSE;
+
+        boolean restrictContent = restrictForSubscription || restrictForGuest;
+
+// Pass to view
+        model.addAttribute("loggedIn", loggedIn);
+        model.addAttribute("restrictContent", restrictContent);
+        model.addAttribute("restrictForSubscription", restrictForSubscription);
 
         return "read/quizes/subtopic";  // Thymeleaf page
     }

@@ -33,6 +33,7 @@ public class StkSubscriptionRequest {
 
     @Column(nullable = false)
     private String status;
+    private String platformSource;
 
     @Column(nullable = false)
     private Long installId;

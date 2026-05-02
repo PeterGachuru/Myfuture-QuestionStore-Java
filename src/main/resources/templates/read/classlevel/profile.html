@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${level.name} + ' Notes, Past Papers & Quizzes | Ibuka Learning App'">
+    <title th:text="${level.name} + ' Notes, Past Papers & Quizzes | Myfuture CBC Revision App'">
         Level Profile
     </title>
 
     <!-- SEO -->
     <meta name="description"
-          th:content="'Access ' + ${level.name} + ' subjects, past papers, revision notes and quizzes. Improve your performance with Ibuka Learning App in Kenya.'">
+          th:content="'Access ' + ${level.name} + ' subjects, past papers, revision notes and quizzes. Improve your performance with Myfuture CBC Revision App in Kenya.'">
 
     <meta name="keywords"
           th:content="${level.name} + ', past papers, revision notes, quizzes, KCSE, CBC, study materials Kenya'">
@@ -136,6 +136,29 @@
 .notes-btn:hover {
     background-color: #660000;
 }
+
+.subject-list {
+    list-style: none;
+    padding: 0;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.subject-item {
+    margin: 0;
+    padding: 14px;
+    border-left: 4px solid #800000;
+    background-color: #fafafa;
+    border-radius: 6px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.subject-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
     </style>
 </head>
 <body>
@@ -168,8 +191,8 @@
 
 <h2>Subjects – Notes, Quizzes & Past Papers</h2>
 
-<ul>
-    <li th:each="subject : ${level.subjects}">
+<ul class="subject-list">
+    <li class="subject-item" th:each="subject : ${level.subjects}">
 
         <!-- Subject Name (no link) -->
         <div style="font-weight: bold; color: #800000;">
