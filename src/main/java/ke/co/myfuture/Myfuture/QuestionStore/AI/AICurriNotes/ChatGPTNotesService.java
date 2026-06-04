@@ -83,6 +83,7 @@ public class ChatGPTNotesService {
             return;
         }
         if (curriTopic.getIsParent() != null && curriTopic.getIsParent()) {
+            System.out.println("Is a parent");
             List<CurriTopic> curriTopicList  =  curriTopicRepository.findByParent(curriTopic.getId());
             for (CurriTopic subCurriTopic: curriTopicList) {
                 generateNotesForSubtopic(model, subCurriTopic);
@@ -91,8 +92,10 @@ public class ChatGPTNotesService {
         }
 
         Optional< CurriNotes> curriNotesList = curriNotesRepository.findBySubtopic(curriTopic);
-        if (!curriNotesList.isEmpty())
+        if (!curriNotesList.isEmpty()) {
+            System.out.println("Already has notes");
             return;
+        }
 
         System.out.println("In generateForSubtopic");
         String purpose = "curri_question";

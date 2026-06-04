@@ -1,6 +1,6 @@
 package ke.co.myfuture.Myfuture.Treasury.PeriodicContributionAnalysis;
 
-import com.lowagie.text.DocumentException;
+//import com.lowagie.text.DocumentException;
 import ke.co.myfuture.Myfuture.NonJdbc.PdfService;
 import ke.co.myfuture.Myfuture.Treasury.TextReport.TextReport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class PeriodicContributionAnalysisController {
     }
 
     @GetMapping("generatepdf")
-    public ResponseEntity<byte[]>  generatePdfFile(@RequestParam("planId") Long planId) throws IOException, DocumentException, com.itextpdf.text.DocumentException {
+    public ResponseEntity<byte[]>  generatePdfFile(@RequestParam("planId") Long planId) throws IOException, com.itextpdf.text.DocumentException {
         List<Long> incomeAccountsForPlan = repository.getAccountIdsForPlan(planId);
         for (Long id: incomeAccountsForPlan)
             service.calculate(id);

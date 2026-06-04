@@ -91,7 +91,7 @@ public class CurriNotesReadController {
 
         if (notesOpt.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            System.out.println("Topic notes not found");
+            System.out.println("Topic notes not found for subtopicId: "+topic.getId());
 
             chatGPTNotesService.generateNotesForSubtopic("gpt-3.5-turbo-0125", topic.getId());
             notesOpt =
@@ -101,10 +101,10 @@ public class CurriNotesReadController {
 
         if (notesOpt.isEmpty()) {
             System.out.println("Could not create notes");
-            return "error";
+//            return "error";
         }
 
-        loadPageData(request, model, topic, notesOpt.get());
+        loadPageData(request, model, topic, notesOpt.isPresent()? notesOpt.get(): null);
         String visitorId = cookieService.getOrCreateVisitorId(request, response);
         // Save the visit
         PageVisit visit = new PageVisit();

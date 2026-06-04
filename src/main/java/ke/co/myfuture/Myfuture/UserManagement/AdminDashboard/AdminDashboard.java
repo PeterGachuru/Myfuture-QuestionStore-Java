@@ -96,7 +96,7 @@ public class AdminDashboard {
                 "Contest Attempts",
                 contestInviteeRepository.countAttemptsPerDay(startDate),
                 "Date",
-                "Attempts"
+                "Contest Attempts"
         ));
 
         graphs.add(graphService.fromCountPerDay(
@@ -104,7 +104,7 @@ public class AdminDashboard {
                 "Post Attempts",
                 postattemptRepository.countAttemptsPerDay(startDate),
                 "Date",
-                "Attempts"
+                "Post Attempts"
         ));
 
         graphs.add(graphService.fromCountPerDay(

@@ -1,113 +1,189 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- SEO Title -->
-    <title>CBC Revision App Kenya | Past Papers, Notes, Quizzes - MyFuture App</title>
+    <!-- SEO -->
+    <title>Myfuture CBC Revision App Kenya | Past Papers, Notes, Quizzes & Exam Practice</title>
+    <meta name="description" content="Myfuture CBC Revision App Kenya helps students access CBC notes, past papers, quizzes and exam practice. Improve performance in KCPE and Junior Secondary exams.">
+    <meta name="keywords" content="Myfuture CBC Revision App, CBC revision Kenya, CBC past papers, CBC notes, CBC quizzes, KCPE revision app, junior secondary revision Kenya">
+    <meta name="author" content="Myfuture CBC Revision App">
 
-    <!-- SEO Meta -->
-    <meta name="description" content="Best CBC revision app in Kenya. Access past papers, revision notes, quizzes, and exam practice for all subjects. Improve your performance with MyFuture App.">
-    <meta name="keywords" content="CBC revision app Kenya, CBC past papers, CBC notes, CBC quizzes, KCPE revision, junior secondary notes, exam practice Kenya, learning app Kenya">
-    <meta name="author" content="MyFuture App">
-
-    <!-- Open Graph (for sharing) -->
-    <meta property="og:title" content="MyFuture CBC Revision App - Past Papers, Notes & Quizzes">
-    <meta property="og:description" content="Master CBC exams with past papers, notes, and quizzes. Download the best learning app in Kenya.">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Myfuture CBC Revision App Kenya">
+    <meta property="og:description" content="Download Myfuture CBC Revision App for notes, past papers and quizzes in Kenya.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://play.google.com/store/apps/details?id=ke.co.myfuture">
 
-    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Myfuture CBC Revision App Kenya">
+    <meta name="twitter:description" content="CBC notes, quizzes and past papers for Kenyan students.">
+
+    <link rel="icon" th:href="@{/favicon.ico}">
 
     <style>
+        :root {
+            --primary: #800020;
+            --secondary: #ff7b00;
+        }
+
         body {
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background: #fdf6f8;
             color: #333;
+            overflow-x: hidden;
         }
 
-        /* Brand colors */
-        :root {
-            --primary: #800020; /* maroon */
-            --secondary: #ff7b00; /* orange */
-        }
-
+        /* ===== HERO ===== */
         header {
-            background: linear-gradient(135deg, var(--primary), #a8324a);
+            background: linear-gradient(270deg, #800020, #a8324a, #800020);
+            background-size: 400% 400%;
+            animation: gradientMove 8s infinite;
             color: white;
-            padding: 60px 20px;
             text-align: center;
+            padding: 100px 20px;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% }
+            50% { background-position: 100% }
+            100% { background-position: 0% }
         }
 
         header h1 {
-            font-size: 2.8rem;
+            font-size: 3rem;
+            animation: fadeUp 1s ease;
         }
 
         header p {
-            font-size: 1.2rem;
             max-width: 700px;
             margin: auto;
+            opacity: 0.95;
+            animation: fadeUp 1.4s ease;
         }
 
+        /* floating effect */
+        header h1, header p {
+            animation: float 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        /* ===== BUTTON ===== */
         .cta-btn {
             display: inline-block;
-            margin-top: 25px;
-            padding: 12px 25px;
+            margin-top: 30px;
+            padding: 15px 30px;
             background: white;
             color: var(--primary);
-            border-radius: 25px;
-            text-decoration: none;
+            border-radius: 30px;
             font-weight: bold;
+            text-decoration: none;
+            transition: 0.3s;
+            animation: pulse 2s infinite;
+        }
+
+        .cta-btn:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.6); }
+            70% { box-shadow: 0 0 0 20px rgba(255,255,255,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
         }
 
         section {
-            padding: 60px 20px;
+            padding: 80px 20px;
             max-width: 1100px;
             margin: auto;
         }
 
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        p.center {
+            text-align: center;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        /* ===== FEATURES ===== */
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            gap: 25px;
+            margin-top: 40px;
         }
 
         .feature {
             background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: 0.4s;
+            transform: translateY(50px);
+            opacity: 0;
         }
 
-        .feature h3 {
-            color: var(--primary);
+        .feature:hover {
+            transform: translateY(-10px) rotate(-1deg);
+        }
+
+        /* ===== SCREENSHOTS ===== */
+        .screenshots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
         }
 
         .screenshots img {
             width: 100%;
-            border-radius: 10px;
-            cursor: pointer;
+            border-radius: 15px;
+            transition: 0.4s;
+            transform: scale(0.9);
+            opacity: 0;
         }
 
-        .link-btn {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px 20px;
-            background: var(--secondary);
-            color: white;
-            border-radius: 20px;
-            text-decoration: none;
-            font-weight: bold;
+        .screenshots img:hover {
+            transform: scale(1.08) rotate(1deg);
         }
 
+        /* ===== CTA ===== */
         .cta-section {
-            text-align: center;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #a8324a);
             color: white;
-            border-radius: 12px;
-            padding: 40px 20px;
+            text-align: center;
+            border-radius: 15px;
+            padding: 60px 20px;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #222;
+            color: #aaa;
+            text-align: center;
+            padding: 25px;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .show {
+            opacity: 1 !important;
+            transform: translateY(0) scale(1) !important;
+            transition: all 0.7s ease;
         }
     </style>
 </head>
@@ -115,84 +191,81 @@
 <body>
 
 <header>
-    <h1>CBC Revision App Kenya – Past Papers, Notes & Quizzes</h1>
-    <p>Access CBC past papers, revision notes, and quizzes to improve your exam performance. MyFuture App helps Kenyan students master exams easily.</p>
+    <h1>Myfuture CBC Revision App Kenya</h1>
+    <p>
+        The Myfuture CBC Revision App helps Kenyan students access CBC notes, past papers,
+        quizzes, and exam practice tools. Designed for KCPE and Junior Secondary success.
+    </p>
 
-    <a href="https://play.google.com/store/apps/details?id=ke.co.myfuture" class="cta-btn">
-        Download CBC Revision App
+    <a href="https://share.myfuture.co.ke/referral/share/landingPage" class="cta-btn">
+        Download Myfuture CBC Revision App
     </a>
 </header>
 
 <section>
-    <h2 style="text-align:center;">Best CBC Revision App with Notes, Past Papers & Quizzes</h2>
+    <h2>Why Choose Myfuture CBC Revision App?</h2>
+    <p class="center">
+        Myfuture CBC Revision App is one of the best learning apps in Kenya, providing
+        high-quality CBC revision materials including notes, quizzes, and past papers.
+    </p>
 
     <div class="features">
-        <div class="feature">
-            <h3>📘 CBC Notes for All Subjects</h3>
-            <p>Well-structured revision notes for CBC learners in Kenya.</p>
-        </div>
-
-        <div class="feature">
-            <h3>📄 CBC Past Papers & Exam Practice</h3>
-            <p>Practice with real CBC past papers and improve exam confidence.</p>
-        </div>
-
-        <div class="feature">
-            <h3>🧠 Interactive CBC Quizzes</h3>
-            <p>Engaging quizzes with instant feedback to boost learning.</p>
-        </div>
-
-        <div class="feature">
-            <h3>📊 Track Your Performance</h3>
-            <p>Monitor progress and identify weak areas.</p>
-        </div>
-
-        <div class="feature">
-            <h3>🎯 Personalized Learning</h3>
-            <p>Adaptive learning experience based on your performance.</p>
-        </div>
-
-        <div class="feature">
-            <h3>📱 Learn Anytime Anywhere</h3>
-            <p>Access notes, quizzes, and past papers on your phone.</p>
-        </div>
+        <div class="feature"><h3>📘 CBC Notes</h3><p>Detailed notes for all subjects aligned with CBC curriculum.</p></div>
+        <div class="feature"><h3>📄 Past Papers</h3><p>Practice real exam questions and improve confidence.</p></div>
+        <div class="feature"><h3>🧠 Quizzes</h3><p>Interactive quizzes with instant feedback.</p></div>
+        <div class="feature"><h3>📊 Performance Tracking</h3><p>Track progress and improve weak areas.</p></div>
+        <div class="feature"><h3>🎯 Smart Learning</h3><p>Personalized recommendations.</p></div>
+        <div class="feature"><h3>📱 Mobile Learning</h3><p>Study anytime anywhere in Kenya.</p></div>
     </div>
 </section>
 
 <section>
-    <div class="cta-section">
-        <h2>Download the Best CBC Learning App in Kenya</h2>
-        <p>Get access to notes, past papers, and quizzes today.</p>
-
-        <a href="https://play.google.com/store/apps/details?id=ke.co.myfuture" class="cta-btn">
-            Download Now on Play Store
-        </a>
-    </div>
+    <h2>How Myfuture CBC Revision App Helps Students</h2>
+    <p class="center">
+        Students using Myfuture CBC Revision App in Kenya improve performance through
+        continuous practice, structured notes, and smart quizzes.
+    </p>
 </section>
 
 <section>
-    <h2 style="text-align:center;">CBC App Screenshots – Notes, Quizzes & Past Papers</h2>
+    <h2>App Screenshots</h2>
 
     <div class="screenshots">
-        <img th:src="@{/images/screenshot1.jpeg}" alt="CBC revision app dashboard Kenya">
-        <img th:src="@{/images/screenshot3.jpeg}" alt="CBC quiz interface Kenya">
-        <img th:src="@{/images/screenshot10.jpeg}" alt="CBC notes reading page Kenya">
-        <img th:src="@{/images/screenshot4.jpeg}" alt="student leaderboard and scores">
+        <img th:src="@{/images/screenshot1.jpeg}">
+        <img th:src="@{/images/screenshot3.jpeg}">
+        <img th:src="@{/images/screenshot10.jpeg}">
+        <img th:src="@{/images/screenshot4.jpeg}">
     </div>
 </section>
 
 <section class="cta-section">
-    <h2>Start Your CBC Revision Today</h2>
-    <p>Thousands of students are already improving with MyFuture App.</p>
+    <h2>Download Myfuture CBC Revision App Today</h2>
+    <p>Join thousands of Kenyan students improving their exam performance.</p>
 
-    <a href="https://play.google.com/store/apps/details?id=ke.co.myfuture" class="cta-btn">
-        Download MyFuture CBC App
+    <a href="https://share.myfuture.co.ke/referral/share/landingPage" class="cta-btn">
+        Download Now
     </a>
 </section>
 
 <footer>
-    <p>© 2026 MyFuture App | CBC Past Papers, Notes & Quizzes in Kenya</p>
+    <p>© 2026 Myfuture CBC Revision App Kenya</p>
 </footer>
+
+<script>
+    const elements = document.querySelectorAll('.feature, .screenshots img');
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.classList.add('show');
+                }, index * 150);
+            }
+        });
+    });
+
+    elements.forEach(el => observer.observe(el));
+</script>
 
 </body>
 </html>

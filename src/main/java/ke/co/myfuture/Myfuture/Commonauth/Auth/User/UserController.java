@@ -27,6 +27,8 @@ public class UserController {
     @Autowired
     UserService userService;
     @Autowired
+    UserUtil userUtil;
+    @Autowired
     private UserRepository userRepository;
 
 
@@ -135,7 +137,7 @@ public class UserController {
 
     @GetMapping("byemail")
     public ResponseEntity<UserResponse> getUserDetails(@RequestParam("email") String email) {
-        UserResponse user = this.userService.getUserDetails(email);
+        UserResponse user = this.userUtil.getUserDetails(email);
 
         if (user != null) {
             return ResponseEntity.ok().body(user);

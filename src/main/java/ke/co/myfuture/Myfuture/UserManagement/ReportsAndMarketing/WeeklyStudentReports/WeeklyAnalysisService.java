@@ -236,7 +236,8 @@ public class WeeklyAnalysisService {
 
         emailContent.append("<h2 style='color: #28a745; font-size: 20px; margin-bottom: 10px;'>Rescue the Week - You Can Do It!</h2>");
 
-        emailContent.append("<p style='margin: 0; font-size: 16px;'>Hello ").append(student.getName()).append(",</p>");
+        emailContent.append("<p style='margin: 0; font-size: 16px;'>Hello ")
+                .append(student.getName()).append(",</p>");
 
         emailContent.append("<p style='margin: 10px 0 20px; font-size: 16px;'>Just a friendly reminder: there are still a few days left before the end of the week (<b>")
                 .append(endOfWeek.toLocalDate()).append("</b>). This is your chance to rescue the week! Give your best effort, and you can still improve your scores and make amazing progress!</p>");
@@ -255,6 +256,16 @@ public class WeeklyAnalysisService {
         emailContent.append("<p style='margin-top: 20px; font-size: 16px; text-align: center;'>");
         emailContent.append("Complete your lessons, take on those quizzes, and show everyone how brilliant you are!");
         emailContent.append("</p>");
+
+        // Download App Section (NEW)
+        emailContent.append("<div style='margin-top: 30px; text-align: center;'>");
+        emailContent.append("<p style='font-size: 16px;'>Don’t have the app or accidentally uninstalled it?</p>");
+        emailContent.append("<a href='https://share.myfuture.co.ke/referral/share/rescueWeekReminder' ");
+        emailContent.append("style='display: inline-block; padding: 12px 20px; background-color: #28a745; color: white; ");
+        emailContent.append("text-decoration: none; border-radius: 5px; font-size: 16px;'>");
+        emailContent.append("📲 Download / Reinstall App");
+        emailContent.append("</a>");
+        emailContent.append("</div>");
 
         // Closing Message
         emailContent.append("<p style='margin-top: 20px; font-size: 16px;'>");

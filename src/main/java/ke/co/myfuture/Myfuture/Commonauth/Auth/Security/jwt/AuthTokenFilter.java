@@ -4,6 +4,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.UserData;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserService;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserUtil;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.HttpInterceptor.EntityRequestContext;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -37,6 +38,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private UserRepository usersRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserUtil userUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -86,7 +89,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
                 EntityRequestContext.setCurrentEntityId(String.valueOf(user.get().getId()));
 
-                UserData userData = userService.getUserDetails(email).getUser();
+                UserData userData = userUtil.getUserDetails(email).getUser();
                 UserDetails userDetails = dataToUserDetails(userData);
                 log.debug("userDetails: "+userDetails);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

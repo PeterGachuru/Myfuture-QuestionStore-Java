@@ -59,7 +59,7 @@ public class ChatGPTQuestionsService {
     private static final int MAXIMUM_NUMBER_OF_QUESTIONS_ALLOWED = 35;
 
     @Async
-    public UniversalResponse generateQuestionsForSubject(String model, long levelId, long subjectId) {
+    public void generateQuestionsForSubject(String model, long levelId, long subjectId) {
         System.out.println("Automatically generating questions  level: "+levelId+" subject: "+subjectId);
         List<CurriTopic> topicList  =  curriTopicRepository.findBySubjectAndClass(subjectId,
                 levelId);
@@ -76,7 +76,6 @@ public class ChatGPTQuestionsService {
         response.setStatus("Success");
         response.setMessage("Generated Successfully");
         response.setStatusCode(200);
-        return response;
     }
 
 

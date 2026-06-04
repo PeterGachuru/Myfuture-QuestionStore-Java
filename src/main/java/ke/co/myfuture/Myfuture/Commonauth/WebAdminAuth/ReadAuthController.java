@@ -13,6 +13,9 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserService;
 import ke.co.myfuture.Myfuture.Commonauth.Install.Install;
 import ke.co.myfuture.Myfuture.Commonauth.Install.InstallService;
 import ke.co.myfuture.Myfuture.Commonauth.Install.WebInstallService;
+import ke.co.myfuture.Myfuture.Commonauth.RememberMeToken.RememberMeRepository;
+import ke.co.myfuture.Myfuture.Commonauth.RememberMeToken.RememberMeService;
+import ke.co.myfuture.Myfuture.HttpAuth.CookieService;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevelRepository;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
@@ -34,6 +37,9 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ReadAuthController {
     private final UserService userService;
+    private final CookieService cookieService;
+    private final RememberMeRepository rememberMeRepository;
+    private final RememberMeService rememberMeService;
     private final PasswordResetService passwordResetService;
     private final IbukaStudentAccountRepository ibukaStudentAccountRepository;
     private final CurriLevelRepository curriLevelRepository;
@@ -64,6 +70,10 @@ public class ReadAuthController {
         if (loginResponse.getStatusCode() == 200) {
 
             session.setAttribute("user", loginResponse.getUser());
+
+            String rememberToken = rememberMeService.createToken(loginResponse.getUser().getUserId());
+
+            cookieService.addRememberMeCookie(response, rememberToken);
 
             Install install = webInstallService.getOrCreateInstall(request, response);
             if (install.getAccountEmail() == null) {

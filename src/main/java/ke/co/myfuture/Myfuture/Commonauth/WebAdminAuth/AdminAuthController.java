@@ -1,9 +1,12 @@
 package ke.co.myfuture.Myfuture.Commonauth.WebAdminAuth;
 
+import jakarta.servlet.http.HttpServletResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.LoginResponse;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserService;
+import ke.co.myfuture.Myfuture.Commonauth.RememberMeToken.RememberMeService;
+import ke.co.myfuture.Myfuture.HttpAuth.CookieService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -21,9 +24,9 @@ import java.util.List;
 @RequestMapping("/admin")
 @AllArgsConstructor
 public class AdminAuthController {
-
     private final UserService userService;
     private final UserRepository userRepository;
+    private final RememberMeService rememberMeService;
 
     @GetMapping("/login")
     public String loginPage(HttpSession session) {
@@ -38,10 +41,13 @@ public class AdminAuthController {
             @RequestParam String email,
             @RequestParam String password,
             Model model,
-            HttpSession session) {
+            HttpSession session, HttpServletResponse httpServletResponse) {
 
         LoginResponse response =
                 userService.authenticateUser(email, password);
+        String rememberToken = rememberMeService.createToken(response.getUser().getId());
+
+        CookieService.addRememberMeCookie(httpServletResponse, rememberToken);
 
         if (response.getStatusCode() == 200) {
 

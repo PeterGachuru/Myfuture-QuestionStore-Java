@@ -64,11 +64,12 @@ public class UserService {
     private final PasswordResetService passwordResetService;
 
     private final MailService2 mailService2;
+    private final UserUtil userUtil;
 
     @Autowired
     private GoogleTokenVerifierService googleTokenVerifierService;
-    @Autowired
-    LoginSessionRepository loginSessionRepository;
+
+   private final  LoginSessionRepository loginSessionRepository;
 
     @Autowired
     PasswordResetRepository passwordResetRepository;
@@ -107,8 +108,8 @@ public class UserService {
     }
 
     public AtomicReference<LoginResponse> loginResponse(String email) {
-        UserData userData = getUserDetails(email).getUser();
-        LoginSession authResponse = loginBuilder(userData);
+        UserData userData = userUtil.getUserDetails(email).getUser();
+        LoginSession authResponse = userUtil.loginBuilder(userData);
         AtomicReference<LoginResponse> response = new AtomicReference<>();
         response.set(LoginResponse.builder().statusCode(HttpStatus.OK.value()).message("Login successful").user(authResponse).build());
         return response;
@@ -130,28 +131,6 @@ public class UserService {
         } else {
             return this.userRoleRepository.findAllByUserAndStatus(user, 1).stream().map(UserRole::getRole).collect(Collectors.toList());
         }
-    }
-
-    public LoginSession loginBuilder(UserData userData) {
-        System.out.println("About to generate jwt token");
-        String token = jwtUtils.generateJwtToken(userData, true);
-        String refreshToken = jwtUtils.generateJwtToken(userData, true);
-        String otp = this.otpService.generateOTP(userData.getEmail(), token);
-        log.info("Otp is: {}", otp);
-        LoginSession authResponse =  LoginSession.builder()
-                .token(token)
-                .refreshToken(refreshToken)
-                .userId(userData.getId())
-                .firstName(userData.getFirstName())
-                .phoneNumber(userData.getPhoneNumber())
-                .lastName(userData.getLastName())
-                .email(userData.getEmail())
-                .firstLogin(userData.getFirstLogin())
-                .hasAcceptedTerms(userData.getHasAcceptedTerms())
-                .roles(userData.getRoles())
-                .build();
-
-        return  loginSessionRepository.save(authResponse);
     }
 
     public LoginResponse authenticateUser(@NonNull String email, @NonNull String password) {
@@ -196,21 +175,21 @@ public class UserService {
                 System.out.println(" before Check password match");
 
                 if (user.getPasswords().isEmpty()) {
-                    System.out.println("EMpty passwords");
+                    System.out.println("Empty passwords");
                     response.set(LoginResponse.builder().statusCode(HttpStatus.BAD_REQUEST.value()).message("No password set").build());
                 } else
                 if (passwordUtil.matches(password.trim(),
                         user.getPasswords().get(user.getPasswords().size() - 1).getPassword())) {
                     System.out.println("Password does match");
 
-                    UserData userData = getUserDetails(user.getEmail()).getUser();
+                    UserData userData = userUtil.getUserDetails(user.getEmail()).getUser();
 
                     if (user.getEmail().equalsIgnoreCase("no-reply@equitybank.co.ke") && user.getFirstLogin() == 0) {
                         response.set(LoginResponse.builder().statusCode(HttpStatus.UNAUTHORIZED.value()).message("Account" +
                                 " Is Deactivated").build());
                         return;
                     }
-                    LoginSession authResponse = loginBuilder(userData);
+                    LoginSession authResponse = userUtil.loginBuilder(userData);
                     otpService.resetAllRetries(email);
                     try {
 //                        log.info("otp is {}",otp);
@@ -512,60 +491,6 @@ public class UserService {
         return response.get();
     }
 
-    public UserResponse getUserDetails(@NonNull String email) {
-        AtomicReference<UserResponse> response = new AtomicReference<>();
-
-        this.userRepository.findByEmail(email).ifPresentOrElse(user -> {
-            UserData data = UserData.builder()
-                    .id(user.getId())
-                    .firstName(user.getFirstName())
-                    .lastName(user.getLastName())
-                    .fullName(user.getFullName())
-                    .county(user.getCounty())
-                    .pictureUrl(user.getPictureUrl())
-                    .email(user.getEmail())
-                    .phoneNumber(user.getPhoneNumber())
-                    .status(user.getStatus())
-                    .creationDate(user.getCreationDate())
-                    .updateDate(user.getUpdateDate())
-                    .isLoggedIn(user.getIsLoggedIn())
-                    .hasAcceptedTerms(user.getHasAcceptedTerms())
-                    .firstLogin(user.getFirstLogin())
-                    .build();
-
-            List<UserRoleData> roles = new ArrayList<>();
-
-            List<UserRole> userRoles = this.userRoleRepository.findAllByUser(user);
-
-            if (userRoles != null && !userRoles.isEmpty()) {
-                userRoles.forEach(userRole -> {
-                    UserRoleData userRoleData = UserRoleData.builder()
-                            .name(userRole.getRole().getName())
-                            .build();
-
-                    List<RoleAccessRights> accessRights = new ArrayList<>();
-                    if (userRole.getRole().getStatus() != null && !userRole.getRole().getAccessRights().isEmpty()) {
-                        userRole.getRole().getAccessRights().forEach(accessRight -> {
-                            accessRights.add(RoleAccessRights.builder().name(accessRight.getName()).accessRights(accessRight).build());
-                        });
-                    }
-
-                    userRoleData.setAccessRights(accessRights);
-
-                    roles.add(userRoleData);
-
-                });
-                data.setRoles(roles);
-            }
-
-            response.set(UserResponse.builder().status(HttpStatus.OK.value()).message("User Details Found").user(data).build());
-        }, () -> {
-
-        });
-
-        return response.get();
-    }
-
     public UsersResponse getUsersByStatus(@org.springframework.lang.NonNull String status) {
         AtomicReference<UsersResponse> response = new AtomicReference<>();
 
@@ -696,7 +621,7 @@ public class UserService {
     public String validateOtp(String otp) throws MaximumRetriesException {
         UserDetails userDetails =
                 (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserData userData = getUserDetails(userDetails.getUsername()).getUser();
+        UserData userData = userUtil.getUserDetails(userDetails.getUsername()).getUser();
         Boolean tokenIsValid = this.otpService.validateOtp(userDetails.getUsername(), otp);
 
         if (tokenIsValid) {
@@ -751,7 +676,7 @@ public class UserService {
 
     public String resendOtp() throws MailServiceException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserData userData = getUserDetails(userDetails.getUsername()).getUser();
+        UserData userData = userUtil.getUserDetails(userDetails.getUsername()).getUser();
 
         String jwt = jwtUtils.generateJwtToken(userData);
         String otp = otpService.generateOTP(userData.getEmail(), jwt);
