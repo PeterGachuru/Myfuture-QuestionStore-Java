@@ -15,6 +15,7 @@ public class RememberMeToken {
     private Long id;
 
     private Long userId;
+    private Long studentId;
 
     @Column(unique = true, nullable = false)
     private String token;

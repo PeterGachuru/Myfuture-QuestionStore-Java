@@ -10,7 +10,9 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.User.User;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserRepository;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserUtil;
 import ke.co.myfuture.Myfuture.Commonauth.RememberMeToken.RememberMeService;
+import ke.co.myfuture.Myfuture.Commonauth.RememberMeToken.RememberMeToken;
 import ke.co.myfuture.Myfuture.HttpAuth.CookieService;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -26,6 +28,8 @@ public class RememberMeFilter extends OncePerRequestFilter {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private IbukaStudentAccountRepository ibukaStudentAccountRepository;
     @Autowired
     private UserUtil userUtil;
 
@@ -46,11 +50,11 @@ public class RememberMeFilter extends OncePerRequestFilter {
             System.out.println("Remember me token: "+token);
 
             if (token != null) {
-                Optional<Long> userIdOpt = rememberMeService.validateToken(token);
+                Optional<RememberMeToken> userIdOpt = rememberMeService.validateToken(token);
 
                 if (userIdOpt.isPresent()) {
 
-                    User user = userRepository.findById(userIdOpt.get()).orElse(null);
+                    User user = userRepository.findById(userIdOpt.get().getUserId()).orElse(null);
 
                     if (user != null) {
                         UserData userData = userUtil.getUserDetails(user);
@@ -58,6 +62,9 @@ public class RememberMeFilter extends OncePerRequestFilter {
                         LoginSession loginSession = userUtil.loginBuilder(userData);
 
                         request.getSession().setAttribute("user", loginSession);
+                        if (userIdOpt.get().getStudentId() != null) {
+                            request.getSession().setAttribute("student", ibukaStudentAccountRepository.findById(userIdOpt.get().getStudentId()).get());
+                        }
                         System.out.println("Restored login");
                     }
                 }

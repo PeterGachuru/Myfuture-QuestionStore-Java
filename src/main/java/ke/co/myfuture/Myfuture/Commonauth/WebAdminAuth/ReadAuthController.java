@@ -202,6 +202,7 @@ public class ReadAuthController {
 
         if (student != null) {
             request.getSession().setAttribute("student", student);
+            rememberMeService.addStudent(CookieService.getRememberMeCookie(request), student.getId());
         }
 
         Optional<CurriLevel> curriLevel = curriLevelRepository.findById(student.getClasslevel());

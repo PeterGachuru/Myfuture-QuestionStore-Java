@@ -13,8 +13,8 @@ public class RememberMeService {
     private RememberMeRepository rememberMeRepo;
 
     // 30 days validity
-    private static final long EXPIRY_DURATION =
-            30L * 24 * 60 * 60 * 1000;
+    public static final long REMEMBER_ME_EXPIRY_DURATION =
+            12* 30L * 24 * 60 * 60 * 1000;
 
     public String createToken(Long userId) {
 
@@ -23,7 +23,7 @@ public class RememberMeService {
 
         String token = UUID.randomUUID().toString();
 
-        Date expiryDate = new Date(System.currentTimeMillis() + EXPIRY_DURATION);
+        Date expiryDate = new Date(System.currentTimeMillis() + REMEMBER_ME_EXPIRY_DURATION);
 
         RememberMeToken entity = new RememberMeToken();
         entity.setUserId(userId);
@@ -36,7 +36,17 @@ public class RememberMeService {
         return token;
     }
 
-    public Optional<Long> validateToken(String token) {
+    public void addStudent(String token, Long studentId) {
+        Optional<RememberMeToken> record = rememberMeRepo.findByToken(token);
+
+        if (record.isEmpty()) return ;
+
+        RememberMeToken t = record.get();
+        t.setStudentId(studentId);
+        rememberMeRepo.save(t);
+    }
+
+    public Optional<RememberMeToken> validateToken(String token) {
 
         Optional<RememberMeToken> record = rememberMeRepo.findByToken(token);
 
@@ -50,7 +60,7 @@ public class RememberMeService {
             return Optional.empty();
         }
 
-        return Optional.of(t.getUserId());
+        return Optional.of(t);
     }
 
     public void revokeToken(String token) {

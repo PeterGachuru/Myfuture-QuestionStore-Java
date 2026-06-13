@@ -12,6 +12,8 @@ import java.util.UUID;
 
 import ke.co.myfuture.Myfuture.Commonauth.Install.WebInstallService;
 
+import static ke.co.myfuture.Myfuture.Commonauth.RememberMeToken.RememberMeService.REMEMBER_ME_EXPIRY_DURATION;
+
 @Service
 @AllArgsConstructor
 public class CookieService {
@@ -49,7 +51,7 @@ public class CookieService {
         Cookie cookie = new Cookie("REMEMBER_ME", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setMaxAge(12* 30 * 24 * 60 * 60); // 1 year
+        cookie.setMaxAge((int) (REMEMBER_ME_EXPIRY_DURATION /1000)); // 1 year
         response.addCookie(cookie);
     }
 

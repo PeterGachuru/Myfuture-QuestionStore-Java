@@ -167,7 +167,7 @@ public class CurriNotesReadController {
 
 
         if (loggedIn && student == null) {
-            return "redirect:/students/select";
+            return "redirect:/read/students/select";
         }
 
         return "read/notes/profile";
