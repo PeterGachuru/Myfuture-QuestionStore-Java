@@ -69,7 +69,8 @@ dependencies {
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 
 	// 📊 Reporting / PDF
-	implementation 'net.sf.jasperreports:jasperreports:7.0.4'
+//	implementation 'net.sf.jasperreports:jasperreports:7.0.4'
+	implementation 'net.sf.jasperreports:jasperreports:6.20.5'
 	implementation 'com.itextpdf:itextpdf:5.5.13.3'
 
 	// 🌍 HTTP clients

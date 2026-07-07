@@ -157,6 +157,11 @@ public class ChatGPTQuestionsService {
         }
     }
 
+
+
+    public void generateForSubtopic(CurriTopic curriTopic){
+        generateForSubtopic(CURRENT_MODEL, curriTopic);
+    }
     @Async
     public void generateForSubtopic(String model, CurriTopic curriTopic) {
         if (curriTopic.getCurriLevel().getCurriculum() == 1) {
@@ -559,8 +564,6 @@ public class ChatGPTQuestionsService {
         }
         return null;
     }
-
-
 
     private void displayHttpError(HttpURLConnection connection, int responseCode) throws IOException {
         BufferedReader errorReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));

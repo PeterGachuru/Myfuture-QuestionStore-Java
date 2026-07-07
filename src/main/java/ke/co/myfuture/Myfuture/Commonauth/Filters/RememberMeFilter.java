@@ -39,7 +39,7 @@ public class RememberMeFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        System.out.println("===========In RememberMeFilter==========");
+//        System.out.println("===========In RememberMeFilter==========");
         LoginSession sessionUser =
                 (LoginSession) request.getSession().getAttribute("user");
 
@@ -47,7 +47,7 @@ public class RememberMeFilter extends OncePerRequestFilter {
 
             String token = CookieService.getRememberMeCookie(request);
 
-            System.out.println("Remember me token: "+token);
+//            System.out.println("Remember me token: "+token);
 
             if (token != null) {
                 Optional<RememberMeToken> userIdOpt = rememberMeService.validateToken(token);

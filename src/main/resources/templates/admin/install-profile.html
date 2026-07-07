@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+
+<div id="content" class="content">
+
+    <h2>Install Profile</h2>
+
+
+    <div class="card">
+
+        <h3>Installation Details</h3>
+
+        <table class="table">
+
+            <tr>
+                <th>ID</th>
+                <td th:text="${install.id}"></td>
+            </tr>
+
+            <tr>
+                <th>Platform</th>
+                <td th:text="${install.platform}"></td>
+            </tr>
+
+            <tr>
+                <th>Version</th>
+                <td th:text="${install.version}"></td>
+            </tr>
+
+            <tr>
+                <th>Email</th>
+                <td th:text="${install.accountEmail}"></td>
+            </tr>
+
+            <tr>
+                <th>Account ID</th>
+                <td th:text="${install.accountId}"></td>
+            </tr>
+
+            <tr>
+                <th>Created</th>
+                <td th:text="${#dates.format(install.createdAt,'yyyy-MM-dd HH:mm:ss')}"></td>
+            </tr>
+
+        </table>
+
+    </div>
+
+
+
+    <!-- Tabs -->
+
+    <div class="tabs">
+
+        <button onclick="showTab('events')">
+            Analytics Events
+        </button>
+
+    </div>
+
+
+
+    <div id="events" class="tab-content">
+
+        <h3>
+            Latest Events (3000)
+        </h3>
+
+
+        <table class="table">
+
+            <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Event</th>
+                <th>Screen</th>
+                <th>Description</th>
+                <th>App Version</th>
+                <th>Event Time</th>
+            </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            <tr th:each="event : ${events}">
+
+                <td th:text="${event.id}"></td>
+
+                <td th:text="${event.eventName}"></td>
+
+                <td th:text="${event.screenName}"></td>
+
+                <td th:text="${event.description}"></td>
+
+                <td th:text="${event.appVersion}"></td>
+
+
+                <td th:text="${#temporals.format(
+    T(java.time.Instant).ofEpochMilli(event.eventTime / 1000)
+    .atZone(T(java.time.ZoneId).systemDefault())
+    .toLocalDateTime(),
+    'yyyy-MM-dd HH:mm:ss'
+)}"></td>
+
+
+            </tr>
+
+
+            </tbody>
+
+        </table>
+
+
+    </div>
+
+
+</div>
+
+
+<div th:replace="admin/layout :: scripts"></div>
+
+
+<style>
+
+    .table {
+        width:100%;
+        border-collapse:collapse;
+        margin-top:20px;
+    }
+
+
+    .table th,
+    .table td {
+
+        padding:10px;
+        border:1px solid #ddd;
+
+    }
+
+
+    .table th {
+
+        background:#2c3e50;
+        color:white;
+
+    }
+
+
+    .card {
+
+        background:#f8f8f8;
+        padding:20px;
+        margin-bottom:20px;
+
+    }
+
+
+    .tabs button {
+
+        padding:10px 20px;
+        cursor:pointer;
+
+    }
+
+
+</style>
+
+
+<script>
+
+    function showTab(tab){
+
+        document.getElementById(tab).style.display='block';
+
+    }
+
+</script>
+
+
+</body>
+</html>

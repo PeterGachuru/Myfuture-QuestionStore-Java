@@ -66,6 +66,7 @@ public class WebReportsController {
 //            }
         } catch (Exception exc) {
             System.out.println(exc.getLocalizedMessage());
+            exc.printStackTrace();
             return null;
         }
     }

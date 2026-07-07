@@ -68,6 +68,14 @@ public class AdminDashboard {
         ));
 
         graphs.add(graphService.fromCountPerDay(
+                "accountsAddedPerDay",
+                "Accounts Added",
+                installRepository.accountsAddedPerDay(startDate),
+                "Date",
+                "Users"
+        ));
+
+        graphs.add(graphService.fromCountPerDay(
                 "referralsChart",
                 "Referrals",
                 referralRepository.countPerDay(startDate),

@@ -166,7 +166,6 @@ public class ContestService {
         static public class Attempt {
             Long contestId;
             Integer score;
-
             Long studentId;
         }
     }

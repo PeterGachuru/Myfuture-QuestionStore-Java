@@ -47,6 +47,17 @@ public interface Install2Repository extends JpaRepository<Install, Long> {
     ORDER BY DATE(created_at)
 """, nativeQuery = true)
     List<Object[]> countInstallsWithAccountsPerDay(@Param("startDate") Date startDate);
+
+    @Query(value = """
+    SELECT DATE(created_at), COUNT(*)
+    FROM install
+    WHERE account_added_at >= :startDate
+    AND account_id > 0 
+    GROUP BY DATE(account_added_at)
+    ORDER BY DATE(account_added_at)
+""", nativeQuery = true)
+    List<Object[]> accountsAddedPerDay(@Param("startDate") Date startDate);
+
     @Query(value = """
     SELECT DATE(created_at),
            (COUNT(CASE WHEN account_id IS NOT NULL THEN 1 END) * 100.0) / COUNT(*) as percentage

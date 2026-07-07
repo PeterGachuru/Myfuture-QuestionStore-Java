@@ -2,6 +2,7 @@ package ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion;
 
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.LoginSession;
 import ke.co.myfuture.Myfuture.HttpAuth.CookieService;
+import ke.co.myfuture.Myfuture.QuestionStore.AI.AICurriQuestion.ChatGPTQuestionsService;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
@@ -9,6 +10,7 @@ import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisit;
 import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisitRepository;
 import ke.co.myfuture.Myfuture.UserManagement.SubscriptionExpiryTrack.SubscriptionExpiryTrackRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +37,7 @@ public class QuestionWebController {
     private final PageVisitRepository pageVisitRepository;
     private final CookieService cookieService;
     private final SubscriptionExpiryTrackRepository subscriptionRepo;
+    private final ChatGPTQuestionsService chatGPTQuestionsService;
 
     // SEO-friendly URL
     @GetMapping("/questions/**")
@@ -54,6 +57,9 @@ public class QuestionWebController {
         CurriTopic topic = topicOpt.get();
 
         List<CurriQuestion> questions = questionRepository.findBySubtopic(topic.getId());
+        if (questions.isEmpty()) {
+            chatGPTQuestionsService.generateForSubtopic(topic);
+        }
         for (CurriQuestion q : questions) {
             Collections.shuffle(q.getChoices());
         }

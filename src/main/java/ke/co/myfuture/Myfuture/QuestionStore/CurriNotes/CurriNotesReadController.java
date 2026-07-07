@@ -90,7 +90,7 @@ public class CurriNotesReadController {
         }
 
         if (notesOpt.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+//            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             System.out.println("Topic notes not found for subtopicId: "+topic.getId());
 
             chatGPTNotesService.generateNotesForSubtopic("gpt-3.5-turbo-0125", topic.getId());
