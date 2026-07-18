@@ -88,6 +88,8 @@ public class User implements Serializable {
 
     private String updatedBy;
 
+    private Boolean anonymized = false;
+
     public void update() {
         updatedBy = UserRequestContext.getCurrentUserName();
     }

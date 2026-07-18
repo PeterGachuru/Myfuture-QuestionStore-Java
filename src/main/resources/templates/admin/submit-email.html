@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+
+<div id="content" class="content">
+
+    <h2>Delete User</h2>
+
+    <p>Submit an email address for Deletion</p>
+
+
+    <form th:action="@{/admin/userdelete}"
+          method="post">
+
+        <div>
+            <label>Email Address</label>
+
+            <input
+                    type="email"
+                    name="email"
+                    placeholder="example@gmail.com"
+                    required
+                    style="width:300px;padding:8px;"
+            />
+
+        </div>
+
+
+        <br>
+
+        <button type="submit"
+                style="
+                padding:10px 20px;
+                background:#2c3e50;
+                color:white;
+                border:none;
+                cursor:pointer;">
+            Submit
+        </button>
+
+
+    </form>
+
+
+    <div th:if="${message}"
+         style="margin-top:20px;color:green;"
+         th:text="${message}">
+    </div>
+
+
+</div>
+
+
+<div th:replace="admin/layout :: scripts"></div>
+
+
+</body>
+</html>

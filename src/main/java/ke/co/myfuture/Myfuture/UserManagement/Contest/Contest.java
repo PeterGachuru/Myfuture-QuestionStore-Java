@@ -4,6 +4,7 @@ import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAc
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInvitee;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion.ContestQuestion;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -15,6 +16,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class Contest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

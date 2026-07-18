@@ -19,6 +19,8 @@ public interface Install2Repository extends JpaRepository<Install, Long> {
         return findLatestInstall(PageRequest.of(0, 500));
     }
 
+    List<Install> findTop500ByPlatformOrderByCreatedAtDesc(String platform);
+
         @Query(value = """
         SELECT DATE(created_at), COUNT(*)
         FROM install
@@ -49,7 +51,7 @@ public interface Install2Repository extends JpaRepository<Install, Long> {
     List<Object[]> countInstallsWithAccountsPerDay(@Param("startDate") Date startDate);
 
     @Query(value = """
-    SELECT DATE(created_at), COUNT(*)
+    SELECT DATE(account_added_at), COUNT(*)
     FROM install
     WHERE account_added_at >= :startDate
     AND account_id > 0 

@@ -99,6 +99,7 @@ public class MigratorService {
 
     public void execute(String sql) {
         try {
+            initDatabase();
             Statement statement =  targetConnection.createStatement();
             statement.executeQuery(sql);
         } catch (SQLException e) {

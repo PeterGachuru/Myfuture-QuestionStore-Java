@@ -12,6 +12,26 @@
 
     <h2>App Installs</h2>
 
+    <div style="margin-bottom:20px;">
+        <a th:href="@{/admin/installs}"
+           class="btn"
+           th:style="${selectedPlatform == null ? 'background:#2ecc71' : ''}">
+            All
+        </a>
+
+        <a th:href="@{/admin/installs(platform='myfuture_android')}"
+           class="btn"
+           th:style="${selectedPlatform == 'myfuture_android' ? 'background:#2ecc71' : ''}">
+            MyFuture Android
+        </a>
+
+        <a th:href="@{/admin/installs(platform='study.myfuture.co.ke')}"
+           class="btn"
+           th:style="${selectedPlatform == 'study.myfuture.co.ke' ? 'background:#2ecc71' : ''}">
+            Website
+        </a>
+    </div>
+
     <table class="table">
         <thead>
         <tr>

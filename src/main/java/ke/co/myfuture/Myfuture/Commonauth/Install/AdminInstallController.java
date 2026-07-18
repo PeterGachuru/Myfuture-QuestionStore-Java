@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -22,9 +23,19 @@ public class AdminInstallController {
     private final AnalyticsRepository analyticsRepository;
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("installs",
-                installRepository.findLatest500());
+    public String list(
+            @RequestParam(required = false) String platform,
+            Model model) {
+
+        if (platform != null && !platform.isEmpty()) {
+            model.addAttribute("installs",
+                    installRepository.findTop500ByPlatformOrderByCreatedAtDesc(platform));
+        } else {
+            model.addAttribute("installs",
+                    installRepository.findLatest500());
+        }
+
+        model.addAttribute("selectedPlatform", platform);
 
         return "admin/installs";
     }

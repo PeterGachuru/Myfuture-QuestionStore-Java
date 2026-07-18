@@ -43,11 +43,9 @@ public class AdminDashboard {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, HttpSession session) {
-//        if (session.getAttribute("user") == null) {
-//            return "redirect:/admin/login";
-//        }
-
-//        LocalDateTime startDate = LocalDateTime.now().minusMonths(1);
+//    if (session.getAttribute("user") == null) {
+//        return "redirect:/admin/login";
+//    }
 
         LocalDateTime startDateTime = LocalDateTime.now().minusMonths(3);
 
@@ -55,10 +53,11 @@ public class AdminDashboard {
                 startDateTime.atZone(ZoneId.systemDefault()).toInstant()
         );
 
-        ibukaStudentAccountRepository.countPerDay(startDate);
-
         List<GraphData> graphs = new ArrayList<>();
 
+        long start, end;
+
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "studentsChart",
                 "Student Registrations",
@@ -66,7 +65,10 @@ public class AdminDashboard {
                 "Date",
                 "Students"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("studentsChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "accountsAddedPerDay",
                 "Accounts Added",
@@ -74,7 +76,10 @@ public class AdminDashboard {
                 "Date",
                 "Users"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("accountsAddedPerDay generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "referralsChart",
                 "Referrals",
@@ -82,7 +87,10 @@ public class AdminDashboard {
                 "Date",
                 "Referrals"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("referralsChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "quizChart",
                 "Quizzes Done",
@@ -90,7 +98,10 @@ public class AdminDashboard {
                 "Date",
                 "Quizzes"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("quizChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "activeStudentsChart",
                 "Active Students (DAU)",
@@ -98,7 +109,10 @@ public class AdminDashboard {
                 "Date",
                 "Active Users"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("activeStudentsChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "contestAttemptsChart",
                 "Contest Attempts",
@@ -106,7 +120,10 @@ public class AdminDashboard {
                 "Date",
                 "Contest Attempts"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("contestAttemptsChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "postAttemptsChart",
                 "Post Attempts",
@@ -114,7 +131,10 @@ public class AdminDashboard {
                 "Date",
                 "Post Attempts"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("postAttemptsChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "transactionsChart",
                 "Transactions",
@@ -122,7 +142,10 @@ public class AdminDashboard {
                 "Date",
                 "Transactions"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("transactionsChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "revenueChart",
                 "Revenue",
@@ -130,7 +153,10 @@ public class AdminDashboard {
                 "Date",
                 "Amount (KES)"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("revenueChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "visitsChart",
                 "Page Visits",
@@ -138,7 +164,10 @@ public class AdminDashboard {
                 "Date",
                 "Visits"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("visitsChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "chatChart",
                 "Chat Messages",
@@ -146,7 +175,10 @@ public class AdminDashboard {
                 "Date",
                 "Messages"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("chatChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "postsChart",
                 "Posts Created",
@@ -154,7 +186,10 @@ public class AdminDashboard {
                 "Date",
                 "Posts"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("postsChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "contestChart",
                 "Contests Created",
@@ -162,7 +197,10 @@ public class AdminDashboard {
                 "Date",
                 "Contests"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("contestChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "installsChart",
                 "Total Installs",
@@ -170,7 +208,10 @@ public class AdminDashboard {
                 "Date",
                 "Installs"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("installsChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "installsWithAccountsChart",
                 "Installs (With Account)",
@@ -178,7 +219,10 @@ public class AdminDashboard {
                 "Date",
                 "Users"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("installsWithAccountsChart generated in " + (end - start) + " ms");
 
+        start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "conversionChart",
                 "Account Conversion (%)",
@@ -186,9 +230,12 @@ public class AdminDashboard {
                 "Date",
                 "Percentage (%)"
         ));
+        end = System.currentTimeMillis();
+        System.out.println("conversionChart generated in " + (end - start) + " ms");
 
-        for (GraphData graphDataa: graphs)
-            System.out.println("id: "+graphDataa.getId());
+        for (GraphData graphData : graphs) {
+            System.out.println("id: " + graphData.getId());
+        }
 
         model.addAttribute("graphs", graphs);
 

@@ -1,5 +1,6 @@
 package ke.co.myfuture.Myfuture.UserManagement.Contest;
 
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisit;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,6 @@ public interface ContestRepository extends JpaRepository<Contest, Long> {
     ORDER BY DATE(e.createdAt)
 """)
     List<Object[]> countPerDay(@Param("startDate") Date startDate);
+
+    List<Contest> findByCreator(IbukaStudentAccount student);
 }

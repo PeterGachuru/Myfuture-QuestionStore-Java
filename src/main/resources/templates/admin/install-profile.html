@@ -107,7 +107,7 @@
 
 
                 <td th:text="${#temporals.format(
-    T(java.time.Instant).ofEpochMilli(event.eventTime / 1000)
+    T(java.time.Instant).ofEpochMilli(event.eventTime)
     .atZone(T(java.time.ZoneId).systemDefault())
     .toLocalDateTime(),
     'yyyy-MM-dd HH:mm:ss'
