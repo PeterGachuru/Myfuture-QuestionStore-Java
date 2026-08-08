@@ -22,7 +22,6 @@ public class WebRatingController {
     @ResponseBody
     public ResponseEntity<?> rateNotes(@RequestBody Rating rating,
                                        HttpServletRequest request) {
-
         // Set required fields
         rating.setSource("WEB_NOTES");
         rating.setCreatedBy(cookieService.getVisitorId(request));

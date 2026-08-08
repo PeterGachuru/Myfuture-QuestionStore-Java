@@ -50,7 +50,11 @@
             <td th:text="${install.id}"></td>
             <td th:text="${install.platform}"></td>
             <td th:text="${install.version}"></td>
-            <td th:text="${install.accountEmail}"></td>
+            <td>
+                <a th:href="@{/admin/users/profile(email=${install.accountEmail})}"
+                   th:text="${install.accountEmail}">
+                </a>
+            </td>
             <td th:text="${install.accountId}"></td>
             <td th:text="${#dates.format(install.createdAt,'yyyy-MM-dd HH:mm')}"></td>
             <td>

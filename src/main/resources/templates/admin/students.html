@@ -56,7 +56,7 @@
             <!-- Parent -->
 
             <td>
-                <a th:href="@{/admin/users/{id}(id=${s.parent})}"
+                <a th:href="@{/admin/users/profile(email=${s.parentUsername})}"
                    th:text="${s.parentUsername}">
                 </a>
             </td>

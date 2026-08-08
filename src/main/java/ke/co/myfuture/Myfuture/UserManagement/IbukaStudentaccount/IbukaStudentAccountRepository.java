@@ -62,4 +62,6 @@ public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStuden
         ORDER BY DATE(e.createdAt)
     """)
     List<Object[]> countPerDay(@Param("startDate") Date startDate);
+
+    List<IbukaStudentAccount> findByParentUsernameOrderByIdDesc(String parentUsername);
 }

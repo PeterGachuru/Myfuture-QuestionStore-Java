@@ -41,7 +41,11 @@
 
         <tr>
             <th>Parent Username</th>
-            <td th:text="${student.parentUsername}"></td>
+            <td>
+                <a th:href="@{/admin/users/profile(email=${student.parentUsername})}"
+                   th:text="${student.parentUsername}">
+            </a></td>
+
         </tr>
 
         <tr>

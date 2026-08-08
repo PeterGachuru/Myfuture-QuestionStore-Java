@@ -37,10 +37,16 @@
             <td th:text="${u.id}"></td>
 
             <td>
-                <span th:text="${u.fullName != null ? u.fullName : u.firstName + ' ' + u.lastName}"></span>
+                <a th:href="@{/admin/users/profile(email=${u.email})}"
+                   th:text="${u.fullName != null ? u.fullName : u.firstName + ' ' + u.lastName}">
+                </a>
             </td>
 
-            <td th:text="${u.email}"></td>
+            <td>
+                <a th:href="@{/admin/users/profile(email=${u.email})}"
+                   th:text="${u.email}">
+                </a>
+            </td>
 
             <td th:text="${u.phoneNumber}"></td>
 

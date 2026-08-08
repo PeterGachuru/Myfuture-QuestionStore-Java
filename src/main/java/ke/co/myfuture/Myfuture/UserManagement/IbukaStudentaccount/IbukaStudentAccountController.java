@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("student")
-public class StudentAccountController {
+public class IbukaStudentAccountController {
     @Autowired
     IbukaStudentAccountRepository repository;
     @Autowired
