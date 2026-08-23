@@ -8,7 +8,6 @@
 <div th:replace="admin/layout :: header"></div>
 <div th:replace="admin/layout :: sidebar"></div>
 
-
 <div id="content" class="content">
 
     <h2>Install Profile</h2>
@@ -37,7 +36,11 @@
 
             <tr>
                 <th>Email</th>
-                <td th:text="${install.accountEmail}"></td>
+                <td >
+                    <a th:href="@{/admin/users/profile(email=${install.accountEmail})}"
+                       th:text="${install.accountEmail}">
+                    </a>
+                </td>
             </tr>
 
             <tr>
@@ -186,7 +189,6 @@
     }
 
 </script>
-
 
 </body>
 </html>

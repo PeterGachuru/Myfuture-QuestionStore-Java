@@ -16,6 +16,8 @@ public class GooglePlaySubscriptionService {
         if (repository.existsByPurchaseToken(subscription.getPurchaseToken())) {
             throw new IllegalArgumentException("Duplicate subscription detected");
         }
-        return repository.save(subscription);
+        GooglePlaySubscription savedGooglePlaySubscription = repository.save(subscription);
+
+        return savedGooglePlaySubscription;
     }
 }
