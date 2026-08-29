@@ -61,4 +61,17 @@ public interface CurriQuestionRepository extends JpaRepository<CurriQuestion, Lo
     """)
     List<CurriQuestion> findBySubtopic(@Param("subtopicId") Long subtopicId);
 
+
+    @Query("""
+        SELECT DISTINCT q
+        FROM CurriQuestion q
+        JOIN q.subtopic t
+        WHERE t.curriLevel.id = :classLevelId
+          AND t.subject.id = :subjectId
+          AND COALESCE(q.deleted, false) = false
+    """)
+    List<CurriQuestion> findQuizQuestions(
+            @Param("classLevelId") Long classLevelId,
+            @Param("subjectId") Long subjectId
+    );
 }

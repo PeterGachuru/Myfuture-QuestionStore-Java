@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface QuizDoneRepository extends JpaRepository<QuizDone, Long> {
     @Query("SELECT q FROM QuizDone q WHERE q.student = :student AND q.endDate BETWEEN :startOfWeek AND :endOfWeek")
@@ -46,4 +47,16 @@ public interface QuizDoneRepository extends JpaRepository<QuizDone, Long> {
     ORDER BY DATE(created_at)
 """, nativeQuery = true)
     List<Object[]> countActiveStudentsPerDay(@Param("startDate") Date startDate);
+
+
+    Optional<QuizDone> findByIdAndStudent(
+            Long id,
+            IbukaStudentAccount student
+    );
+
+    Optional<QuizDone> findByIdAndStudent_Id(
+            Long quizId,
+            Long studentId
+    );
+
 }

@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
+
     <title>Select Student | Myfuture CBC Revision</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -21,21 +24,36 @@
         h2 {
             text-align: center;
             color: #800000;
-        }
-
-        h3 {
-            color: #333;
-            margin-top: 20px;
+            margin-bottom: 5px;
         }
 
         .subtitle {
             text-align: center;
             font-size: 14px;
             color: #666;
+            margin-bottom: 25px;
+        }
+
+        /* TOP BAR */
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
 
-        /* STUDENT LIST */
+        .logout-btn {
+            padding: 6px 12px;
+            background: #ccc;
+            color: #333;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        /* STUDENT CARD */
+
         .student-card {
             margin-bottom: 12px;
         }
@@ -64,88 +82,59 @@
         .student-meta {
             font-size: 13px;
             color: #777;
-            margin-top: 4px;
+            margin-top: 7px;
         }
 
         .student-score {
-            float: right;
             color: #800000;
             font-weight: bold;
         }
 
-        /* CREATE SECTION */
+        .school-badge {
+            display: inline-block;
+            background: #fff3e0;
+            color: #800000;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 6px;
+        }
+
+        /* EMPTY STATE */
+
+        .empty-box {
+            text-align: center;
+            padding: 30px 15px;
+            color: #777;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 10px;
+        }
+
+        /* CREATE BUTTON */
+
         .create-section {
-            margin-top: 20px;
+            margin-top: 25px;
             text-align: center;
         }
 
-        .toggle-btn {
-            background: none;
-            border: none;
-            color: #800000;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .form-box {
-            display: none;
-            margin-top: 15px;
-            padding: 15px;
-            border: 1px solid #eee;
-            border-radius: 10px;
-            background: #fff;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-
         .create-btn {
-            width: 100%;
-            padding: 12px;
+            display: inline-block;
+            padding: 12px 20px;
             background: #800000;
             color: white;
-            border: none;
+            text-decoration: none;
             border-radius: 8px;
             font-weight: bold;
-            cursor: pointer;
         }
 
         .create-btn:hover {
             background: #660000;
         }
 
-        /* TOP BAR */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .logout-btn {
-            padding: 6px 12px;
-            background: #ccc;
-            color: #333;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 13px;
-        }
-.school-badge {
-    display: inline-block;
-    background: #fff3e0;
-    color: #800000;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: bold;
-}
     </style>
+
 </head>
 
 <body>
@@ -153,100 +142,144 @@
 <div class="container">
 
     <!-- TOP BAR -->
+
     <div class="top-bar">
+
         <span th:if="${session.user != null}">
-            👤 <span th:text="${session.user.firstName}">Parent</span>
+            👤
+            <span th:text="${session.user.firstName}">
+                Parent
+            </span>
         </span>
 
-        <a href="/read/logout" class="logout-btn">Logout</a>
+        <a href="/read/logout" class="logout-btn">
+            Logout
+        </a>
+
     </div>
 
-    <h2>Select Student</h2>
-    <div class="subtitle">Choose a student to continue learning</div>
 
-    <!-- STUDENT LIST -->
+    <!-- HEADER -->
+
+    <h2>Select Student</h2>
+
+    <div class="subtitle">
+        Choose a student to continue learning
+    </div>
+
+
+    <!-- STUDENTS -->
+
     <div th:if="${students != null and students.size() > 0}">
 
         <div th:each="s : ${students}" class="student-card">
 
-            <form method="post" action="/read/students/select">
-                <input type="hidden" name="studentId" th:value="${s.id}" />
+            <form method="post"
+                  action="/read/students/select">
 
-                <button type="submit" class="student-btn">
+                <input type="hidden"
+                       name="studentId"
+                       th:value="${s.id}" />
 
-                                <!-- TOP ROW -->
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <span class="student-name" th:text="${s.name}">John Doe</span>
+                <button type="submit"
+                        class="student-btn">
 
-                                    <span class="student-score">
-                        🏆 <span th:text="${s.totalScore}">0</span>
-                    </span>
-                                </div>
+                    <!-- NAME + SCORE -->
 
-                                <!-- SCHOOL (PROMINENT) -->
-                                <div style="margin-top:6px;">
-                    <span class="school-badge">
-                        🏫 <span th:text="${s.school} ?: 'No school set'"></span>
-                    </span>
-                                </div>
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                    ">
 
-                                <!-- LEVEL -->
-                                <div class="student-meta">
-                                    📘 <span th:text="${s.curriLevel != null ? s.curriLevel.name : 'No level'}"></span>
-                                </div>
+                        <span class="student-name"
+                              th:text="${s.name}">
+                            John Doe
+                        </span>
+
+                        <span class="student-score">
+                            🏆
+                            <span th:text="${s.totalScore}">
+                                0
+                            </span>
+                        </span>
+
+                    </div>
+
+
+                    <!-- SCHOOL -->
+
+                    <div>
+
+                        <span class="school-badge">
+
+                            🏫
+
+                            <span th:text="${s.school ?: 'No school set'}">
+                                No school set
+                            </span>
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- CLASS LEVEL -->
+
+                    <div class="student-meta">
+
+                        📘
+
+                        <span th:text="
+                            ${s.curriLevel != null
+                                ? s.curriLevel.name
+                                : 'No level'}
+                        ">
+                            Class 6
+                        </span>
+
+                    </div>
 
                 </button>
+
             </form>
 
         </div>
+
     </div>
+
 
     <!-- EMPTY -->
-    <div th:if="${students == null or students.size() == 0}" style="text-align:center; color:#777;">
-        <p>No students found.</p>
+
+    <div th:if="${students == null or students.size() == 0}"
+         class="empty-box">
+
+        <p>
+            No students have been created yet.
+        </p>
+
+        <p>
+            Create your first student to get started.
+        </p>
+
     </div>
 
-    <!-- CREATE NEW (COLLAPSIBLE) -->
+
+    <!-- CREATE STUDENT -->
+
     <div class="create-section">
 
-        <button class="toggle-btn" onclick="toggleForm()">
+        <a href="/read/students/create"
+           class="create-btn">
+
             ➕ Add New Student
-        </button>
 
-        <div id="formBox" class="form-box">
+        </a>
 
-            <form method="post" action="/read/students/create">
-
-                <input type="text" name="firstName" placeholder="First Name" required>
-                <input type="text" name="lastName" placeholder="Last Name" required>
-                <input type="text" name="school" placeholder="School (optional)">
-
-                <select name="classlevel" required>
-                    <option value="">Select Class Level</option>
-
-                    <option th:each="lvl : ${classLevels}"
-                            th:value="${lvl.id}"
-                            th:text="${lvl.name}">
-                    </option>
-                </select>
-
-                <button type="submit" class="create-btn">
-                    Create Student
-                </button>
-
-            </form>
-
-        </div>
     </div>
 
 </div>
 
-<script>
-    function toggleForm() {
-        const form = document.getElementById("formBox");
-        form.style.display = form.style.display === "block" ? "none" : "block";
-    }
-</script>
-
 </body>
+
 </html>

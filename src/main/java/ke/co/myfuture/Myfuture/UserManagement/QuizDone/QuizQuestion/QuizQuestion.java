@@ -24,4 +24,6 @@ public class QuizQuestion {
     public String choicesOrder;
     public Long selectedChoice;
     public Boolean gotCorrect;
+//    @Column(nullable = false)
+    public Integer position;
 }

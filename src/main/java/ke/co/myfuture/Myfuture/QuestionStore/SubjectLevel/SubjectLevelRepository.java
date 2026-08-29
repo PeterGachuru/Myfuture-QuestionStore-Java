@@ -58,4 +58,38 @@ public interface SubjectLevelRepository extends JpaRepository<SubjectLevel, Long
 
     boolean existsBySlug(String slug);
 
+
+    List<SubjectLevel> findByCurriLevelIdAndDeletedFlagFalseOrderBySubjectNameAsc(
+            Long curriLevelId
+    );
+
+    Optional<SubjectLevel> findBySubjectIdAndCurriLevelIdAndDeletedFlagFalse(
+            Long subjectId,
+            Long curriLevelId
+    );
+
+    @Query("""
+        SELECT sl
+        FROM SubjectLevel sl
+        JOIN FETCH sl.subject s
+        JOIN FETCH sl.curriLevel cl
+        WHERE cl.id = :classLevelId
+          AND sl.deletedFlag = false
+        ORDER BY s.name
+    """)
+    List<SubjectLevel> findSubjectsForClass(
+            @Param("classLevelId") Long classLevelId
+    );
+
+    @Query("""
+        SELECT sl
+        FROM SubjectLevel sl
+        WHERE sl.subject.id = :subjectId
+          AND sl.curriLevel.id = :classLevelId
+          AND sl.deletedFlag = false
+    """)
+    Optional<SubjectLevel> findValidSubjectLevel(
+            @Param("subjectId") Long subjectId,
+            @Param("classLevelId") Long classLevelId
+    );
 }

@@ -178,6 +178,100 @@
     animation: orbitGlow 2.5s linear infinite;
 }
 
+/* =========================================================
+   MYFUTURE WEB APP — PRIMARY CTA
+   ========================================================= */
+
+.web-study-btn {
+    min-width: 420px;
+    padding: 22px 36px;
+    background: linear-gradient(135deg, #800000, #b30000, #ff6600);
+    border: 3px solid #ffb703;
+    box-shadow:
+        0 10px 30px rgba(128, 0, 0, 0.45),
+        0 0 25px rgba(255, 183, 3, 0.35);
+}
+
+.web-study-btn:hover {
+    background: linear-gradient(135deg, #660000, #990000, #ff5500);
+    transform: scale(1.09) translateY(-4px);
+    box-shadow:
+        0 0 40px rgba(255, 183, 3, 0.8),
+        0 15px 40px rgba(128, 0, 0, 0.55);
+}
+
+.web-study-btn .download-top {
+    font-size: 25px;
+    letter-spacing: 0.3px;
+}
+
+.web-study-btn .download-sub {
+    margin-top: 9px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.web-cta-small {
+    display: block;
+    margin-top: 12px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 900;
+    z-index: 2;
+}
+
+/* Benefits underneath the main CTA */
+.web-app-benefits {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+    font-size: 13px;
+}
+
+.web-app-benefits span {
+    background: #fff3e0;
+    color: #800000;
+    padding: 7px 11px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    .web-study-btn {
+        min-width: auto;
+        width: 100%;
+        padding: 20px 15px;
+    }
+
+    .web-study-btn .download-top {
+        font-size: 20px;
+    }
+
+    .web-study-btn .download-sub {
+        font-size: 13px;
+    }
+
+    .web-cta-small {
+        font-size: 14px;
+    }
+
+    .web-app-benefits {
+        gap: 6px;
+    }
+
+    .web-app-benefits span {
+        font-size: 12px;
+    }
+}
+
+
+
 .download-top {
     font-size: 22px;
     z-index: 2;
@@ -532,25 +626,63 @@
                     🔥 Join thousands of Kenyan students already revising smarter
                 </div>
 
-                <!-- Mega Download Button -->
-                <a class="download-btn"
-                   href="https://share.myfuture.co.ke/referral/share/studyWeb"
-                   target="_blank">
+                <!-- MYFUTURE WEB APP CTA -->
+                <div class="button-wrapper">
+
+                    <!-- Attention banner -->
+                    <div class="download-banner">
+                        🚀 YOUR MYFUTURE CBC REVISION APP IS READY — STUDY ONLINE NOW!
+                    </div>
+
+                    <!-- PRIMARY WEB APP BUTTON -->
+                    <a class="download-btn web-study-btn"
+                       href="https://study.myfuture.co.ke/read/myprofile">
 
         <span class="download-top">
-            🚀 DOWNLOAD MYFUTURE CBC REVISION APP NOW
+            📚 STUDY ON MYFUTURE WEB APP
         </span>
 
-                    <span class="download-sub">
-            Notes • Quizzes • Past Papers
+                        <span class="download-sub">
+            📝 Study Notes &nbsp; • &nbsp; 🎯 Do Quizzes &nbsp; • &nbsp;
+            📈 Track Progress &nbsp; • &nbsp; 🏆 Compete
         </span>
 
-                </a>
+                        <span class="web-cta-small">
+            👉 Open Myfuture & Start Learning
+        </span>
 
-                <!-- Trust text -->
-                <div class="download-proof">
-                    ⭐ Learn anywhere • Track progress • Compete & improve
+                    </a>
+
+                    <!-- Benefits -->
+                    <div class="download-proof">
+                        ⭐ No app download required &nbsp; • &nbsp;
+                        📱 Works on phone, tablet & computer
+                    </div>
+
+                    <div class="web-app-benefits">
+                        <span>📖 Revise CBC Notes</span>
+                        <span>📝 Test Yourself</span>
+                        <span>📊 Track Your Progress</span>
+                        <span>🏆 Compete With Other Students</span>
+                    </div>
+
+                    <!--
+                    PLAY STORE BUTTON — TEMPORARILY DISABLED
+
+                    <a class="download-btn"
+                       href="YOUR_PLAYSTORE_LINK_HERE"
+                       target="_blank">
+                        <span class="download-top">
+                            📱 DOWNLOAD MYFUTURE CBC REVISION APP
+                        </span>
+                        <span class="download-sub">
+                            Notes • Quizzes • Past Papers
+                        </span>
+                    </a>
+                    -->
+
                 </div>
+
 
             </div>
 

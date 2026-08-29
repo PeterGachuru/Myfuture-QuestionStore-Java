@@ -80,7 +80,12 @@ public class ReadAuthController {
                 installService.addAccountDetails(install, loginResponse.getUser());
             }
 
-            return "redirect:/read/students/select";
+            if (ibukaStudentAccountRepository.findByParent(loginResponse.getUser().getUserId()).isEmpty()){
+                return "redirect:/read/students/create";
+            }else {
+                return "redirect:/read/students/select";
+            }
+
         }
 
         model.addAttribute("error", loginResponse.getMessage());
@@ -162,15 +167,20 @@ public class ReadAuthController {
     }
 
     @GetMapping("/students/select")
-    public String selectStudent(HttpServletRequest request, Model model, HttpServletResponse response) {
-        System.out.println("Logged user: "+request.getSession().getAttribute("user"));
-        LoginSession user = (LoginSession) request.getSession().getAttribute("user");
-        System.out.println("LoginSession: "+user);
+    public String selectStudent(HttpServletRequest request,
+                                Model model,
+                                HttpServletResponse response) {
+
+        LoginSession user =
+                (LoginSession) request.getSession().getAttribute("user");
+
         if (user == null) {
             return "redirect:/read/login";
         }
 
-        Install install = webInstallService.getOrCreateInstall(request, response);
+        Install install =
+                webInstallService.getOrCreateInstall(request, response);
+
         if (install.getAccountEmail() == null) {
             installService.addAccountDetails(install, user);
         }
@@ -180,37 +190,80 @@ public class ReadAuthController {
         List<IbukaStudentAccount> students =
                 ibukaStudentAccountRepository.findByParent(user.getUserId());
 
-        students.forEach(s -> {
-            curriLevelRepository.findById(s.getClasslevel())
-                    .ifPresent(s::setCurriLevel);
+        students.forEach(student -> {
+            curriLevelRepository.findById(student.getClasslevel())
+                    .ifPresent(student::setCurriLevel);
         });
 
-        System.out.println("Students: "+students);
-
         model.addAttribute("students", students);
-        model.addAttribute("classLevels", curriLevelRepository.findByCurriculumNotOrderByCurriculumAscNumberingAsc(1L));
 
         return "read/selectstudent";
     }
+
 
     @PostMapping("/students/select")
     public String selectStudentPost(@RequestParam Long studentId,
                                     HttpServletRequest request) {
 
-        IbukaStudentAccount student =
-                ibukaStudentAccountRepository.findById(studentId).orElse(null);
+        LoginSession user =
+                (LoginSession) request.getSession().getAttribute("user");
 
-        if (student != null) {
-            request.getSession().setAttribute("student", student);
-            rememberMeService.addStudent(CookieService.getRememberMeCookie(request), student.getId());
+        if (user == null) {
+            return "redirect:/read/login";
         }
 
-        Optional<CurriLevel> curriLevel = curriLevelRepository.findById(student.getClasslevel());
+        IbukaStudentAccount student =
+                ibukaStudentAccountRepository.findById(studentId)
+                        .orElse(null);
 
-        return "redirect:/read/classlevel/"+curriLevel.get().getSlug(); // or previous page  /read/classlevel/{slug}
+        if (student == null) {
+            return "redirect:/read/students/select";
+        }
+
+        // Security check:
+        // Make sure the selected student actually belongs to the logged-in parent.
+        if (!student.getParent().equals(user.getUserId())) {
+            return "redirect:/read/students/select";
+        }
+
+        request.getSession().setAttribute("student", student);
+
+        rememberMeService.addStudent(
+                CookieService.getRememberMeCookie(request),
+                student.getId()
+        );
+
+        return "redirect:/read/myprofile";
     }
 
 
+    /**
+     * Show the Create Student page
+     */
+    @GetMapping("/students/create")
+    public String createStudentPage(HttpServletRequest request,
+                                    Model model) {
+
+        LoginSession user =
+                (LoginSession) request.getSession().getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/read/login";
+        }
+
+        model.addAttribute(
+                "classLevels",
+                curriLevelRepository
+                        .findByCurriculumNotOrderByCurriculumAscNumberingAsc(1L)
+        );
+
+        return "read/createstudent";
+    }
+
+
+    /**
+     * Process creation of a new student
+     */
     @PostMapping("/students/create")
     public String createStudent(@RequestParam String firstName,
                                 @RequestParam String lastName,
@@ -219,15 +272,18 @@ public class ReadAuthController {
                                 HttpServletRequest request,
                                 HttpServletResponse response) {
 
-        LoginSession user = (LoginSession) request.getSession().getAttribute("user");
+        LoginSession user =
+                (LoginSession) request.getSession().getAttribute("user");
 
-        Install install = webInstallService.getOrCreateInstall(request, response);
+        if (user == null) {
+            return "redirect:/read/login";
+        }
 
-        System.out.println("User: "+user);
-
-        System.out.println("User Id: "+user.getId());
+        Install install =
+                webInstallService.getOrCreateInstall(request, response);
 
         IbukaStudentAccount student = new IbukaStudentAccount();
+
         student.setFirstName(firstName);
         student.setLastName(lastName);
         student.setName(firstName + " " + lastName);
@@ -240,9 +296,15 @@ public class ReadAuthController {
 
         ibukaStudentAccountRepository.save(student);
 
+        // Automatically select the newly created student
         request.getSession().setAttribute("student", student);
 
-        return "redirect:/";
+        rememberMeService.addStudent(
+                CookieService.getRememberMeCookie(request),
+                student.getId()
+        );
+
+        return "redirect:/read/myprofile";
     }
 
     @GetMapping("/subscribe")

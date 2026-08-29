@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    ```
+    <meta charset="UTF-8">
+
+    <title>My Profile - Myfuture CBC Revision</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f6f7f9;
+            color: #2c3e50;
+        }
+
+        .profile-container {
+            max-width: 1000px;
+            margin: 25px auto;
+            padding: 0 15px 40px;
+        }
+
+
+        /* =====================================================
+           PROFILE HEADER
+        ====================================================== */
+
+        .profile-header {
+            background: linear-gradient(135deg, #800020, #a0002b);
+            color: white;
+            border-radius: 18px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.12);
+        }
+
+        .avatar {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            background: white;
+            color: #800020;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .profile-header h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .profile-header p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+
+
+        /* =====================================================
+           QUIZ SUBJECT SECTION
+        ====================================================== */
+
+        .quiz-section {
+            margin-top: 22px;
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+            border: 1px solid #eee;
+        }
+
+        .quiz-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 8px;
+        }
+
+        .quiz-heading h2 {
+            margin: 0;
+            color: #800020;
+            font-size: 24px;
+        }
+
+        .quiz-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #f8e8ed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            flex-shrink: 0;
+        }
+
+        .quiz-description {
+            color: #666;
+            margin: 0 0 20px;
+            line-height: 1.5;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .subject-card {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            color: #2c3e50;
+            background: #fafafa;
+            border: 1px solid #e5e5e5;
+            border-radius: 14px;
+            padding: 17px;
+            transition: all 0.2s ease;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-3px);
+            border-color: #800020;
+            box-shadow: 0 7px 18px rgba(128, 0, 32, 0.12);
+            background: white;
+        }
+
+        .subject-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: #800020;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .subject-name {
+            font-weight: bold;
+            font-size: 15px;
+            line-height: 1.3;
+        }
+
+        .subject-action {
+            margin-left: auto;
+            color: #800020;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .no-subjects {
+            text-align: center;
+            padding: 30px 15px;
+            color: #777;
+            background: #fafafa;
+            border-radius: 12px;
+        }
+
+
+        /* =====================================================
+           QUICK STATS
+        ====================================================== */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            text-align: center;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #800020;
+        }
+
+        .stat-label {
+            margin-top: 6px;
+            color: #777;
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           TABS
+        ====================================================== */
+
+        .tabs-container {
+            margin-top: 25px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            border-bottom: 1px solid #e5e5e5;
+            background: #fafafa;
+        }
+
+        .tabs::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .tabs::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #777;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .tab-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .tab-btn.active {
+            color: #800020;
+            background: white;
+            border-bottom: 3px solid #800020;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 25px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content h2 {
+            margin: 0 0 20px;
+            color: #800020;
+            font-size: 20px;
+        }
+
+
+        /* =====================================================
+           PROFILE INFORMATION
+        ====================================================== */
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .info-label {
+            display: block;
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 7px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            word-break: break-word;
+        }
+
+
+        /* =====================================================
+           TABLE
+        ====================================================== */
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .activity-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .activity-table th {
+            text-align: left;
+            padding: 12px;
+            background: #f8f9fa;
+            color: #555;
+            font-size: 13px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .activity-table td {
+            padding: 13px 12px;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .activity-table tr:hover {
+            background: #fafafa;
+        }
+
+
+        /* =====================================================
+           BADGES
+        ====================================================== */
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #f1e5e9;
+            color: #800020;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-green {
+            background: #e6f5ea;
+            color: #218838;
+        }
+
+        .badge-orange {
+            background: #fff4df;
+            color: #b26a00;
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+        ====================================================== */
+
+        .empty-state {
+            text-align: center;
+            padding: 45px 20px;
+            color: #888;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .empty-text {
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           SHARE CODE
+        ====================================================== */
+
+        .share-code {
+            background: #fff7e6;
+            border: 1px solid #ffe0a3;
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 20px;
+        }
+
+        .share-code-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .share-code-description {
+            color: #777;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .share-code-value {
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #800020;
+        }
+
+
+        /* =====================================================
+           ACTIONS
+        ====================================================== */
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #800020;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #650019;
+        }
+
+        .btn-secondary {
+            background: #e9ecef;
+            color: #2c3e50;
+        }
+
+        .btn-secondary:hover {
+            background: #dfe3e6;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+        @media (max-width: 800px) {
+
+            .subjects-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .profile-container {
+                margin-top: 15px;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .profile-header {
+                padding: 25px 20px;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-header h1 {
+                font-size: 24px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .subjects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                scrollbar-width: none;
+            }
+
+            .tab-btn {
+                padding: 14px 15px;
+                font-size: 13px;
+            }
+
+            .tab-content {
+                padding: 18px 15px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                text-align: center;
+            }
+
+        }
+
+    </style>
+    ```
+
+</head>
+
+<body>
+
+<div class="profile-container">
+
+    ```
+    <!-- =====================================================
+         PROFILE HEADER
+    ====================================================== -->
+
+    <div class="profile-header">
+
+        <div class="avatar"
+             th:text="${student.firstName != null && !student.firstName.isEmpty()
+                    ? #strings.substring(student.firstName, 0, 1).toUpperCase()
+                    : 'S'}">
+            S
+        </div>
+
+        <div>
+
+            <h1 th:text="${student.name != null
+                       ? student.name
+                       : 'Student'}">
+                Student Name
+            </h1>
+
+            <p>
+                Welcome to Myfuture CBC Revision 👋
+            </p>
+
+            <p th:if="${curriLevel != null}"
+               th:text="${curriLevel.name}">
+                Grade
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PRACTICE / QUIZ SECTION
+    ====================================================== -->
+
+    <div class="quiz-section">
+
+        <div class="quiz-heading">
+
+            <div>
+                <h2>
+                    🎯 Start Practising
+                </h2>
+            </div>
+
+            <div class="quiz-icon">
+                📝
+            </div>
+
+        </div>
+
+
+        <p class="quiz-description">
+
+            Choose a subject below and test your knowledge.
+            You will get <strong>20 questions</strong> to practise.
+
+        </p>
+
+
+        <!-- SUBJECTS AVAILABLE -->
+
+        <div
+                th:if="${subjectLevels != null && !subjectLevels.isEmpty()}"
+                class="subjects-grid">
+
+            <a
+                    th:each="subjectLevel : ${subjectLevels}"
+                    class="subject-card"
+                    th:href="@{/read/webquiz/start/{classLevelId}/{subjectId}
+                           (
+                               classLevelId=${student.classlevel},
+                               subjectId=${subjectLevel.subject.id}
+                           )}">
+
+                <div class="subject-icon"
+                     th:text="${#strings.substring(
+                            subjectLevel.subject.name,
+                            0,
+                            1
+                          ).toUpperCase()}">
+                    M
+                </div>
+
+                <div class="subject-name"
+                     th:text="${subjectLevel.subject.name}">
+                    Mathematics
+                </div>
+
+                <div class="subject-action">
+                    →
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <!-- NO SUBJECTS -->
+
+        <div
+                th:if="${subjectLevels == null || subjectLevels.isEmpty()}"
+                class="no-subjects">
+
+            <div style="font-size: 35px; margin-bottom: 10px;">
+                📚
+            </div>
+
+            <strong>
+                No subjects available
+            </strong>
+
+            <p>
+                There are currently no subjects configured
+                for your class.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         QUICK STATS
+    ====================================================== -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <div class="stat-number"
+                 th:text="${student.totalScore != null
+                       ? student.totalScore
+                       : 0}">
+                0
+            </div>
+
+            <div class="stat-label">
+                Total Score
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-number"
+                 th:text="${student.creditsBalance != null
+                       ? student.creditsBalance
+                       : 0}">
+                0
+            </div>
+
+            <div class="stat-label">
+                Credits
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-number"
+                 th:text="${quizzes != null
+                       ? quizzes.size()
+                       : 0}">
+                0
+            </div>
+
+            <div class="stat-label">
+                Quizzes Done
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TABS
+    ====================================================== -->
+
+    <div class="tabs-container">
+
+        <div class="tabs">
+
+            <button type="button"
+                    class="tab-btn active"
+                    onclick="openTab(event, 'profile')">
+                Profile
+            </button>
+
+            <button type="button"
+                    class="tab-btn"
+                    onclick="openTab(event, 'quizzes')">
+                Past Quizzes
+            </button>
+
+            <button type="button"
+                    class="tab-btn"
+                    onclick="openTab(event, 'posts')">
+                Posts
+            </button>
+
+            <button type="button"
+                    class="tab-btn"
+                    onclick="openTab(event, 'createdContests')">
+                My Contests
+            </button>
+
+            <button type="button"
+                    class="tab-btn"
+                    onclick="openTab(event, 'contests')">
+                Contests Joined
+            </button>
+
+            <button type="button"
+                    class="tab-btn"
+                    onclick="openTab(event, 'referrals')">
+                Referrals
+            </button>
+
+            <button type="button"
+                    class="tab-btn"
+                    onclick="openTab(event, 'subscriptions')">
+                Subscriptions
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             PROFILE TAB
+        ================================================== -->
+
+        <div id="profile"
+             class="tab-content active">
+
+            <h2>
+                My Information
+            </h2>
+
+
+            <div class="info-grid">
+
+                <div class="info-item">
+
+                <span class="info-label">
+                    Full Name
+                </span>
+
+                    <span class="info-value"
+                          th:text="${student.name != null
+                                ? student.name
+                                : 'Not provided'}">
+                    Student Name
+                </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                <span class="info-label">
+                    First Name
+                </span>
+
+                    <span class="info-value"
+                          th:text="${student.firstName != null
+                                ? student.firstName
+                                : 'Not provided'}">
+                    First Name
+                </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                <span class="info-label">
+                    Last Name
+                </span>
+
+                    <span class="info-value"
+                          th:text="${student.lastName != null
+                                ? student.lastName
+                                : 'Not provided'}">
+                    Last Name
+                </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                <span class="info-label">
+                    School
+                </span>
+
+                    <span class="info-value"
+                          th:text="${student.school != null
+                                && !student.school.isEmpty()
+                                ? student.school
+                                : 'Not provided'}">
+                    School
+                </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                <span class="info-label">
+                    Class
+                </span>
+
+                    <span class="info-value"
+                          th:if="${curriLevel != null}"
+                          th:text="${curriLevel.name}">
+                    Grade
+                </span>
+
+                    <span class="info-value"
+                          th:if="${curriLevel == null}">
+                    Not available
+                </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                <span class="info-label">
+                    Student ID
+                </span>
+
+                    <span class="info-value"
+                          th:text="${student.id}">
+                    123
+                </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                <span class="info-label">
+                    Account Created
+                </span>
+
+                    <span class="info-value"
+                          th:text="${student.createdAt != null
+                                ? #dates.format(
+                                    student.createdAt,
+                                    'dd MMM yyyy'
+                                  )
+                                : 'Not available'}">
+                    01 Jan 2026
+                </span>
+
+                </div>
+
+
+                <div class="info-item">
+
+                <span class="info-label">
+                    Last Activity
+                </span>
+
+                    <span class="info-value"
+                          th:text="${student.recentActivity != null
+                                ? #dates.format(
+                                    student.recentActivity,
+                                    'dd MMM yyyy HH:mm'
+                                  )
+                                : 'No recent activity'}">
+                    No recent activity
+                </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- SHARE CODE -->
+
+            <div class="share-code"
+                 th:if="${student.shareCode != null}">
+
+                <div class="share-code-title">
+                    My Student Share Code
+                </div>
+
+                <div class="share-code-description">
+                    Share this code with friends when referring them
+                    to Myfuture.
+                </div>
+
+                <div class="share-code-value"
+                     th:text="${student.shareCode}">
+                    ABC123
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             PAST QUIZZES
+        ================================================== -->
+
+        <div id="quizzes"
+             class="tab-content">
+
+            <h2>
+                Past Quizzes
+            </h2>
+
+
+            <div
+                    th:if="${quizzes == null || quizzes.isEmpty()}"
+                    class="empty-state">
+
+                <div class="empty-icon">
+                    📝
+                </div>
+
+                <div class="empty-text">
+                    You have not completed any quizzes yet.
+                </div>
+
+            </div>
+
+
+            <div
+                    th:if="${quizzes != null && !quizzes.isEmpty()}"
+                    class="table-wrapper">
+
+                <table class="activity-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Quiz
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    <tr th:each="quiz, stat : ${quizzes}">
+
+                        <td th:text="${stat.count}">
+                            1
+                        </td>
+
+                        <td th:text="${quiz.createdAt != null
+                                  ? #dates.format(
+                                      quiz.createdAt,
+                                      'dd MMM yyyy HH:mm'
+                                    )
+                                  : '-'}">
+                            26 Aug 2026
+                        </td>
+
+                        <td>
+                            Quiz Completed
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             POSTS
+        ================================================== -->
+
+        <div id="posts"
+             class="tab-content">
+
+            <h2>
+                My Posts
+            </h2>
+
+
+            <div
+                    th:if="${posts == null || posts.isEmpty()}"
+                    class="empty-state">
+
+                <div class="empty-icon">
+                    💬
+                </div>
+
+                <div class="empty-text">
+                    You have not created any posts yet.
+                </div>
+
+            </div>
+
+
+            <div
+                    th:if="${posts != null && !posts.isEmpty()}"
+                    class="table-wrapper">
+
+                <table class="activity-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            Question
+                        </th>
+
+                        <th>
+                            Created
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    <tr th:each="post, stat : ${posts}">
+
+                        <td th:text="${stat.count}">
+                            1
+                        </td>
+
+                        <td th:text="${post.questionid}">
+                            123
+                        </td>
+
+                        <td th:text="${post.createdAt != null
+                                  ? #dates.format(
+                                      post.createdAt,
+                                      'dd MMM yyyy HH:mm'
+                                    )
+                                  : '-'}">
+                            26 Aug 2026
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             CREATED CONTESTS
+        ================================================== -->
+
+        <div id="createdContests"
+             class="tab-content">
+
+            <h2>
+                Contests I Created
+            </h2>
+
+
+            <div
+                    th:if="${createdContests == null || createdContests.isEmpty()}"
+                    class="empty-state">
+
+                <div class="empty-icon">
+                    🏆
+                </div>
+
+                <div class="empty-text">
+                    You have not created any contests yet.
+                </div>
+
+            </div>
+
+
+            <div
+                    th:if="${createdContests != null && !createdContests.isEmpty()}"
+                    class="table-wrapper">
+
+                <table class="activity-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            Contest Group
+                        </th>
+
+                        <th>
+                            Invites
+                        </th>
+
+                        <th>
+                            Created
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    <tr th:each="contest, stat : ${createdContests}">
+
+                        <td th:text="${stat.count}">
+                            1
+                        </td>
+
+                        <td th:text="${contest.cgroup != null
+                                  ? contest.cgroup
+                                  : '-'}">
+                            12345
+                        </td>
+
+                        <td th:text="${contest.invitesCount}">
+                            10
+                        </td>
+
+                        <td th:text="${contest.createdAt != null
+                                  ? #dates.format(
+                                      contest.createdAt,
+                                      'dd MMM yyyy HH:mm'
+                                    )
+                                  : '-'}">
+                            26 Aug 2026
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             CONTESTS JOINED
+        ================================================== -->
+
+        <div id="contests"
+             class="tab-content">
+
+            <h2>
+                Contests Joined
+            </h2>
+
+
+            <div
+                    th:if="${contests == null || contests.isEmpty()}"
+                    class="empty-state">
+
+                <div class="empty-icon">
+                    🏆
+                </div>
+
+                <div class="empty-text">
+                    You have not joined any contests yet.
+                </div>
+
+            </div>
+
+
+            <div
+                    th:if="${contests != null && !contests.isEmpty()}"
+                    class="table-wrapper">
+
+                <table class="activity-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            Contest
+                        </th>
+
+                        <th>
+                            Joined
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    <tr th:each="contest, stat : ${contests}">
+
+                        <td th:text="${stat.count}">
+                            1
+                        </td>
+
+                        <td>
+                            Contest
+                        </td>
+
+                        <td th:text="${contest.createdAt != null
+                                  ? #dates.format(
+                                      contest.createdAt,
+                                      'dd MMM yyyy HH:mm'
+                                    )
+                                  : '-'}">
+                            26 Aug 2026
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             REFERRALS
+        ================================================== -->
+
+        <div id="referrals"
+             class="tab-content">
+
+            <h2>
+                My Referrals
+            </h2>
+
+
+            <div
+                    th:if="${referrals == null || referrals.isEmpty()}"
+                    class="empty-state">
+
+                <div class="empty-icon">
+                    👥
+                </div>
+
+                <div class="empty-text">
+                    You have not referred anyone yet.
+                </div>
+
+            </div>
+
+
+            <div
+                    th:if="${referrals != null && !referrals.isEmpty()}"
+                    class="table-wrapper">
+
+                <table class="activity-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>#</th>
+                        <th>New User</th>
+                        <th>Action</th>
+                        <th>Credits</th>
+                        <th>Date</th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    <tr th:each="referral, stat : ${referrals}">
+
+                        <td th:text="${stat.count}">
+                            1
+                        </td>
+
+                        <td th:text="${referral.newUserEmail != null
+                                  ? referral.newUserEmail
+                                  : referral.newUserId}">
+                            user@example.com
+                        </td>
+
+                        <td>
+
+                        <span class="badge"
+                              th:text="${referral.referralAction != null
+                                        ? referral.referralAction
+                                        : 'Referral'}">
+                            REGISTERED
+                        </span>
+
+                        </td>
+
+                        <td th:text="${referral.creditsReward != null
+                                  ? referral.creditsReward
+                                  : 0}">
+                            10
+                        </td>
+
+                        <td th:text="${referral.createdAt != null
+                                  ? #dates.format(
+                                      referral.createdAt,
+                                      'dd MMM yyyy HH:mm'
+                                    )
+                                  : '-'}">
+                            26 Aug 2026
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SUBSCRIPTIONS
+        ================================================== -->
+
+        <div id="subscriptions"
+             class="tab-content">
+
+            <h2>
+                My Subscriptions
+            </h2>
+
+
+            <div
+                    th:if="${subscriptions == null || subscriptions.isEmpty()}"
+                    class="empty-state">
+
+                <div class="empty-icon">
+                    💳
+                </div>
+
+                <div class="empty-text">
+                    You don't have any subscription records yet.
+                </div>
+
+            </div>
+
+
+            <div
+                    th:if="${subscriptions != null && !subscriptions.isEmpty()}"
+                    class="table-wrapper">
+
+                <table class="activity-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>Plan</th>
+                        <th>Amount</th>
+                        <th>Days</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Payment</th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    <tr th:each="subscription : ${subscriptions}">
+
+                        <td th:text="${subscription.subscriptionType}">
+                            Monthly
+                        </td>
+
+                        <td>
+
+                            KES
+
+                            <span th:text="${subscription.payAmount}">
+                            99
+                        </span>
+
+                        </td>
+
+                        <td th:text="${subscription.numberOfDays}">
+                            30
+                        </td>
+
+                        <td th:text="${subscription.startDate != null
+                                  ? #dates.format(
+                                      subscription.startDate,
+                                      'dd MMM yyyy'
+                                    )
+                                  : '-'}">
+                            01 Aug 2026
+                        </td>
+
+                        <td th:text="${subscription.endDate != null
+                                  ? #dates.format(
+                                      subscription.endDate,
+                                      'dd MMM yyyy'
+                                    )
+                                  : '-'}">
+                            31 Aug 2026
+                        </td>
+
+                        <td>
+
+                        <span class="badge"
+                              th:text="${subscription.paymentProcessor != null
+                                        ? subscription.paymentProcessor
+                                        : 'Payment'}">
+                            MPESA
+                        </span>
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ACTIONS
+    ====================================================== -->
+
+    <div class="actions">
+
+        <a href="/read"
+           class="btn btn-primary">
+            Continue Learning
+        </a>
+
+        <a href="/"
+           class="btn btn-secondary">
+            Home
+        </a>
+
+    </div>
+    ```
+
+</div>
+
+<!-- =========================================================
+     TAB JAVASCRIPT
+========================================================== -->
+
+<script>
+
+    function openTab(event, tabName) {
+
+        const contents =
+            document.querySelectorAll(".tab-content");
+
+        contents.forEach(function (content) {
+            content.classList.remove("active");
+        });
+
+
+        const buttons =
+            document.querySelectorAll(".tab-btn");
+
+        buttons.forEach(function (button) {
+            button.classList.remove("active");
+        });
+
+
+        const selectedTab =
+            document.getElementById(tabName);
+
+        if (selectedTab) {
+            selectedTab.classList.add("active");
+        }
+
+
+        event.currentTarget.classList.add("active");
+    }
+
+</script>
+
+</body>
+
+</html>

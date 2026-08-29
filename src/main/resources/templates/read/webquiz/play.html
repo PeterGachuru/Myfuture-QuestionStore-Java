@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Quiz | Myfuture</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f6fa;
+        }
+
+        .header {
+            background: #800020;
+            color: white;
+            padding: 17px 25px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .progress-container {
+            background: #ddd;
+            height: 8px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+            background: #800020;
+
+            width: calc(
+                var(--progress) * 1%
+            );
+        }
+
+        .counter {
+            color: #666;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0,0,0,.07);
+        }
+
+        .question {
+            font-size: 22px;
+            font-weight: bold;
+            line-height: 1.5;
+            margin-bottom: 28px;
+        }
+
+        .choice {
+            display: block;
+            border: 2px solid #e5e5e5;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: .15s;
+        }
+
+        .choice:hover {
+            border-color: #800020;
+            background: #fff8fa;
+        }
+
+        .choice input {
+            margin-right: 12px;
+        }
+
+        .submit {
+            margin-top: 25px;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #800020;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="header">
+    Myfuture CBC Revision
+</div>
+
+
+<div class="container">
+
+    <div class="counter">
+
+        Question
+        <span th:text="${questionNumber}"></span>
+
+        of
+
+        <span th:text="${totalQuestions}"></span>
+
+    </div>
+
+
+    <div class="progress-container">
+
+        <div class="progress"
+             th:style="'width:' +
+                 (${questionNumber} * 100 /
+                 ${totalQuestions}) +
+                 '%'">
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="question"
+             th:text="${currentQuestion.question}">
+        </div>
+
+
+        <form method="post"
+              th:action="@{'/read/webquiz/answer/' + ${quiz.id}}">
+
+
+            <input type="hidden"
+                   name="questionId"
+                   th:value="${currentQuestion.questionId}">
+
+
+            <input type="hidden"
+                   name="question"
+                   th:value="${questionNumber}">
+
+
+            <label class="choice"
+                   th:each="choice :
+                   ${currentQuestion.choices}">
+
+                <input type="radio"
+                       name="selectedChoice"
+                       th:value="${choice.id}"
+                       th:checked="${choice.id ==
+                                    currentQuestion.selectedChoice}"
+                       required>
+
+                <span th:text="${choice.value}">
+                </span>
+
+            </label>
+
+
+            <button class="submit"
+                    type="submit">
+
+                <span th:if="${questionNumber < totalQuestions}">
+                    Next Question →
+                </span>
+
+                <span th:if="${questionNumber == totalQuestions}">
+                    Finish Quiz ✓
+                </span>
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

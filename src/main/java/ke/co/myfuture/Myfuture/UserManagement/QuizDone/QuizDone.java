@@ -41,6 +41,8 @@ public class QuizDone {
     @JoinColumn(name = "contest_id", referencedColumnName = "id")
     public Contest contest;
 
+    @Column(nullable = false)
+    public String platform = "ANDROID";
 
     @Column(nullable = false)
     public Date startDate;
