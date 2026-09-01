@@ -53,7 +53,6 @@ public class WebQuizController {
             @PathVariable Long subjectId,
             HttpServletRequest request
     ) {
-
         log.info("========== START QUIZ REQUEST ==========");
         log.info("Requested classLevelId: {}", classLevelId);
         log.info("Requested subjectId: {}", subjectId);
@@ -198,7 +197,7 @@ public class WebQuizController {
                     student.getId(),
                     classLevelId,
                     subjectId,
-                    20
+                    10
             );
 
             QuizDone quiz =
@@ -206,7 +205,7 @@ public class WebQuizController {
                             student.getId(),
                             classLevelId,
                             subjectId,
-                            20
+                            10
                     );
 
             log.info("Quiz creation method returned successfully.");

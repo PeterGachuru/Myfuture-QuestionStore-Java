@@ -87,4 +87,8 @@ public class IbukaStudentAccount {
             totalScore += student.unsyncedScore;
         }
     }
+
+    public void addScore(Long totalScore) {
+        this.totalScore += totalScore;
+    }
 }

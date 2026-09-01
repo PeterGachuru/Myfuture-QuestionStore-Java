@@ -382,7 +382,11 @@ public class WebQuizService {
                 new Date();
 
 
-        return quizDoneRepository.save(quiz);
+        QuizDone savedQuiz = quizDoneRepository.save(quiz);
+        IbukaStudentAccount ibukaStudentAccount = savedQuiz.getStudent();
+        ibukaStudentAccount.addScore((long) (score*2));
+        studentRepository.save(ibukaStudentAccount);
+        return savedQuiz;
     }
 
     public QuizDone getStudentQuiz(
