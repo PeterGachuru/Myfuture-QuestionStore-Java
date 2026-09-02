@@ -284,33 +284,63 @@
         });
     }
 
+
     function startPolling(id) {
 
         document.getElementById("statusBox").style.display = "block";
-        document.getElementById("statusText").innerText = "Waiting for payment...";
+        document.getElementById("statusText").innerText =
+            "Waiting for payment...";
 
-        let interval = setInterval(() => {
+        let interval;
+
+        // First status check after 10 seconds
+        setTimeout(() => {
+
+            checkPaymentStatus();
+
+            // Then check every 1 second
+            interval = setInterval(() => {
+                checkPaymentStatus();
+            }, 1000);
+
+        }, 10000);
+
+
+        function checkPaymentStatus() {
 
             fetch("/myfuture/subscriptions/mpesastk/status/" + id)
                 .then(res => res.json())
                 .then(data => {
 
                     if (data.status === "SUCCESS") {
+
                         clearInterval(interval);
+
                         document.getElementById("statusText").innerText =
                             "✅ Payment Successful";
+
+                        // Redirect 1 second after displaying success
+                        setTimeout(() => {
+                            window.location.href = "/read/myprofile";
+                        }, 1000);
                     }
 
                     if (data.status === "FAILED") {
+
                         clearInterval(interval);
+
                         document.getElementById("statusText").innerText =
                             "❌ Payment Failed";
                     }
 
+                })
+                .catch(() => {
+                    // Ignore temporary polling errors
                 });
-
-        }, 5000);
+        }
     }
+
+
 </script>
 
 </body>

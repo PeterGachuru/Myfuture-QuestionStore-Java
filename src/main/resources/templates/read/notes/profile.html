@@ -1,8 +1,10 @@
 <!DOCTYPE html>
+
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="${level.name} + ' ' + ${subject.name} + ' ' + ${topic.name} + ' Notes | Myfuture CBC Revision App'"></title>
 
+    
     <!-- SEO -->
     <meta name="description"
           th:content="'Read ' + ${level.name} + ' ' + ${subject.name} + ' ' + ${topic.name} + ' notes. Simple, clear revision notes, quizzes and past papers for KCSE & CBC students.'">
@@ -18,13 +20,88 @@
     <link rel="stylesheet" th:href="@{/css/footer.css}" />
 
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #fafafa;
+
+        * {
+            box-sizing: border-box;
         }
 
-        /* HEADER */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fafafa;
+            color: #333;
+        }
+
+        /* =========================================================
+           TOP NAVBAR
+           ========================================================= */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            background: white;
+            padding: 14px 24px;
+
+            border-bottom: 1px solid #eee;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+
+            width: 100%;
+        }
+
+        .brand-title {
+            font-size: 22px;
+            font-weight: 900;
+            color: #800000;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            transition: 0.25s ease;
+        }
+
+        .brand-title:hover {
+            color: #a00000;
+            transform: scale(1.03);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .top-login-btn {
+            padding: 10px 18px;
+            background: #800000;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.25s ease;
+        }
+
+        .top-login-btn:hover {
+            background: #660000;
+            transform: translateY(-2px);
+        }
+
+        /* =========================================================
+           PAGE HEADER
+           ========================================================= */
+
         .page-header {
             margin-bottom: 15px;
         }
@@ -33,26 +110,42 @@
             color: #800000;
             margin-bottom: 5px;
             font-size: 22px;
+            line-height: 1.35;
         }
 
         .breadcrumbs {
             font-size: 13px;
             color: #777;
             margin-bottom: 5px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
         }
 
-        /* LAYOUT */
+        /* =========================================================
+           LAYOUT
+           ========================================================= */
+
         .container {
             display: flex;
+            width: 100%;
+            max-width: 100%;
             min-height: 100vh;
         }
 
-        /* SIDEBAR */
+        /* =========================================================
+           SIDEBAR
+           ========================================================= */
+
         .sidebar {
             width: 260px;
+            min-width: 260px;
+
             background: #fff;
             padding: 15px;
+
             overflow-y: auto;
+            overflow-x: hidden;
+
             border-right: 1px solid #eee;
         }
 
@@ -61,13 +154,20 @@
             margin-top: 0;
         }
 
+        .sidebar ul {
+            padding-left: 18px;
+        }
+
         .sidebar a {
             display: block;
             padding: 8px;
             border-radius: 6px;
+
             color: #333;
             text-decoration: none;
             font-size: 14px;
+
+            overflow-wrap: anywhere;
         }
 
         .sidebar a:hover {
@@ -81,27 +181,163 @@
             font-weight: bold;
         }
 
-        /* CONTENT */
+        /* =========================================================
+           CONTENT
+           ========================================================= */
+
         .content {
             flex: 1;
+            min-width: 0;
+
             padding: 20px;
+
             background: #fff;
+
+            overflow-x: hidden;
         }
 
-        /* BUTTONS */
+        /* =========================================================
+           STUDY / APP BUTTONS
+           Web version = PRIMARY
+           Play Store = SECONDARY
+           ========================================================= */
+
         .button-wrapper {
             text-align: center;
-            margin: 20px 0;
+            margin: 22px 0 28px;
+            width: 100%;
         }
+
+        /* Small attention text */
+
+        .download-banner {
+            color: #800000;
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        /* =========================================================
+           PRIMARY WEB APP BUTTON
+           ========================================================= */
+
+        .web-study-btn {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
+            width: min(420px, 100%);
+            min-height: 54px;
+
+            padding: 13px 22px;
+
+            background: linear-gradient(
+                135deg,
+                #800000,
+                #a90000,
+                #ff6600
+            );
+
+            color: white;
+
+            border: 2px solid #ffb703;
+            border-radius: 12px;
+
+            text-decoration: none;
+
+            font-size: 18px;
+            font-weight: 800;
+
+            box-shadow:
+                0 7px 20px rgba(128, 0, 0, 0.25);
+
+            transition: all 0.25s ease;
+        }
+
+        .web-study-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 10px 25px rgba(128, 0, 0, 0.35);
+        }
+
+        .web-icon {
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .web-cta-note {
+            margin-top: 8px;
+            color: #777;
+            font-size: 13px;
+        }
+
+        /* =========================================================
+           SECONDARY PLAY STORE BUTTON
+           Deliberately smaller and separated
+           ========================================================= */
+
+        .playstore-section {
+            margin-top: 25px;
+            padding-top: 18px;
+
+            border-top: 1px solid #eee;
+        }
+
+        .playstore-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .playstore-btn {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+
+            padding: 9px 16px;
+
+            background: white;
+            color: #555;
+
+            border: 1px solid #ccc;
+            border-radius: 7px;
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: all 0.2s ease;
+        }
+
+        .playstore-btn:hover {
+            background: #f5f5f5;
+            color: #800000;
+            border-color: #aaa;
+        }
+
+        /* =========================================================
+           QUIZ BUTTON
+           ========================================================= */
 
         .quiz-btn {
             display: inline-block;
+
             padding: 10px 16px;
+
             background-color: #800000;
             color: white;
+
             border-radius: 6px;
+
             text-decoration: none;
             font-weight: bold;
+
             margin-right: 10px;
         }
 
@@ -109,250 +345,123 @@
             background-color: #660000;
         }
 
-.button-wrapper {
-    text-align: center;
-    margin: 25px 0;
-}
+        /* =========================================================
+           NOTES
+           ========================================================= */
 
-.download-banner {
-    color: #ff6600;
-    font-weight: bold;
-    font-size: 15px;
-    margin-bottom: 12px;
-    animation: blinkText 1.5s infinite;
-}
-
-.download-btn {
-    position: relative;
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 18px 34px;
-    background: linear-gradient(135deg, #ff5e00, #ff9800);
-    color: white;
-    border-radius: 18px;
-    text-decoration: none;
-    font-weight: 900;
-    overflow: hidden;
-    min-width: 360px;
-    box-shadow:
-        0 8px 25px rgba(255,102,0,0.45);
-    animation:
-        pulseGlow 1.8s infinite,
-        floatBtn 3s ease-in-out infinite;
-    transition: all 0.25s ease;
-    border: 2px solid rgba(255,255,255,0.25);
-}
-
-.download-btn:hover {
-    transform: scale(1.08) translateY(-3px);
-    box-shadow:
-        0 0 35px rgba(255,140,0,0.9),
-        0 15px 35px rgba(255,102,0,0.6);
-}
-
-.download-btn::before {
-    content: "";
-    position: absolute;
-    top: -120%;
-    left: -40%;
-    width: 50%;
-    height: 320%;
-    background: linear-gradient(
-        120deg,
-        transparent,
-        rgba(255,255,255,0.95),
-        transparent
-    );
-    transform: rotate(25deg);
-    animation: meteorSweep 2.2s linear infinite;
-}
-
-.download-btn::after {
-    content: "";
-    position: absolute;
-    inset: -5px;
-    border-radius: 22px;
-    border: 2px solid rgba(255,255,255,0.35);
-    animation: orbitGlow 2.5s linear infinite;
-}
-
-/* =========================================================
-   MYFUTURE WEB APP — PRIMARY CTA
-   ========================================================= */
-
-.web-study-btn {
-    min-width: 420px;
-    padding: 22px 36px;
-    background: linear-gradient(135deg, #800000, #b30000, #ff6600);
-    border: 3px solid #ffb703;
-    box-shadow:
-        0 10px 30px rgba(128, 0, 0, 0.45),
-        0 0 25px rgba(255, 183, 3, 0.35);
-}
-
-.web-study-btn:hover {
-    background: linear-gradient(135deg, #660000, #990000, #ff5500);
-    transform: scale(1.09) translateY(-4px);
-    box-shadow:
-        0 0 40px rgba(255, 183, 3, 0.8),
-        0 15px 40px rgba(128, 0, 0, 0.55);
-}
-
-.web-study-btn .download-top {
-    font-size: 25px;
-    letter-spacing: 0.3px;
-}
-
-.web-study-btn .download-sub {
-    margin-top: 9px;
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-.web-cta-small {
-    display: block;
-    margin-top: 12px;
-    padding: 8px 14px;
-    background: rgba(255,255,255,0.18);
-    border-radius: 20px;
-    font-size: 15px;
-    font-weight: 900;
-    z-index: 2;
-}
-
-/* Benefits underneath the main CTA */
-.web-app-benefits {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 14px;
-    font-size: 13px;
-}
-
-.web-app-benefits span {
-    background: #fff3e0;
-    color: #800000;
-    padding: 7px 11px;
-    border-radius: 20px;
-    font-weight: bold;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-
-    .web-study-btn {
-        min-width: auto;
-        width: 100%;
-        padding: 20px 15px;
-    }
-
-    .web-study-btn .download-top {
-        font-size: 20px;
-    }
-
-    .web-study-btn .download-sub {
-        font-size: 13px;
-    }
-
-    .web-cta-small {
-        font-size: 14px;
-    }
-
-    .web-app-benefits {
-        gap: 6px;
-    }
-
-    .web-app-benefits span {
-        font-size: 12px;
-    }
-}
-
-
-
-.download-top {
-    font-size: 22px;
-    z-index: 2;
-}
-
-.download-sub {
-    font-size: 14px;
-    margin-top: 6px;
-    opacity: 0.95;
-    z-index: 2;
-}
-
-.download-proof {
-    margin-top: 12px;
-    color: #666;
-    font-size: 14px;
-    font-weight: bold;
-}
-
-@keyframes meteorSweep {
-    0% { left: -70%; }
-    100% { left: 140%; }
-}
-
-@keyframes pulseGlow {
-    0%,100% {
-        box-shadow:
-            0 8px 25px rgba(255,102,0,0.45);
-    }
-    50% {
-        box-shadow:
-            0 0 28px 10px rgba(255,180,0,0.45),
-            0 12px 35px rgba(255,102,0,0.65);
-    }
-}
-
-@keyframes orbitGlow {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-@keyframes floatBtn {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-}
-
-@keyframes blinkText {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.65; }
-}
-
-@media (max-width: 768px) {
-    .download-btn {
-        min-width: auto;
-        width: 100%;
-        padding: 16px;
-    }
-
-    .download-top {
-        font-size: 18px;
-    }
-
-    .download-sub {
-        font-size: 13px;
-    }
-}
-
-        /* NOTES */
         .notes-content {
             line-height: 1.7;
             font-size: 16px;
             margin-top: 20px;
+
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
-        /* RATING */
+        .notes-content img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .notes-content table {
+            max-width: 100%;
+            display: block;
+            overflow-x: auto;
+        }
+
+        .notes-content iframe {
+            max-width: 100%;
+        }
+
+        .fade-content {
+            max-height: 550px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .fade-content::after {
+            content: "";
+
+            position: absolute;
+            bottom: 0;
+            left: 0;
+
+            height: 120px;
+            width: 100%;
+
+            background: linear-gradient(
+                transparent,
+                white
+            );
+        }
+
+        /* =========================================================
+           LOGIN / SUBSCRIPTION OVERLAY
+           ========================================================= */
+
+        .login-overlay {
+            position: absolute;
+
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(255,255,255,0.85);
+
+            padding: 15px;
+        }
+
+        .overlay-box {
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+            text-align: center;
+
+            max-width: 420px;
+            width: 100%;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .overlay-login-btn {
+            display: inline-block;
+
+            margin-top: 10px;
+
+            padding: 10px 16px;
+
+            background: #800000;
+            color: white;
+
+            border-radius: 6px;
+
+            text-decoration: none;
+        }
+
+        /* =========================================================
+           RATING
+           ========================================================= */
+
         .rating-box {
             margin-top: 30px;
+
             padding: 20px;
+
             border: 1px solid #eee;
             border-radius: 8px;
+
             background: #fafafa;
+
+            max-width: 100%;
         }
 
         .stars span {
@@ -361,11 +470,23 @@
             margin-right: 5px;
         }
 
-        /* FOOTER LINKS */
+        #feedbackMessage {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* =========================================================
+           FOOTER LINKS
+           ========================================================= */
+
         .footer-links {
             margin-top: 40px;
+
             padding-top: 20px;
+
             border-top: 1px solid #ddd;
+
+            max-width: 100%;
         }
 
         .footer-section {
@@ -378,39 +499,76 @@
 
         .footer-items {
             display: flex;
+
             flex-wrap: wrap;
+
             gap: 10px 18px;
+
+            max-width: 100%;
         }
 
         .footer-items a {
             background: #fff3e0;
             color: #800000;
+
             padding: 6px 10px;
+
             border-radius: 6px;
+
             font-size: 14px;
+
             text-decoration: none;
+
+            overflow-wrap: anywhere;
         }
 
-        /* MOBILE */
+        /* =========================================================
+           MOBILE MENU
+           ========================================================= */
+
         .menu-btn {
             display: none;
-            font-size: 22px;
-            background: none;
+
+            font-size: 18px;
+
+            background: white;
+
             border: none;
-            padding: 10px;
+
+            padding: 10px 14px;
+
+            color: #800000;
+
+            font-weight: bold;
+
+            width: 100%;
+
+            text-align: left;
+
+            border-bottom: 1px solid #eee;
         }
 
+        /* =========================================================
+           MOBILE
+           ========================================================= */
+
         @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                height: 100%;
-                z-index: 1000;
-                transform: translateX(-100%);
-                transition: 0.3s;
+
+            .topbar {
+                padding: 12px 14px;
             }
 
-            .sidebar.open {
-                transform: translateX(0);
+            .brand-title {
+                font-size: 18px;
+            }
+
+            .top-login-btn {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .topbar-right > div {
+                font-size: 13px;
             }
 
             .menu-btn {
@@ -419,131 +577,191 @@
 
             .container {
                 flex-direction: column;
+                width: 100%;
+            }
+
+            .sidebar {
+                position: fixed;
+
+                top: 0;
+                left: 0;
+
+                height: 100vh;
+
+                width: 280px;
+                max-width: 85vw;
+                min-width: 0;
+
+                z-index: 3000;
+
+                transform: translateX(-100%);
+
+                transition: transform 0.3s ease;
+
+                box-shadow:
+                    5px 0 20px rgba(0,0,0,0.15);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .content {
+                width: 100%;
+                max-width: 100%;
+
+                padding: 15px;
+
+                overflow-x: hidden;
+            }
+
+            .page-header h1 {
+                font-size: 20px;
+                line-height: 1.3;
+            }
+
+            .breadcrumbs {
+                font-size: 12px;
+            }
+
+            /* Primary button */
+            .web-study-btn {
+                width: 100%;
+                max-width: 420px;
+
+                min-height: 52px;
+
+                padding: 12px 15px;
+
+                font-size: 16px;
+            }
+
+            .web-icon {
+                font-size: 20px;
+            }
+
+            .download-banner {
+                font-size: 14px;
+                line-height: 1.4;
+            }
+
+            .web-cta-note {
+                font-size: 12px;
+            }
+
+            /* Play Store */
+            .playstore-section {
+                margin-top: 20px;
+            }
+
+            .playstore-btn {
+                font-size: 12px;
+                padding: 8px 14px;
+            }
+
+            /* Notes */
+            .notes-content {
+                font-size: 15px;
+                line-height: 1.65;
+            }
+
+            /* Rating */
+            .rating-box {
+                padding: 15px;
+            }
+
+            .stars span {
+                font-size: 25px;
+            }
+
+            /* Footer */
+            .footer-items {
+                gap: 7px;
+            }
+
+            .footer-items a {
+                font-size: 13px;
             }
         }
+
+        /* =========================================================
+           VERY SMALL PHONES
+           ========================================================= */
+
+        @media (max-width: 360px) {
+
+            .topbar {
+                padding: 10px;
+            }
+
+            .brand-title {
+                font-size: 16px;
+            }
+
+            .top-login-btn {
+                padding: 7px 9px;
+                font-size: 12px;
+            }
+
+            .content {
+                padding: 12px;
+            }
+
+            .web-study-btn {
+                font-size: 15px;
+                padding: 11px 10px;
+            }
+
+            .download-banner {
+                font-size: 13px;
+            }
+
+            .web-cta-note {
+                font-size: 11px;
+            }
+        }
+
     </style>
+
     <style>
-        .fade-content {
-             max-height: 550px;   /* 👈 MUCH better default */
-             overflow: hidden;
-             position: relative;
-         }
 
-         .fade-content::after {
-             content: "";
-             position: absolute;
-             bottom: 0;
-             left: 0;
-             height: 120px;
-             width: 100%;
-             background: linear-gradient(transparent, white);
-         }
+        /* =========================================================
+           ADDITIONAL CONTENT SAFETY
+           ========================================================= */
 
-         /* Overlay */
-         .login-overlay {
-             position: absolute;
-             top: 0;
-             left: 0;
-             right: 0;
-             bottom: 0;
+        .content * {
+            max-width: 100%;
+        }
 
-             display: flex;
-             align-items: center;
-             justify-content: center;
+        .content pre {
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
 
-             background: rgba(255,255,255,0.85);
-         }
+        .content code {
+            word-break: break-word;
+        }
 
-         .overlay-box {
-             background: white;
-             padding: 20px;
-             border-radius: 10px;
-             text-align: center;
-             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-         }
+        .content video {
+            max-width: 100%;
+            height: auto;
+        }
 
-         .overlay-login-btn {
-             display: inline-block;
-             margin-top: 10px;
-             padding: 10px 16px;
-             background: #800000;
-             color: white;
-             border-radius: 6px;
-             text-decoration: none;
-         }
     </style>
-    <style>
-        /* TOP NAVBAR */
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    padding: 14px 24px;
-    border-bottom: 1px solid #eee;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-    position: sticky;
-    top: 0;
-    z-index: 2000;
-}
+    
 
-.brand-title {
-    font-size: 22px;
-    font-weight: 900;
-    color: #800000;
-    text-decoration: none;
-    letter-spacing: -0.5px;
-    transition: 0.25s ease;
-}
-
-.brand-title:hover {
-    color: #a00000;
-    transform: scale(1.03);
-}
-
-.topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.top-login-btn {
-    padding: 10px 18px;
-    background: #800000;
-    color: white;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: 0.25s ease;
-}
-
-.top-login-btn:hover {
-    background: #660000;
-    transform: translateY(-2px);
-}
-
-@media (max-width: 768px) {
-    .topbar {
-        padding: 12px 14px;
-    }
-
-    .brand-title {
-        font-size: 18px;
-    }
-
-    .top-login-btn {
-        padding: 8px 14px;
-        font-size: 14px;
-    }
-}
-    </style>
 </head>
 
 <body>
-<!-- TOP BRAND BAR -->
+
+<!-- =========================================================
+     TOP BRAND BAR
+     ========================================================= -->
+
 <div class="topbar">
 
-    <!-- Clickable brand -->
+    
     <a href="/" class="brand-title">
         Myfuture CBC Revision
     </a>
@@ -554,411 +772,752 @@
         <a th:if="${!loggedIn}"
            href="/read/login"
            class="top-login-btn">
-            🔐  Login to track your progress
+            🔐 Login
         </a>
 
         <!-- Show user if logged in -->
-        <div th:if="${loggedIn}" style="font-weight:bold; color:#800000;">
+        <div th:if="${loggedIn}"
+             style="font-weight:bold; color:#800000;">
+
             👤 <span th:text="${currentUser?.firstName}"></span>
+
         </div>
 
     </div>
+    
 
 </div>
-<button class="menu-btn" onclick="toggleSidebar()">☰ Topics</button>
+
+<!-- MOBILE TOPICS BUTTON -->
+
+<button class="menu-btn"
+        onclick="toggleSidebar()">
+
+    
+    ☰ Topics
+    
+
+</button>
 
 <div class="container">
 
-    <!-- SIDEBAR -->
+    
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
     <div id="sidebar" class="sidebar">
 
         <h3>Topics</h3>
 
         <ul>
+
             <li th:each="parent : ${parentTopics}">
+
                 <strong th:text="${parent.name}"></strong>
 
                 <ul>
+
                     <li th:each="child : ${parent.children}">
+
                         <a th:href="@{/read/notes/{slug}(slug=${child.slug})}"
                            th:text="${child.name}"
                            th:classappend="${child.id} == ${topic.id} ? 'active' : ''">
                         </a>
+
                     </li>
+
                 </ul>
+
             </li>
+
         </ul>
 
     </div>
 
-    <!-- CONTENT -->
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
     <div class="content">
 
-        <!-- HEADER -->
+        <!-- =================================================
+             PAGE HEADER
+             ================================================= -->
+
         <div class="page-header">
 
             <div class="breadcrumbs">
-                <span th:text="${curriculum.name}"></span> →
-                <span th:text="${level.name}"></span> →
-                <span th:text="${subject.name}"></span> →
+
+                <span th:text="${curriculum.name}"></span>
+                →
+                <span th:text="${level.name}"></span>
+                →
+                <span th:text="${subject.name}"></span>
+                →
                 <span th:text="${topic.name}"></span>
+
             </div>
 
             <h1 th:text="${topic.name} + ' Notes, Quizzes & Revision'"></h1>
 
             <button id="regenBtn"
                     onclick="regenerateNotes()"
-                    style="display:none; font-size: 11px; padding: 4px 8px;">
+                    style="display:none; font-size:11px; padding:4px 8px;">
+
                 🔄 Regenerate
+
             </button>
 
         </div>
 
+
         <hr/>
 
-        <!-- BUTTONS -->
+
+        <!-- =================================================
+             STUDY OPTIONS
+             WEB = PRIMARY
+             PLAY STORE = SECONDARY
+             ================================================= -->
+
         <div class="button-wrapper">
 
-            <!-- BUTTONS -->
-            <div class="button-wrapper">
-                <!-- Attention banner -->
-                <div class="download-banner">
-                    🔥 Join thousands of Kenyan students already revising smarter
+            <!-- PRIMARY WEB OPTION -->
+
+            <div class="download-banner">
+                📚 Ready to learn?
+            </div>
+
+            <a class="web-study-btn"
+               href="https://study.myfuture.co.ke/read/myprofile">
+
+                <span class="web-icon">🌐</span>
+
+                <span>📝 Do Quizzes Online • Get Marked Instantly</span>
+
+            </a>
+
+            <div class="web-cta-note">
+                Instant results • Automatic marking • No download required
+            </div>
+
+
+            <!-- SECONDARY PLAY STORE OPTION -->
+
+            <div class="playstore-section">
+
+                <div class="playstore-label">
+                    Prefer the Android app?
                 </div>
 
-                <!-- MYFUTURE WEB APP CTA -->
-                <div class="button-wrapper">
+                <a class="playstore-btn"
+                   href="https://play.google.com/store/apps/details?id=ke.co.myfuture"
+                   target="_blank"
+                   rel="noopener noreferrer">
 
-                    <!-- Attention banner -->
-                    <div class="download-banner">
-                        🚀 YOUR MYFUTURE CBC REVISION APP IS READY — STUDY ONLINE NOW!
-                    </div>
+                    📱 Get the Android App
 
-                    <!-- PRIMARY WEB APP BUTTON -->
-                    <a class="download-btn web-study-btn"
-                       href="https://study.myfuture.co.ke/read/myprofile">
-
-        <span class="download-top">
-            📚 STUDY ON MYFUTURE WEB APP
-        </span>
-
-                        <span class="download-sub">
-            📝 Study Notes &nbsp; • &nbsp; 🎯 Do Quizzes &nbsp; • &nbsp;
-            📈 Track Progress &nbsp; • &nbsp; 🏆 Compete
-        </span>
-
-                        <span class="web-cta-small">
-            👉 Open Myfuture & Start Learning
-        </span>
-
-                    </a>
-
-                    <!-- Benefits -->
-                    <div class="download-proof">
-                        ⭐ No app download required &nbsp; • &nbsp;
-                        📱 Works on phone, tablet & computer
-                    </div>
-
-                    <div class="web-app-benefits">
-                        <span>📖 Revise CBC Notes</span>
-                        <span>📝 Test Yourself</span>
-                        <span>📊 Track Your Progress</span>
-                        <span>🏆 Compete With Other Students</span>
-                    </div>
-
-                    <!--
-                    PLAY STORE BUTTON — TEMPORARILY DISABLED
-
-                    <a class="download-btn"
-                       href="YOUR_PLAYSTORE_LINK_HERE"
-                       target="_blank">
-                        <span class="download-top">
-                            📱 DOWNLOAD MYFUTURE CBC REVISION APP
-                        </span>
-                        <span class="download-sub">
-                            Notes • Quizzes • Past Papers
-                        </span>
-                    </a>
-                    -->
-
-                </div>
-
+                </a>
 
             </div>
 
         </div>
+
+
+        <!-- =================================================
+             LOGGED-IN USER
+             ================================================= -->
 
         <div style="text-align:right; margin-bottom:10px;">
 
-            <!-- LOGGED IN -->
-            <div th:if="${loggedIn}" style="text-align:right;">
+            <div th:if="${loggedIn}"
+                 style="text-align:right;">
 
-    <span>
-        👤 <span th:text="${currentUser?.firstName}"></span>
-    </span>
+            <span>
+                👤
+                <span th:text="${currentUser?.firstName}"></span>
+            </span>
 
                 <br/>
 
-                <span th:if="${session.student != null}" style="font-size:13px; color:#555;">
-        🎓 <span th:text="${session.student.name}"></span>
-    </span>
+                <span th:if="${session.student != null}"
+                      style="font-size:13px; color:#555;">
+
+                🎓
+                <span th:text="${session.student.name}"></span>
+
+            </span>
 
             </div>
 
         </div>
 
-        <p style="color:#666; font-size:14px; text-align:center;">
-            📘 Revision Notes • 📝 Quizzes • 📄 Past Papers available in app
+
+        <!-- =================================================
+             QUICK DESCRIPTION
+             ================================================= -->
+
+        <p style="
+        color:#666;
+        font-size:14px;
+        text-align:center;
+        line-height:1.5;
+    ">
+
+            📘 Revision Notes • 📝 Quizzes • 📄 Past Papers
+
         </p>
 
-        <!-- NOTES -->
-        <div th:if="${notes != null}" style="position:relative;">
+
+        <!-- =================================================
+             NOTES
+             ================================================= -->
+
+        <div th:if="${notes != null}"
+             style="position:relative;">
 
             <div th:classappend="${restrictContent} ? 'fade-content' : ''"
                  class="notes-content"
                  th:utext="${notes.content}">
             </div>
 
-            <!-- Overlay -->
-            <div th:if="${restrictContent}" class="login-overlay">
+
+            <!-- LOGIN / SUBSCRIPTION OVERLAY -->
+
+            <div th:if="${restrictContent}"
+                 class="login-overlay">
+
                 <div class="overlay-box">
 
                     <!-- NOT LOGGED IN -->
-                    <div th:if="${!loggedIn}">
-                        <h3>📘 Continue Reading</h3>
-                        <p>Login to unlock full notes, track scores & compete with others</p>
 
-                        <a href="/read/login" class="overlay-login-btn">Login</a>
+                    <div th:if="${!loggedIn}">
+
+                        <h3>📘 Continue Reading</h3>
+
+                        <p>
+                            Login to unlock full notes,
+                            track scores & compete with others.
+                        </p>
+
+                        <a href="/read/login"
+                           class="overlay-login-btn">
+
+                            Login
+
+                        </a>
+
                     </div>
 
-                    <!-- LOGGED IN BUT NO SUBSCRIPTION -->
-                    <div th:if="${restrictForSubscription}">
-                        <h3>🔒 Subscription Required</h3>
-                        <p>Your subscription is not active. Subscribe to continue learning.</p>
 
-                        <a href="/read/subscribe" class="overlay-login-btn">
+                    <!-- LOGGED IN BUT NO SUBSCRIPTION -->
+
+                    <div th:if="${restrictForSubscription}">
+
+                        <h3>🔒 Subscription Required</h3>
+
+                        <p>
+                            Your subscription is not active.
+                            Subscribe to continue learning.
+                        </p>
+
+                        <a href="/read/subscribe"
+                           class="overlay-login-btn">
+
                             💳 Get Subscription
+
                         </a>
+
                     </div>
 
                 </div>
+
             </div>
 
         </div>
 
+
+        <!-- NO NOTES -->
+
         <div th:if="${notes == null}">
-            <p>No notes available for this subtopic yet.</p>
+
+            <p>
+                No notes available for this subtopic yet.
+            </p>
+
         </div>
 
+
+        <!-- =================================================
+             QUIZ
+             ================================================= -->
+
         <div>
+
             <a class="quiz-btn"
                th:href="@{/read/questions/{slug}(slug=${topic.slug})}">
+
                 📝 Practice Quiz
+
             </a>
+
         </div>
+
 
         <hr/>
 
-        <!-- RATING -->
+
+        <!-- =================================================
+             RATING
+             ================================================= -->
+
         <div class="rating-box">
+
             <h3>Rate these notes</h3>
 
             <div class="stars">
+
                 <span onclick="rate(1)">⭐</span>
                 <span onclick="rate(2)">⭐</span>
                 <span onclick="rate(3)">⭐</span>
                 <span onclick="rate(4)">⭐</span>
                 <span onclick="rate(5)">⭐</span>
+
             </div>
+
 
             <textarea id="feedbackMessage"
                       placeholder="Write your feedback (required)..."
                       rows="3"
-                      style="width:100%; margin-top:10px;"></textarea>
+                      style="
+                      width:100%;
+                      margin-top:10px;
+                      resize:vertical;
+                  "></textarea>
 
-            <button onclick="submitRating()">Submit</button>
 
-            <p id="ratingStatus" style="color:green;"></p>
+            <button onclick="submitRating()">
+
+                Submit
+
+            </button>
+
+
+            <p id="ratingStatus"
+               style="color:green;">
+            </p>
+
         </div>
 
-        <!-- FOOTER -->
+
+        <!-- =================================================
+             FOOTER LINKS
+             ================================================= -->
+
         <div class="footer-links">
 
+
+            <!-- SUBJECTS -->
+
             <div class="footer-section">
+
                 <h3 th:text="'Subjects in ' + ${level.name}"></h3>
 
                 <div class="footer-items">
+
                     <a th:each="sub : ${allSubjects}"
                        th:href="@{/read/notes/{firstSubtopicSlug}(firstSubtopicSlug=${sub.firstSubtopicSlug})}"
                        th:text="${sub.name}">
+
                     </a>
+
                 </div>
+
             </div>
 
+
+            <!-- CLASS LEVELS -->
+
             <div class="footer-section">
+
                 <h3 th:text="'Class Levels in ' + ${curriculum.name}"></h3>
 
                 <div class="footer-items">
+
                     <a th:each="lvl : ${allLevels}"
                        th:href="@{/read/classlevel/{slug}(slug=${lvl.slug})}"
                        th:text="${lvl.name}">
+
                     </a>
+
                 </div>
+
             </div>
+
 
         </div>
 
     </div>
+    
+
 </div>
 
-<script>
-    function toggleSidebar() {
-        document.getElementById("sidebar").classList.toggle("open");
-    }
-</script>
+<!-- =========================================================
+     SIDEBAR SCRIPT
+     ========================================================= -->
 
 <script>
+
+    function toggleSidebar() {
+
+        const sidebar =
+            document.getElementById("sidebar");
+
+        sidebar.classList.toggle("open");
+
+    }
+
+</script>
+
+<!-- =========================================================
+     RATING SCRIPT
+     ========================================================= -->
+
+<script>
+
     let selectedRating = 0;
     let isSubmitting = false;
 
+
     function rate(value) {
+
         selectedRating = value;
+
         document.getElementById("ratingStatus").innerText =
             "You selected " + value + " stars";
+
     }
 
-function submitRating() {
 
-    if (isSubmitting) return;
+    function submitRating() {
 
-    if (selectedRating === 0) {
-        alert("Please select a rating");
-        return;
-    }
+        if (isSubmitting) return;
 
-    const message = document.getElementById("feedbackMessage").value.trim();
 
-    // 🚫 NEW: block empty feedback
-    if (message.length === 0) {
-        alert("Please write your feedback before submitting");
-        return;
-    }
+        if (selectedRating === 0) {
 
-    const payload = {
-        rating: selectedRating,
-        message: message,
-        subtopicId: [[${topic.id}]]
-    };
+            alert("Please select a rating");
 
-    isSubmitting = true;
+            return;
 
-    const btn = document.querySelector(".rating-box button");
-    btn.disabled = true;
-    btn.innerText = "Submitting...";
-
-    fetch("/read/notes/rate", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(payload)
-    })
-    .then(res => {
-        if (!res.ok) throw new Error("Failed");
-        return res;
-    })
-    .then(() => {
-        document.getElementById("ratingStatus").innerText =
-            "Thanks for your feedback 🙌";
-
-        selectedRating = 0;
-        document.getElementById("feedbackMessage").value = "";
-    })
-    .catch(() => {
-        alert("Failed to submit rating");
-    })
-    .finally(() => {
-        isSubmitting = false;
-        btn.disabled = false;
-        btn.innerText = "Submit";
-    });
-}
-</script>
-
-<script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const adminKey = urlParams.get("adminKey");
-
-    if (adminKey) {
-        document.getElementById("regenBtn").style.display = "inline-block";
-    }
-
-    function regenerateNotes() {
-        if (!adminKey) return alert("Unauthorized");
-
-        fetch(`/read/regenerate?subtopic=[[${topic.id}]]&key=${adminKey}`, {
-            method: "POST"
-        })
-        .then(() => alert("Regeneration started"));
-    }
-</script>
-<!-- Add this script block before the closing </body> tag -->
-<script th:if="${restrictContent}">
-    (function () {
-        const isLoggedIn = [[${loggedIn}]];
-        const restrictForSubscription = [[${restrictForSubscription ?: false}]];
-
-        let redirectUrl = null;
-        let countdown = 5;
-
-        if (!isLoggedIn) {
-            redirectUrl = '/read/login';
-        } else if (restrictForSubscription) {
-            redirectUrl = '/read/subscribe';
         }
 
-        if (!redirectUrl) return;
 
-        // Inject a countdown banner
-        const banner = document.createElement('div');
-        banner.id = 'redirect-banner';
+        const message =
+            document
+                .getElementById("feedbackMessage")
+                .value
+                .trim();
+
+
+        if (message.length === 0) {
+
+            alert(
+                "Please write your feedback before submitting"
+            );
+
+            return;
+
+        }
+
+
+        const payload = {
+
+            rating: selectedRating,
+
+            message: message,
+
+            subtopicId: [[${topic.id}]]
+
+        };
+
+
+        isSubmitting = true;
+
+
+        const btn =
+            document.querySelector(
+                ".rating-box button"
+            );
+
+
+        btn.disabled = true;
+
+        btn.innerText = "Submitting...";
+
+
+        fetch("/read/notes/rate", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(payload)
+
+        })
+
+        .then(res => {
+
+            if (!res.ok)
+                throw new Error("Failed");
+
+            return res;
+
+        })
+
+        .then(() => {
+
+            document.getElementById(
+                "ratingStatus"
+            ).innerText =
+                "Thanks for your feedback 🙌";
+
+
+            selectedRating = 0;
+
+
+            document.getElementById(
+                "feedbackMessage"
+            ).value = "";
+
+        })
+
+        .catch(() => {
+
+            alert(
+                "Failed to submit rating"
+            );
+
+        })
+
+        .finally(() => {
+
+            isSubmitting = false;
+
+            btn.disabled = false;
+
+            btn.innerText = "Submit";
+
+        });
+
+    }
+
+</script>
+
+<!-- =========================================================
+     ADMIN REGENERATE NOTES
+     ========================================================= -->
+
+<script>
+
+    const urlParams =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const adminKey =
+        urlParams.get("adminKey");
+
+
+    if (adminKey) {
+
+        document.getElementById(
+            "regenBtn"
+        ).style.display = "inline-block";
+
+    }
+
+
+    function regenerateNotes() {
+
+        if (!adminKey)
+            return alert("Unauthorized");
+
+
+        fetch(
+            `/read/regenerate?subtopic=[[${topic.id}]]&key=${adminKey}`,
+            {
+                method: "POST"
+            }
+        )
+
+        .then(() =>
+            alert("Regeneration started")
+        );
+
+    }
+
+</script>
+
+<!-- =========================================================
+     RESTRICTED CONTENT REDIRECT
+     ========================================================= -->
+
+<script th:if="${restrictContent}">
+
+    (function () {
+
+        const isLoggedIn =
+            [[${loggedIn}]];
+
+
+        const restrictForSubscription =
+            [[${restrictForSubscription ?: false}]];
+
+
+        let redirectUrl = null;
+
+        let countdown = 5;
+
+
+        if (!isLoggedIn) {
+
+            redirectUrl =
+                '/read/login';
+
+        }
+
+        else if (restrictForSubscription) {
+
+            redirectUrl =
+                '/read/subscribe';
+
+        }
+
+
+        if (!redirectUrl)
+            return;
+
+
+        /* Create countdown banner */
+
+        const banner =
+            document.createElement('div');
+
+
+        banner.id =
+            'redirect-banner';
+
+
         banner.style.cssText = `
+
             position: fixed;
+
             bottom: 20px;
+
             left: 50%;
+
             transform: translateX(-50%);
+
             background: #800000;
+
             color: white;
+
             padding: 12px 24px;
+
             border-radius: 8px;
+
             font-size: 15px;
+
             font-weight: bold;
+
             z-index: 9999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+
+            box-shadow:
+                0 4px 12px rgba(0,0,0,0.25);
+
             text-align: center;
+
+            max-width: calc(100vw - 30px);
+
+            width: max-content;
+
         `;
 
-        const message = !isLoggedIn
-            ? '🔐 Redirecting to login'
-            : '💳 Redirecting to subscription page';
 
-        banner.innerHTML = `${message} in <span id="countdown-num">${countdown}</span>s&nbsp;&nbsp;
+        const message =
+            !isLoggedIn
+
+                ? '🔐 Redirecting to login'
+
+                : '💳 Redirecting to subscription page';
+
+
+        banner.innerHTML = `
+
+            ${message}
+            in
+            <span id="countdown-num">
+                ${countdown}
+            </span>s&nbsp;&nbsp;
+
             <a href="${redirectUrl}"
-               style="color:#ffd700; text-decoration:underline; font-weight:bold;">
-               Go now
-            </a>`;
 
-        document.body.appendChild(banner);
+               style="
+                    color:#ffd700;
+                    text-decoration:underline;
+                    font-weight:bold;
+               ">
 
-        const timer = setInterval(() => {
-            countdown--;
-            const el = document.getElementById('countdown-num');
-            if (el) el.textContent = countdown;
+                Go now
 
-            if (countdown <= 0) {
-                clearInterval(timer);
-                window.location.href = redirectUrl;
-            }
-        }, 1000);
+            </a>
+
+        `;
+
+
+        document.body.appendChild(
+            banner
+        );
+
+
+        const timer =
+            setInterval(() => {
+
+                countdown--;
+
+
+                const el =
+                    document.getElementById(
+                        'countdown-num'
+                    );
+
+
+                if (el)
+                    el.textContent =
+                        countdown;
+
+
+                if (countdown <= 0) {
+
+                    clearInterval(timer);
+
+                    window.location.href =
+                        redirectUrl;
+
+                }
+
+            }, 1000);
+
+
     })();
+
 </script>
+
 </body>
 </html>
