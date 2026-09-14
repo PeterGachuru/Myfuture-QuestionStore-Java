@@ -6,6 +6,7 @@ import ke.co.myfuture.Myfuture.Commonauth.Auth.Data.LoginSession;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevelRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.SubjectLevel.SubjectLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.SubjectLevel.SubjectLevelRepository;
+import ke.co.myfuture.Myfuture.QuestionStore.Subject.SubjectRepository;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizDone;
@@ -35,6 +36,9 @@ public class WebQuizController {
 
     @Autowired
     private SubjectLevelRepository subjectLevelRepository;
+
+    @Autowired
+    private SubjectRepository subjectRepository;
 
     @Autowired
     private IbukaStudentAccountRepository ibukaStudentAccountRepository;
@@ -320,8 +324,10 @@ public class WebQuizController {
          * the student to continue answering it.
          */
         if (quiz.endDate != null) {
-            return "redirect:/read/webquiz/result/"
-                    + quizId;
+            if (quiz.getContest() != null) {
+                return "redirect:/read/contests/" + quiz.getContest().getId() + "/details";
+            }
+            return "redirect:/read/webquiz/result/" + quizId;
         }
 
 
@@ -375,11 +381,31 @@ public class WebQuizController {
                 quizQuestions.size()
         );
 
+        // Quiz information shown while the student progresses through the quiz.
+        String classLevelName = curriLevelRepository.getName(student.getClasslevel());
+        String subjectName = subjectRepository.getName(quiz.subjectId);
+
+        model.addAttribute("classLevelName", classLevelName);
+        model.addAttribute("subjectName", subjectName);
+        model.addAttribute("isContest", quiz.getContest() != null);
+
+        if (quiz.getContest() != null) {
+            model.addAttribute("quizContext", "Contest challenge");
+        } else {
+            model.addAttribute("quizContext", "Practice quiz");
+        }
+
         model.addAttribute(
                 "student",
                 student
         );
 
+        Boolean autoLoggedIn =
+                (Boolean) request.getSession().getAttribute("studentAutoLoggedIn");
+        if (Boolean.TRUE.equals(autoLoggedIn)) {
+            model.addAttribute("studentAutoLoggedIn", true);
+            request.getSession().removeAttribute("studentAutoLoggedIn");
+        }
 
         return "read/webquiz/play";
     }
@@ -448,8 +474,10 @@ public class WebQuizController {
          * Don't allow answers after completion.
          */
         if (quiz.endDate != null) {
-            return "redirect:/read/webquiz/result/"
-                    + quizId;
+            if (quiz.getContest() != null) {
+                return "redirect:/read/contests/" + quiz.getContest().getId() + "/details";
+            }
+            return "redirect:/read/webquiz/result/" + quizId;
         }
 
 
@@ -484,8 +512,11 @@ public class WebQuizController {
                     quizId
             );
 
-            return "redirect:/read/webquiz/result/"
-                    + quizId;
+            if (quiz.getContest() != null) {
+                return "redirect:/read/contests/" + quiz.getContest().getId() + "/details";
+            }
+
+            return "redirect:/read/webquiz/result/" + quizId;
         }
 
 
@@ -564,6 +595,10 @@ public class WebQuizController {
                     webQuizService.finishQuiz(
                             quizId
                     );
+        }
+
+        if (quiz.getContest() != null) {
+            return "redirect:/read/contests/" + quiz.getContest().getId() + "/details";
         }
 
 

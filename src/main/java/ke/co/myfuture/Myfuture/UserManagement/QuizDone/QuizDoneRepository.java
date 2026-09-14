@@ -54,6 +54,13 @@ public interface QuizDoneRepository extends JpaRepository<QuizDone, Long> {
             IbukaStudentAccount student
     );
 
+    List<QuizDone> findByContest_IdOrderByScoreDescEndDateAsc(Long contestId);
+
+    Optional<QuizDone> findFirstByContest_IdAndStudent_IdOrderByCreatedAtDesc(
+            Long contestId,
+            Long studentId
+    );
+
     Optional<QuizDone> findByIdAndStudent_Id(
             Long quizId,
             Long studentId

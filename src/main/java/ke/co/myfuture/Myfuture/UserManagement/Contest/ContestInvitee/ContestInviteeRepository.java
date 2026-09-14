@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import jakarta.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface ContestInviteeRepository extends JpaRepository<ContestInvitee, Long> {
 
@@ -19,7 +20,11 @@ public interface ContestInviteeRepository extends JpaRepository<ContestInvitee, 
 
     List<ContestInvitee> findByContestOrderByCreatedAtDesc(Long contestId);
 
-    List<ContestInvitee>  findByStudentaccount(IbukaStudentAccount student);
+    int countByContest(Long contestId);
+
+    List<ContestInvitee> findByStudentaccount(IbukaStudentAccount student);
+
+    Optional<ContestInvitee> findByContestAndStudentaccount(Long contest, IbukaStudentAccount student);
 
     @Query(value = """
         SELECT DATE(attempted_at), COUNT(*)

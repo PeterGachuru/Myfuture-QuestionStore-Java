@@ -7,6 +7,8 @@ import lombok.Data;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "google_play_subscriptions")
@@ -18,10 +20,12 @@ public class GooglePlaySubscription {
     private Long id;
 
     @Column(nullable = false)
-    private String userId;
+    private Long userId;
 
     @Column(nullable = false)
     private String productId;
+
+    private Long installId;
 
     @Column(nullable = false, unique = true)
     private String purchaseToken;
@@ -44,5 +48,5 @@ public class GooglePlaySubscription {
     private String originalJson;
 
     @CreationTimestamp
-    private DateTime createdAt;
+    private LocalDateTime createdAt;
 }

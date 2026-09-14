@@ -22,6 +22,7 @@
             <th>Rating</th>
             <th>Version</th>
             <th>Message</th>
+            <th>Link</th>
             <th>Source</th>
             <th>Created</th>
         </tr>
@@ -48,8 +49,15 @@
 
             <td th:text="${r.message}"></td>
 
-            <td th:text="${r.source}"></td>
+            <td>
+                <a th:if="${r.source == 'WEB_NOTES'}"
+                   th:href="@{/read/topic/{subtopicId}/notes(subtopicId=${r.subtopicId})}"
+                   th:text="Link">
+                </a>
+            </td>
 
+
+            <td th:text="${r.source}"></td>
 
             <td th:text="${#dates.format(r.createdAt,'yyyy-MM-dd HH:mm')}"></td>
 

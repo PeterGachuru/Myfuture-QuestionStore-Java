@@ -66,12 +66,10 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
 
         if (hasStudents) {
-
             // Existing parent → select a student
             setDefaultTargetUrl("/read/students/select");
 
         } else {
-
             // New parent → create first student
             setDefaultTargetUrl("/read/students/create");
 

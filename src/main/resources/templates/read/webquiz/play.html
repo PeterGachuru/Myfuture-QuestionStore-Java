@@ -52,10 +52,36 @@
             );
         }
 
+        .quiz-info {
+            background: white;
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 14px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .quiz-context {
+            color: #800020;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .quiz-details {
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .separator {
+            color: #999;
+            margin: 0 7px;
+        }
+
         .counter {
             color: #666;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         .card {
@@ -109,6 +135,10 @@
 </head>
 
 <body>
+<div th:if="${studentAutoLoggedIn}"
+     style="max-width:900px;margin:12px auto;padding:12px 15px;background:#eaf7ee;border:1px solid #b8dfc2;border-radius:10px;font-family:Arial,sans-serif">
+    <strong>You're in!</strong> We automatically signed you into your student account from the Myfuture app.
+</div>
 
 <div class="header">
     Myfuture CBC Revision
@@ -116,6 +146,15 @@
 
 
 <div class="container">
+
+    <div class="quiz-info">
+        <div class="quiz-context" th:text="${quizContext}"></div>
+        <div class="quiz-details">
+            <span th:text="${classLevelName}"></span>
+            <span class="separator">•</span>
+            <span th:text="${subjectName}"></span>
+        </div>
+    </div>
 
     <div class="counter">
 

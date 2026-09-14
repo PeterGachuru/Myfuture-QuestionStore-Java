@@ -1,4 +1,4 @@
-package ke.co.myfuture.Myfuture.Commonauth.Filters;
+package ke.co.myfuture.Myfuture.Commonauth.WebSessionServices;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

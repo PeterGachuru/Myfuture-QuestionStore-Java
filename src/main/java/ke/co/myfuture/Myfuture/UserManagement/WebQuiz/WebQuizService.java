@@ -10,6 +10,12 @@ import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizDone;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizDoneRepository;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizQuestion.QuizQuestion;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizQuestion.QuizQuestionRepository;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.Contest;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestRepository;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInvitee;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInviteeRepository;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion.ContestQuestion;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion.ContestQuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +40,15 @@ public class WebQuizService {
 
     @Autowired
     private IbukaStudentAccountRepository studentRepository;
+
+    @Autowired
+    private ContestRepository contestRepository;
+
+    @Autowired
+    private ContestQuestionRepository contestQuestionRepository;
+
+    @Autowired
+    private ContestInviteeRepository contestInviteeRepository;
 
 
 
@@ -207,6 +222,80 @@ public class WebQuizService {
 
         return saved;
     }
+
+    public QuizDone createContestQuiz(Long studentId, Long contestId) {
+        IbukaStudentAccount student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        Contest contest = contestRepository.findById(contestId)
+                .orElseThrow(() -> new RuntimeException("Contest not found"));
+
+        ContestInvitee invitee = contestInviteeRepository
+                .findByContestAndStudentaccount(contestId, student)
+                .orElseThrow(() -> new RuntimeException("Student is not invited to this contest"));
+
+        if (invitee.isAttempted()) {
+            return quizDoneRepository
+                    .findFirstByContest_IdAndStudent_IdOrderByCreatedAtDesc(contestId, studentId)
+                    .orElseThrow(() -> new RuntimeException("Contest already attempted"));
+        }
+
+        // Resume an unfinished web attempt if one exists.
+        Optional<QuizDone> existing = quizDoneRepository
+                .findFirstByContest_IdAndStudent_IdOrderByCreatedAtDesc(contestId, studentId);
+        if (existing.isPresent() && existing.get().getEndDate() == null) {
+            return existing.get();
+        }
+
+        List<ContestQuestion> contestQuestions =
+                contestQuestionRepository.findByContestOrderByIdAsc(contestId);
+
+        if (contestQuestions.isEmpty()) {
+            throw new RuntimeException("This contest has no questions");
+        }
+
+        QuizDone quiz = new QuizDone();
+        quiz.questionsCount = contestQuestions.size();
+        quiz.student = student;
+        quiz.contest = contest;
+        quiz.startDate = new Date();
+        quiz.subjectId = contest.subjectId;
+        quiz.score = 0;
+        quiz.overall = contestQuestions.size();
+        quiz.deleted = false;
+        quiz.platform = "WEB";
+        quiz.category = "CONTEST";
+        quiz.inid = System.currentTimeMillis();
+        quiz.installId = 0L;
+
+        QuizDone saved = quizDoneRepository.save(quiz);
+
+        List<QuizQuestion> quizQuestions = new ArrayList<>();
+        int position = 1;
+
+        for (ContestQuestion contestQuestion : contestQuestions) {
+            CurriQuestion question = curriQuestionRepository.findById(contestQuestion.getQuestion())
+                    .orElseThrow(() -> new RuntimeException("Contest question not found"));
+
+            QuizQuestion qq = new QuizQuestion();
+            qq.quiz = saved.id;
+            qq.questionId = question.id;
+            qq.position = position++;
+
+            List<Long> choices = question.getChoices().stream()
+                    .map(c -> c.id)
+                    .collect(Collectors.toList());
+            Collections.shuffle(choices);
+            qq.choicesOrder = choices.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(","));
+            quizQuestions.add(qq);
+        }
+
+        quizQuestionRepository.saveAll(quizQuestions);
+        return saved;
+    }
+
     public WebQuizQuestionDTO getQuestion(
             Long quizId,
             int position
@@ -355,6 +444,10 @@ public class WebQuizService {
                         .findById(quizId)
                         .orElseThrow();
 
+        // Prevent repeated result-page refreshes from awarding points repeatedly.
+        if (quiz.endDate != null) {
+            return quiz;
+        }
 
         List<QuizQuestion> questions =
                 quizQuestionRepository
@@ -384,8 +477,17 @@ public class WebQuizService {
 
         QuizDone savedQuiz = quizDoneRepository.save(quiz);
         IbukaStudentAccount ibukaStudentAccount = savedQuiz.getStudent();
-        ibukaStudentAccount.addScore((long) (score*2));
+        ibukaStudentAccount.addScore((long) (score * 2));
         studentRepository.save(ibukaStudentAccount);
+
+        if (savedQuiz.getContest() != null) {
+            contestInviteeRepository.updateScore(
+                    savedQuiz.getContest().getId(),
+                    ibukaStudentAccount.getId(),
+                    score
+            );
+        }
+
         return savedQuiz;
     }
 

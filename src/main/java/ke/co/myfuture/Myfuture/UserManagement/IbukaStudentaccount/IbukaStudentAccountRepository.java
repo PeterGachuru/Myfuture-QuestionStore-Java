@@ -27,6 +27,21 @@ public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStuden
             @Param("count") Integer count,
             @Param("classlevels") List<Long> classlevels,
             @Param("studentId") Long studentId);
+
+    @Query(value = """
+        SELECT *
+        FROM ibuka_student_account
+        WHERE name LIKE CONCAT('%', :search, '%')
+          AND classlevel = :classlevel
+          AND id <> :studentId
+        ORDER BY id DESC
+        LIMIT :count
+        """, nativeQuery = true)
+    List<IbukaStudentAccount> contestInviteesExactClass(
+            @Param("search") String search,
+            @Param("count") Integer count,
+            @Param("classlevel") Long classlevel,
+            @Param("studentId") Long studentId);
     List<IbukaStudentAccount> findByParent(Long parentId);
     Optional<IbukaStudentAccount> findByShareCode(String shareCode);
 
