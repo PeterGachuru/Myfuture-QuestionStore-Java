@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+    <h2>Topics</h2>
+
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>S/N</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Subject</th>
+            <th>Level</th>
+            <th>Parent</th>
+            <th>Created By</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="t, stat : ${topics}">
+            <td th:text="${stat.index + 1}"></td>
+
+            <td th:text="${t.id}"></td>
+
+            <td th:text="${t.name}"></td>
+
+            <td th:text="${t.subject != null ? t.subject.name : '-'}"></td>
+
+            <td th:text="${t.curriLevel != null ? t.curriLevel.name : '-'}"></td>
+
+            <td th:text="${t.parent != null ? t.parent.name : '-'}"></td>
+
+            <td th:text="${t.createdBy}"></td>
+
+            <td th:text="${#dates.format(t.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+
+            <td th:text="${#dates.format(t.updatedAt,'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+</body>
+</html>

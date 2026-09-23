@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <h2>Posts</h2>
+    <p>Latest 300 posts with attempts</p>
+
+    <table class="admin-table">
+
+        <thead>
+        <tr>
+            <th>S/N</th>
+            <th>ID</th>
+            <th>Student</th>
+            <th>Question ID</th>
+            <th>Install ID</th>
+            <th>Attempts</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="p, stat : ${posts}">
+
+            <td th:text="${stat.index + 1}"></td>
+
+            <td th:text="${p.id}"></td>
+
+            <td>
+                <a th:href="@{/admin/students/{id}(id=${p.studentaccount.id})}" th:text="${p.studentaccount.name}"></a>
+            </td>
+
+            <td th:text="${p.questionid}"></td>
+
+            <td th:text="${p.installId}"></td>
+
+            <td th:text="${attemptsMap[p.id]}"></td>
+
+            <td th:text="${#dates.format(p.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+
+            <td th:text="${#dates.format(p.updatedAt,'yyyy-MM-dd HH:mm')}"></td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+
+<style>
+    .admin-table{
+    width:100%;
+    border-collapse:collapse;
+    }
+
+    .admin-table th{
+    background:#2c3e50;
+    color:black;
+    padding:10px;
+    }
+
+    .admin-table td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    }
+
+    .admin-table tr:hover{
+    background:#f5f5f5;
+    }
+</style>
+
+</body>
+</html>

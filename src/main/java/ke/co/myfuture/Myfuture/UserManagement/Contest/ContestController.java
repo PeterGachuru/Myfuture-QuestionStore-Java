@@ -3,6 +3,7 @@ package ke.co.myfuture.Myfuture.UserManagement.Contest;
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevelRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInviteeRepository;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestFriendship.ContestFriendshipRepository;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
@@ -30,6 +31,8 @@ public class ContestController {
     CurriLevelRepository curriLevelRepository;
     @Autowired
     ContestInviteeRepository contestInviteeRepository;
+    @Autowired
+    ContestFriendshipRepository contestFriendshipRepository;
     @Autowired
     ContestService contestService;
     @Autowired
@@ -92,7 +95,26 @@ public class ContestController {
         response.setStatus("Success");
         response.setMessage("Invitees retrieved Successfully");
         ibukaStudentAccountRepository.updateRecentActivity(studentId);
-        response.setEntity(ibukaStudentAccountRepository.contestInviteesExactClass(search, 30, classlevel, studentId));
+        List<Long> orderedInviteeIds =
+                contestFriendshipRepository.contestInviteeIdsOrderedByRelationship(
+                        search, 100, classlevel, studentId);
+
+        // findAllById does not guarantee database ordering, so rebuild the
+        // response in exactly the order returned by the relationship query.
+        java.util.Map<Long, IbukaStudentAccount> studentsById =
+                ibukaStudentAccountRepository.findAllById(orderedInviteeIds)
+                        .stream()
+                        .collect(java.util.stream.Collectors.toMap(
+                                IbukaStudentAccount::getId,
+                                student -> student
+                        ));
+
+        List<IbukaStudentAccount> orderedInvitees = orderedInviteeIds.stream()
+                .map(studentsById::get)
+                .filter(java.util.Objects::nonNull)
+                .toList();
+
+        response.setEntity(orderedInvitees);
         response.setStatusCode(200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

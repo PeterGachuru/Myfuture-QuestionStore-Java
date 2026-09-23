@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Contest - Myfuture CBC Revision</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        *{box-sizing:border-box}
+        body{margin:0;font-family:Arial,sans-serif;background:#f6f7f9;color:#27323a}
+        .wrap{max-width:950px;margin:24px auto;padding:0 16px 50px}
+        .header{background:#800020;color:#fff;border-radius:18px;padding:24px}
+        .header h1{margin:0 0 7px}
+        .notice{background:#eaf7ee;border:1px solid #b8dfc2;padding:12px 15px;border-radius:10px;margin:16px 0}
+        .panel{background:#fff;border:1px solid #e1e5e8;border-radius:16px;padding:20px;margin-top:16px}
+        label{display:block;font-weight:700;margin:12px 0 7px}
+        input{padding:11px;border:1px solid #cfd5da;border-radius:9px;font-size:15px}
+        .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+        .list{max-height:330px;overflow:auto;border:1px solid #e0e4e7;border-radius:10px;padding:8px}
+        .option{display:flex;gap:12px;align-items:center;padding:11px 10px;border-bottom:1px solid #f0f1f2;border-radius:8px;cursor:pointer;transition:background .12s ease}.option:hover{background:#fff7f2}
+        .option:last-child{border:0}
+        .option input{width:22px;height:22px;margin:0;flex:0 0 22px;accent-color:#800020;cursor:pointer}
+        .option label{margin:0;font-weight:500;cursor:pointer;flex:1;line-height:1.35;padding:3px 0}
+        .muted{color:#68737c;font-size:14px}
+        .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+        .btn{display:inline-block;padding:12px 17px;border:0;border-radius:10px;font-weight:700;text-decoration:none;cursor:pointer}
+        .primary{background:#e8580a;color:#fff}
+        .light{background:#fff;color:#800020;border:1px solid #ddd}
+        .error{color:#b42318;margin-top:8px}
+        .counter{font-size:13px;color:#68737c;margin:7px 0}
+        .subject-options{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+            gap:8px;
+            margin-top:8px;
+        }
+        .subject-option{
+            position:relative;
+        }
+        .subject-option input{
+            position:absolute;
+            opacity:0;
+            pointer-events:none;
+        }
+        .subject-option label{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            min-height:44px;
+            margin:0;
+            padding:9px 12px;
+            border:1px solid #cfd5da;
+            border-radius:10px;
+            background:#fff;
+            font-weight:600;
+            text-align:center;
+            cursor:pointer;
+        }
+        .subject-option input:checked + label{
+            border-color:#800020;
+            background:#fff4f6;
+            color:#800020;
+            box-shadow:0 0 0 2px rgba(128,0,32,.10);
+        }
+        .subject-option input:focus-visible + label{
+            outline:2px solid #e8580a;
+            outline-offset:2px;
+        }
+        .section-heading{margin:0 0 4px}
+        .question-notice{margin:16px 0 0}
+        .invite-panel{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:16px;align-items:start}
+        .selected-panel{border:1px solid #e0e4e7;border-radius:10px;background:#fafbfc;overflow:hidden}
+        .selected-header{padding:10px 12px;border-bottom:1px solid #e0e4e7;font-weight:700;color:#800020;background:#fff}
+        .selected-list{max-height:330px;overflow:auto}
+        .selected-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border-bottom:1px solid #eceff1}
+        .selected-row:last-child{border-bottom:0}
+        .selected-name{min-width:0;font-size:14px}
+        .selected-name strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .remove-btn{flex:0 0 auto;border:0;background:transparent;color:#b42318;font-size:13px;font-weight:700;cursor:pointer;padding:5px}
+        .empty-selected{padding:14px 12px;color:#68737c;font-size:14px}
+        @media(max-width:820px){.invite-panel{grid-template-columns:1fr}}
+        @media(max-width:720px){.grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="header">
+        <h1>🏆 Create a contest</h1>
+        <div th:text="'You are creating this for ' + ${curriLevel != null ? curriLevel.name : 'your class'}">Your class</div>
+    </div>
+
+    <div th:if="${studentAutoLoggedIn}" class="notice">
+        <strong>You're in!</strong> We automatically signed you into your student account from the Myfuture app.
+    </div>
+
+    <div class="panel">
+        <form method="post" action="/read/contests/create" id="contestForm">
+
+            <label class="section-heading">Subject</label>
+            <div class="subject-options">
+                <div class="subject-option" th:each="sl : ${subjectLevels}">
+                    <input type="radio"
+                           name="subjectId"
+                           th:id="'subject-' + ${sl.subject.id}"
+                           th:value="${sl.subject.id}"
+                           required>
+                    <label th:for="'subject-' + ${sl.subject.id}"
+                           th:text="${sl.subject.name}">Mathematics</label>
+                </div>
+            </div>
+
+            <div style="margin-top:18px">
+                <label for="inviteeSearch" class="section-heading">Invite classmates</label>
+                <div class="invite-panel">
+                    <div>
+                        <input id="inviteeSearch"
+                               type="search"
+                               placeholder="Search classmates by name..."
+                               style="width:100%">
+                        <div id="inviteeList" class="list" style="margin-top:8px">
+                            <div class="muted" style="padding:12px">Loading classmates...</div>
+                        </div>
+                    </div>
+
+                    <div class="selected-panel">
+                        <div class="selected-header">
+                            Selected classmates <span id="selectedCountBadge">0</span>
+                        </div>
+                        <div id="selectedList" class="selected-list">
+                            <div class="empty-selected">No classmates selected yet.</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="inviteeCounter" class="counter">0 classmates selected</div>
+                <div class="muted">
+                    Students in your class are shown automatically. Search for more classmates without losing previous selections.
+                    You are automatically included as a participant.
+                </div>
+                <div id="selectedInvitees"></div>
+            </div>
+
+            <div class="notice question-notice">
+                <strong>20 questions</strong> will be created automatically, with questions mixed across different topics and subtopics.
+            </div>
+
+            <div id="formError" class="error"></div>
+            <div class="actions">
+                <button class="btn primary" type="submit">Create contest →</button>
+                <a class="btn light" href="/read/contests">Cancel</a>
+                <a class="btn light" href="/read/myprofile">Back to profile</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const invitees = document.getElementById('inviteeList');
+const form = document.getElementById('contestForm');
+const selectedInvitees = document.getElementById('selectedInvitees');
+const inviteeCounter = document.getElementById('inviteeCounter');
+const inviteeSearch = document.getElementById('inviteeSearch');
+
+let searchTimer;
+const selectedInviteeIds = new Set();
+
+const selectedList = document.getElementById('selectedList');
+const selectedCountBadge = document.getElementById('selectedCountBadge');
+const selectedInviteeDetails = new Map();
+
+function renderSelectedInvitees() {
+    selectedList.innerHTML = '';
+    selectedCountBadge.textContent = selectedInviteeIds.size;
+
+    if (selectedInviteeIds.size === 0) {
+        selectedList.innerHTML = '<div class="empty-selected">No classmates selected yet.</div>';
+        return;
+    }
+
+    selectedInviteeIds.forEach(id => {
+        const student = selectedInviteeDetails.get(id);
+        if (!student) return;
+
+        const row = document.createElement('div');
+        row.className = 'selected-row';
+
+        const name = document.createElement('div');
+        name.className = 'selected-name';
+        const strong = document.createElement('strong');
+        strong.textContent = student.name;
+        name.appendChild(strong);
+        if (student.school) {
+            const school = document.createElement('span');
+            school.className = 'muted';
+            school.textContent = student.school;
+            name.appendChild(school);
+        }
+
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'remove-btn';
+        remove.textContent = 'Remove';
+        remove.addEventListener('click', () => {
+            selectedInviteeIds.delete(id);
+            selectedInviteeDetails.delete(id);
+            updateSelectedInviteeInputs();
+            updateVisibleCheckboxes();
+        });
+
+        row.appendChild(name);
+        row.appendChild(remove);
+        selectedList.appendChild(row);
+    });
+}
+
+function updateSelectedInviteeInputs() {
+    selectedInvitees.innerHTML = '';
+
+    selectedInviteeIds.forEach(id => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'inviteeIds';
+        input.value = id;
+        selectedInvitees.appendChild(input);
+    });
+
+    inviteeCounter.textContent =
+        selectedInviteeIds.size + ' classmates selected';
+
+    renderSelectedInvitees();
+}
+
+function updateVisibleCheckboxes() {
+    invitees.querySelectorAll('input[type="checkbox"]').forEach(input => {
+        input.checked = selectedInviteeIds.has(String(input.value));
+    });
+}
+
+function attachInviteeHandlers() {
+    invitees.querySelectorAll('input[type="checkbox"]').forEach(input => {
+        input.addEventListener('change', () => {
+            const id = String(input.value);
+
+            if (input.checked) {
+                selectedInviteeIds.add(id);
+            } else {
+                selectedInviteeIds.delete(id);
+                selectedInviteeDetails.delete(id);
+            }
+
+            updateSelectedInviteeInputs();
+        });
+    });
+
+    updateVisibleCheckboxes();
+}
+
+async function loadInvitees() {
+    const search = inviteeSearch.value.trim();
+
+    invitees.innerHTML =
+        '<div class="muted" style="padding:12px">Loading classmates...</div>';
+
+    try {
+        const response = await fetch(
+            '/read/contests/invitees?search=' + encodeURIComponent(search)
+        );
+
+        if (!response.ok) {
+            throw new Error('Unable to load classmates');
+        }
+
+        const data = await response.json();
+
+        invitees.innerHTML = '';
+
+        if (!data.length) {
+            invitees.innerHTML =
+                '<div class="muted" style="padding:12px">No classmates found.</div>';
+            updateSelectedInviteeInputs();
+            return;
+        }
+
+        data.forEach(s => {
+            const id = String(s.id);
+            selectedInviteeDetails.set(id, s);
+
+            const row = document.createElement('div');
+            row.className = 'option';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = 'invitee-' + id;
+            checkbox.value = s.id;
+            checkbox.checked = selectedInviteeIds.has(id);
+            checkbox.setAttribute('aria-label', 'Select ' + s.name);
+
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent =
+                s.name + (s.school ? ' · ' + s.school : '');
+
+            // Make the whole student row clickable, not just the checkbox/name.
+            row.addEventListener('click', event => {
+                if (event.target === checkbox || event.target === label) return;
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+            });
+
+            row.appendChild(checkbox);
+            row.appendChild(label);
+            invitees.appendChild(row);
+        });
+
+        attachInviteeHandlers();
+        updateSelectedInviteeInputs();
+
+    } catch (error) {
+        invitees.innerHTML =
+            '<div class="muted" style="padding:12px">Could not load classmates. Please try again.</div>';
+    }
+}
+
+inviteeSearch.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(loadInvitees, 250);
+});
+
+form.addEventListener('submit', e => {
+    const subject = document.querySelector('input[name="subjectId"]:checked');
+
+    if (!subject) {
+        e.preventDefault();
+        document.getElementById('formError').textContent =
+            'Select a subject.';
+        return;
+    }
+
+    if (selectedInviteeIds.size === 0) {
+        e.preventDefault();
+        document.getElementById('formError').textContent =
+            'Select at least one classmate.';
+        return;
+    }
+
+    updateSelectedInviteeInputs();
+});
+
+// Prepopulate the page immediately with classmates.
+loadInvitees();
+</script>
+</body>
+</html>

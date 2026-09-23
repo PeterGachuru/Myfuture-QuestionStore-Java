@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Quiz Results - Myfuture</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f6f7fb;
+            color: #333;
+        }
+
+        .header {
+            background: #800020;
+            color: white;
+            padding: 18px 25px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        .summary {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 30px rgba(0,0,0,.08);
+        }
+
+        .summary h1 {
+            margin-top: 0;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #800020;
+        }
+
+        .percentage {
+            font-size: 22px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .question {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,.05);
+        }
+
+        .correct {
+            border-left: 6px solid #28a745;
+        }
+
+        .wrong {
+            border-left: 6px solid #dc3545;
+        }
+
+        .unanswered {
+            border-left: 6px solid #6c757d;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .question-number {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .status {
+            font-weight: bold;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .correctStatus {
+            background: #e8f7ed;
+            color: #218838;
+        }
+
+        .wrongStatus {
+            background: #fdecec;
+            color: #c82333;
+        }
+
+        .unansweredStatus {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        .question-text {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .choices {
+            margin-top: 15px;
+        }
+
+        .choice {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 9px;
+            margin-bottom: 10px;
+            background: #fafafa;
+        }
+
+        .selected {
+            border: 2px solid #800020;
+            background: #fff5f7;
+        }
+
+        .correctChoice {
+            border: 2px solid #28a745;
+            background: #eaf8ee;
+        }
+
+        .selectedCorrect {
+            border: 2px solid #28a745;
+            background: #eaf8ee;
+        }
+
+        .choice-label {
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .choice-status {
+            float: right;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .your-answer {
+            margin-top: 15px;
+            padding: 12px 15px;
+            background: #f7f7f7;
+            border-radius: 9px;
+        }
+
+        .explanation {
+            background: #f7f7f7;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 18px;
+            line-height: 1.6;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 13px 25px;
+            background: #800020;
+            color: white;
+            text-decoration: none;
+            border-radius: 9px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .button:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                margin: 15px auto;
+                padding: 12px;
+            }
+
+            .summary {
+                padding: 22px 15px;
+            }
+
+            .question {
+                padding: 18px;
+            }
+
+            .score {
+                font-size: 40px;
+            }
+
+            .question-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="header">
+    Myfuture CBC Revision
+</div>
+
+<div class="container">
+
+    <!-- ========================= -->
+    <!-- QUIZ SUMMARY -->
+    <!-- ========================= -->
+
+    <div class="summary">
+
+        <h1>Quiz Complete 🎉</h1>
+
+        <div class="score">
+
+            <span th:text="${quiz.score}">0</span>
+            /
+            <span th:text="${quiz.overall}">20</span>
+
+        </div>
+
+        <div class="percentage"
+             th:if="${quiz.overall != null and quiz.overall > 0}">
+
+        <span th:text="${quiz.score * 100 / quiz.overall}">
+            0
+        </span>%
+
+        </div>
+
+        <p>
+            Well done!
+        </p>
+
+        <a class="button"
+           th:href="@{/read/webquiz}">
+            Take Another Quiz
+        </a>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- QUESTIONS -->
+    <!-- ========================= -->
+
+    <div th:each="result, stat : ${results}"
+         class="question"
+         th:classappend="${result.gotCorrect == true ? 'correct' :
+                       result.answered == true ? 'wrong' :
+                       'unanswered'}">
+
+
+        <div class="question-header">
+
+            <div class="question-number">
+
+                Question
+                <span th:text="${stat.count}">
+                1
+            </span>
+
+            </div>
+
+
+            <!-- CORRECT -->
+
+            <div
+                    th:if="${result.gotCorrect == true}"
+                    class="status correctStatus">
+
+                ✓ Correct
+
+            </div>
+
+
+            <!-- WRONG -->
+
+            <div
+                    th:if="${result.answered == true and result.gotCorrect != true}"
+                    class="status wrongStatus">
+
+                ✗ Wrong
+
+            </div>
+
+
+            <!-- UNANSWERED -->
+
+            <div
+                    th:if="${result.answered != true}"
+                    class="status unansweredStatus">
+
+                Not Answered
+
+            </div>
+
+        </div>
+
+
+        <!-- QUESTION -->
+
+        <div class="question-text"
+             th:text="${result.question}">
+
+            Question text
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- CHOICES -->
+        <!-- ========================= -->
+
+        <div class="choices">
+
+            <div
+                    th:each="choice : ${result.choices}"
+                    class="choice"
+                    th:classappend="${
+                    choice.correct == true and
+                    result.selectedChoice == choice.id
+                    ? 'selectedCorrect'
+                    :
+                    choice.correct == true
+                    ? 'correctChoice'
+                    :
+                    result.selectedChoice == choice.id
+                    ? 'selected'
+                    : ''
+                }">
+
+
+            <span class="choice-label"
+                  th:text="${choice.id}">
+                1
+            </span>
+
+
+                <span th:text="${choice.value}">
+                Choice text
+            </span>
+
+
+                <!-- Student selected this choice -->
+
+                <span
+                        th:if="${result.selectedChoice == choice.id}"
+                        class="choice-status">
+
+                Your answer
+
+            </span>
+
+
+                <!-- Correct answer -->
+
+                <span
+                        th:if="${choice.correct == true and result.selectedChoice != choice.id}"
+                        class="choice-status">
+
+                Correct answer
+
+            </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- YOUR ANSWER -->
+        <!-- ========================= -->
+
+        <div
+                th:if="${result.selectedChoice != null}"
+                class="your-answer">
+
+            <strong>Your answer:</strong>
+
+            <span
+                    th:each="choice : ${result.choices}"
+                    th:if="${choice.id == result.selectedChoice}"
+                    th:text="${choice.value}">
+        </span>
+
+        </div>
+
+
+        <div
+                th:if="${result.selectedChoice == null}"
+                class="your-answer">
+
+            <strong>Your answer:</strong>
+            Not answered
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- EXPLANATION -->
+        <!-- ========================= -->
+
+        <div
+                th:if="${result.explanation != null and !#strings.isEmpty(result.explanation)}"
+                class="explanation">
+
+            <strong>Explanation</strong>
+
+            <p th:text="${result.explanation}">
+            </p>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

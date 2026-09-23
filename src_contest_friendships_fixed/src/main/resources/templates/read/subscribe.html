@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Subscription Plans | Myfuture CBC Revision</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #fafafa;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #800000;
+            margin-bottom: 15px;
+        }
+
+        /* ================= LEFT SIDE ================= */
+        .left {
+            flex: 2;
+        }
+
+        .info-box {
+            background: #fff;
+            border-left: 5px solid #800000;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .info-box a {
+            color: #800000;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .info-box a:hover {
+            text-decoration: underline;
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .plan {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+        .plan:hover {
+            background: #fff3e0;
+            transform: translateY(-2px);
+        }
+
+        .plan-price {
+            color: #800000;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* ================= RIGHT CHECKOUT PANEL ================= */
+        .right {
+            flex: 1;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .checkout {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .checkout h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .checkout-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        input {
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .pay-btn {
+            padding: 12px;
+            border-radius: 6px;
+            background: #800000;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .pay-btn:hover {
+            background: #a00000;
+        }
+
+        #msg {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .status-box {
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* ================= MOBILE ================= */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .right {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Choose Subscription Plan</h2>
+
+<div class="container">
+
+    <!-- LEFT SIDE -->
+    <div class="left">
+
+        <div class="info-box">
+            <p>
+                Your subscription gives you full access to all learning materials, quizzes, and performance tracking
+                on both web and mobile app.
+            </p>
+
+            <p>
+                📱 Mobile app:
+                <a href="https://play.google.com/store/apps/details?id=ke.co.myfuture" target="_blank">
+                    Myfuture CBC Revision app
+                </a>
+            </p>
+
+            <p>
+                Subscription works across all devices linked to your email automatically.
+            </p>
+        </div>
+
+        <div class="plans-grid">
+
+            <div th:each="plan : ${plans}"
+                 class="plan"
+                 th:onclick="'selectPlan(' + ${plan.durationDays} + ',' + ${plan.price} + ')'">
+
+                <span th:text="${plan.name}"></span>
+
+                <span class="plan-price">
+                    Ksh <span th:text="${plan.price}"></span>
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT SIDE (CHECKOUT) -->
+    <div class="right">
+
+        <div class="checkout">
+
+            <h3 id="selectedPlan">Select a plan</h3>
+
+            <div class="checkout-box">
+
+                <input type="text" id="phone" placeholder="07XXXXXXXX">
+
+                <button class="pay-btn" onclick="payMpesa()">
+                    Pay with M-Pesa
+                </button>
+
+                <div id="msg"></div>
+
+            </div>
+
+            <div id="statusBox" class="status-box">
+                <h4 id="statusText"></h4>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+    let selectedDays = 0;
+    let selectedPrice = 0;
+
+    const installId = [[${installId}]];
+    const userEmail = [[${userEmail}]];
+
+    function selectPlan(days, price) {
+        selectedDays = days;
+        selectedPrice = price;
+
+        document.getElementById("selectedPlan").innerText =
+            days + " Days - Ksh " + price;
+    }
+
+    function payMpesa() {
+
+        let phone = document.getElementById("phone").value.trim();
+
+        if (phone.length !== 10) {
+            alert("Enter valid phone number");
+            return;
+        }
+
+        let fullPhone = "254" + phone.substring(1);
+
+        let now = new Date();
+        let end = new Date();
+        end.setDate(now.getDate() + selectedDays);
+
+        let payload = {
+            phoneNumber: fullPhone,
+            payAmount: selectedPrice,
+            numberOfDays: selectedDays,
+            subscriptionType: "DAYS_" + selectedDays,
+            status: "PENDING",
+            platformSource: "study.myfuture.co.ke",
+            installId: installId,
+            emailAddress: userEmail,
+            startDate: now.toISOString(),
+            endDate: end.toISOString()
+        };
+
+        document.getElementById("msg").innerText = "Sending STK Push...";
+
+        fetch("/myfuture/subscriptions/mpesastk", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("msg").innerText =
+                "Check your phone for STK push...";
+
+            startPolling(data.id);
+        })
+        .catch(() => {
+            alert("Failed to start payment");
+        });
+    }
+
+
+    function startPolling(id) {
+
+        document.getElementById("statusBox").style.display = "block";
+        document.getElementById("statusText").innerText =
+            "Waiting for payment...";
+
+        let interval;
+
+        // First status check after 10 seconds
+        setTimeout(() => {
+
+            checkPaymentStatus();
+
+            // Then check every 1 second
+            interval = setInterval(() => {
+                checkPaymentStatus();
+            }, 1000);
+
+        }, 10000);
+
+
+        function checkPaymentStatus() {
+
+            fetch("/myfuture/subscriptions/mpesastk/status/" + id)
+                .then(res => res.json())
+                .then(data => {
+
+                    if (data.status === "SUCCESS") {
+
+                        clearInterval(interval);
+
+                        document.getElementById("statusText").innerText =
+                            "✅ Payment Successful";
+
+                        // Redirect 1 second after displaying success
+                        setTimeout(() => {
+                            window.location.href = "/read/myprofile";
+                        }, 1000);
+                    }
+
+                    if (data.status === "FAILED") {
+
+                        clearInterval(interval);
+
+                        document.getElementById("statusText").innerText =
+                            "❌ Payment Failed";
+                    }
+
+                })
+                .catch(() => {
+                    // Ignore temporary polling errors
+                });
+        }
+    }
+
+
+</script>
+
+</body>
+</html>

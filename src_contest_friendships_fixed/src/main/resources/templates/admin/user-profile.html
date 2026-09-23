@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/layout :: styles"></head>
+
+<body>
+
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+
+    <!-- ========================================================= -->
+    <!-- PAGE HEADER -->
+    <!-- ========================================================= -->
+
+    <div class="page-header">
+
+        <div>
+            <h2>User Profile</h2>
+
+            <p class="subtitle">
+                Complete account information and associated students
+            </p>
+        </div>
+
+        <div>
+            <a href="/admin/users" class="back-button">
+                ← Back to Users
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- USER SUMMARY -->
+    <!-- ========================================================= -->
+
+    <div class="profile-summary">
+
+        <!-- Profile picture -->
+
+        <div class="profile-picture-container">
+
+            <img
+                    th:if="${user.pictureUrl != null and !#strings.isEmpty(user.pictureUrl)}"
+                    th:src="${user.pictureUrl}"
+                    class="profile-picture"
+                    alt="Profile Picture">
+
+            <div
+                    th:unless="${user.pictureUrl != null and !#strings.isEmpty(user.pictureUrl)}"
+                    class="profile-picture-placeholder">
+
+                <span
+                        th:text="${user.firstName != null
+                            ? #strings.substring(user.firstName,0,1).toUpperCase()
+                            : 'U'}">
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- Main identity -->
+
+        <div class="profile-main">
+
+            <h1
+                    th:text="${user.fullName != null
+                        ? user.fullName
+                        : ((user.firstName != null ? user.firstName : '')
+                            + ' '
+                            + (user.lastName != null ? user.lastName : ''))}">
+            </h1>
+
+            <div class="profile-email"
+                 th:text="${user.email}">
+            </div>
+
+            <div class="profile-badges">
+
+                <span
+                        class="badge"
+                        th:classappend="${user.status == 'ACTIVE'
+                            ? ' badge-success'
+                            : ' badge-danger'}"
+                        th:text="${user.status}">
+                </span>
+
+                <span
+                        class="badge badge-success"
+                        th:if="${user.isLoggedIn == 1}">
+                    Currently Logged In
+                </span>
+
+                <span
+                        class="badge badge-secondary"
+                        th:if="${user.isLoggedIn != 1}">
+                    Currently Logged Out
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- ACCOUNT INFORMATION -->
+    <!-- ========================================================= -->
+
+    <div class="section">
+
+        <div class="section-title">
+            Account Information
+        </div>
+
+        <div class="details-grid">
+
+            <div class="detail-item">
+                <div class="detail-label">User ID</div>
+                <div class="detail-value"
+                     th:text="${user.id}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">Email</div>
+                <div class="detail-value"
+                     th:text="${user.email}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">Phone Number</div>
+                <div class="detail-value"
+                     th:text="${user.phoneNumber != null
+                        ? user.phoneNumber
+                        : 'N/A'}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">First Name</div>
+                <div class="detail-value"
+                     th:text="${user.firstName != null
+                        ? user.firstName
+                        : 'N/A'}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">Last Name</div>
+                <div class="detail-value"
+                     th:text="${user.lastName != null
+                        ? user.lastName
+                        : 'N/A'}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">Full Name</div>
+                <div class="detail-value"
+                     th:text="${user.fullName != null
+                        ? user.fullName
+                        : 'N/A'}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">County</div>
+                <div class="detail-value"
+                     th:text="${user.county != null
+                        ? user.county
+                        : 'N/A'}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">Status</div>
+                <div class="detail-value">
+                    <span
+                            class="badge"
+                            th:classappend="${user.status == 'ACTIVE'
+                                ? ' badge-success'
+                                : ' badge-danger'}"
+                            th:text="${user.status}">
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- LOGIN INFORMATION -->
+    <!-- ========================================================= -->
+
+    <div class="section">
+
+        <div class="section-title">
+            Login & Authentication
+        </div>
+
+        <div class="details-grid">
+
+            <div class="detail-item">
+                <div class="detail-label">Currently Logged In</div>
+
+                <div class="detail-value">
+
+                    <span
+                            class="badge badge-success"
+                            th:if="${user.isLoggedIn == 1}">
+                        Yes
+                    </span>
+
+                    <span
+                            class="badge badge-secondary"
+                            th:if="${user.isLoggedIn != 1}">
+                        No
+                    </span>
+
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">First Login</div>
+
+                <div class="detail-value"
+                     th:text="${user.firstLogin != null
+                        ? (user.firstLogin == 1 ? 'Yes' : 'No')
+                        : 'N/A'}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">Last Login</div>
+
+                <div class="detail-value"
+                     th:text="${user.lastLogin != null
+                        ? #dates.format(user.lastLogin,'yyyy-MM-dd HH:mm:ss')
+                        : 'Never'}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">Terms Accepted</div>
+
+                <div class="detail-value">
+
+                    <span
+                            class="badge badge-success"
+                            th:if="${user.hasAcceptedTerms == true}">
+                        Yes
+                    </span>
+
+                    <span
+                            class="badge badge-warning"
+                            th:if="${user.hasAcceptedTerms != true}">
+                        No
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">Install ID</div>
+
+                <div class="detail-value"
+                     th:text="${user.installId != null
+                        ? user.installId
+                        : 'N/A'}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">Number of Password Records</div>
+
+                <div class="detail-value"
+                     th:text="${user.passwords != null
+                        ? user.passwords.size()
+                        : 0}">
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- ACCOUNT DATES -->
+    <!-- ========================================================= -->
+
+    <div class="section">
+
+        <div class="section-title">
+            Account History
+        </div>
+
+        <div class="details-grid">
+
+            <div class="detail-item">
+                <div class="detail-label">Created</div>
+
+                <div class="detail-value"
+                     th:text="${user.creationDate != null
+                        ? #dates.format(user.creationDate,'yyyy-MM-dd HH:mm:ss')
+                        : 'N/A'}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">Last Updated</div>
+
+                <div class="detail-value"
+                     th:text="${user.updateDate != null
+                        ? #dates.format(user.updateDate,'yyyy-MM-dd HH:mm:ss')
+                        : 'N/A'}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">Deleted Date</div>
+
+                <div class="detail-value"
+                     th:text="${user.deletedDate != null
+                        ? #dates.format(user.deletedDate,'yyyy-MM-dd HH:mm:ss')
+                        : 'Not Deleted'}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">Updated By</div>
+
+                <div class="detail-value"
+                     th:text="${user.updatedBy != null
+                        ? user.updatedBy
+                        : 'N/A'}">
+                </div>
+            </div>
+
+
+            <div class="detail-item">
+                <div class="detail-label">Anonymized</div>
+
+                <div class="detail-value">
+
+                    <span
+                            class="badge badge-danger"
+                            th:if="${user.anonymized == true}">
+                        Yes
+                    </span>
+
+                    <span
+                            class="badge badge-secondary"
+                            th:if="${user.anonymized != true}">
+                        No
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- STUDENTS -->
+    <!-- ========================================================= -->
+
+    <div class="section">
+
+        <div class="section-header">
+
+            <div>
+                <div class="section-title">
+                    Associated Students
+                </div>
+
+                <div class="section-description">
+                    Students registered under this user account
+                </div>
+            </div>
+
+            <div class="student-count"
+                 th:text="${studentCount + ' student(s)'}">
+            </div>
+
+        </div>
+
+
+        <!-- No students -->
+
+        <div
+                class="empty-state"
+                th:if="${#lists.isEmpty(students)}">
+
+            <div class="empty-icon">
+                🎓
+            </div>
+
+            <div>
+                This user has no associated students.
+            </div>
+
+        </div>
+
+
+        <!-- Students table -->
+
+        <div class="table-container"
+             th:if="${!#lists.isEmpty(students)}">
+
+            <table class="admin-table">
+
+                <thead>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>School</th>
+                    <th>Class</th>
+                    <th>Curriculum</th>
+                    <th>Total Score</th>
+                    <th>Credits</th>
+                    <th>Share Code</th>
+                    <th>Install ID</th>
+                    <th>Recent Activity</th>
+                    <th>Created</th>
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:each="s : ${students}">
+
+                    <td th:text="${s.id}"></td>
+
+
+                    <td>
+
+                        <a
+                                th:href="@{/admin/students/{id}(id=${s.id})}"
+                                class="student-link"
+                                th:text="${s.name != null
+                                    ? s.name
+                                    : ((s.firstName != null ? s.firstName : '')
+                                        + ' '
+                                        + (s.lastName != null ? s.lastName : ''))}">
+                        </a>
+
+                    </td>
+
+
+                    <td
+                            th:text="${s.school != null
+                                ? s.school
+                                : 'N/A'}">
+                    </td>
+
+
+                    <td>
+
+                        <span
+                                th:if="${s.curriLevel != null}"
+                                th:text="${s.curriLevel.name}">
+                        </span>
+
+                        <span
+                                th:unless="${s.curriLevel != null}">
+                            N/A
+                        </span>
+
+                    </td>
+
+
+                    <td
+                            th:text="${s.curriculum != null
+                                ? s.curriculum
+                                : 'N/A'}">
+                    </td>
+
+
+                    <td
+                            th:text="${s.totalScore != null
+                                ? s.totalScore
+                                : 0}">
+                    </td>
+
+
+                    <td
+                            th:text="${s.creditsBalance != null
+                                ? s.creditsBalance
+                                : 0}">
+                    </td>
+
+
+                    <td
+                            th:text="${s.shareCode != null
+                                ? s.shareCode
+                                : 'N/A'}">
+                    </td>
+
+
+                    <td>
+
+                        <a
+                                th:href="@{/admin/installs/{id}(id=${s.installId})}"
+                                th:text="${s.installId}">
+                        </a>
+
+                    </td>
+
+
+                    <td
+                            th:text="${s.recentActivity != null
+                                ? #dates.format(s.recentActivity,'yyyy-MM-dd HH:mm:ss')
+                                : 'N/A'}">
+                    </td>
+
+
+                    <td
+                            th:text="${s.createdAt != null
+                                ? #dates.format(s.createdAt,'yyyy-MM-dd HH:mm:ss')
+                                : 'N/A'}">
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- SECURITY NOTE -->
+    <!-- ========================================================= -->
+
+    <div class="security-note">
+
+        <strong>Security:</strong>
+
+        Password values and password-reset tokens are intentionally not
+        displayed on this page.
+
+    </div>
+
+</div>
+
+
+<div th:replace="admin/layout :: scripts"></div>
+
+
+<style>
+
+    /* ========================================================= */
+    /* PAGE HEADER */
+    /* ========================================================= */
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        gap: 20px;
+    }
+
+    .page-header h2 {
+        margin: 0 0 5px 0;
+    }
+
+    .subtitle {
+        margin: 0;
+        color: #777;
+    }
+
+    .back-button {
+        display: inline-block;
+        padding: 9px 15px;
+        background: #34495e;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    .back-button:hover {
+        background: #2c3e50;
+    }
+
+
+    /* ========================================================= */
+    /* PROFILE SUMMARY */
+    /* ========================================================= */
+
+    .profile-summary {
+        background: white;
+        border-radius: 8px;
+        padding: 25px;
+        margin-bottom: 20px;
+
+        display: flex;
+        align-items: center;
+        gap: 25px;
+
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .profile-picture-container {
+        flex-shrink: 0;
+    }
+
+    .profile-picture,
+    .profile-picture-placeholder {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+    }
+
+    .profile-picture {
+        object-fit: cover;
+    }
+
+    .profile-picture-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #34495e;
+        color: white;
+
+        font-size: 40px;
+        font-weight: bold;
+    }
+
+    .profile-main h1 {
+        margin: 0 0 5px 0;
+    }
+
+    .profile-email {
+        color: #777;
+        margin-bottom: 12px;
+    }
+
+    .profile-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+
+    /* ========================================================= */
+    /* SECTIONS */
+    /* ========================================================= */
+
+    .section {
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        padding: 20px;
+
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .section-title {
+        font-size: 19px;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 18px;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        gap: 15px;
+    }
+
+    .section-header .section-title {
+        margin-bottom: 3px;
+    }
+
+    .section-description {
+        color: #777;
+        font-size: 14px;
+    }
+
+    .student-count {
+        background: #ecf0f1;
+        padding: 7px 12px;
+        border-radius: 15px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+
+    /* ========================================================= */
+    /* DETAILS */
+    /* ========================================================= */
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+
+    .detail-item {
+        border: 1px solid #eee;
+        border-radius: 6px;
+        padding: 13px;
+        background: #fafafa;
+    }
+
+    .detail-label {
+        font-size: 12px;
+        text-transform: uppercase;
+        color: #888;
+        margin-bottom: 6px;
+        font-weight: bold;
+    }
+
+    .detail-value {
+        font-size: 15px;
+        color: #333;
+        word-break: break-word;
+    }
+
+
+    /* ========================================================= */
+    /* BADGES */
+    /* ========================================================= */
+
+    .badge {
+        display: inline-block;
+        padding: 4px 9px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .badge-success {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-danger {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .badge-warning {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .badge-secondary {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+
+
+    /* ========================================================= */
+    /* STUDENT TABLE */
+    /* ========================================================= */
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1100px;
+    }
+
+    .admin-table th {
+        background: #2c3e50;
+        color: white;
+        padding: 10px;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .admin-table td {
+        padding: 9px;
+        border-bottom: 1px solid #ddd;
+        white-space: nowrap;
+    }
+
+    .admin-table tbody tr:hover {
+        background: #f5f5f5;
+    }
+
+    .student-link {
+        color: #2980b9;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    .student-link:hover {
+        text-decoration: underline;
+    }
+
+
+    /* ========================================================= */
+    /* EMPTY STATE */
+    /* ========================================================= */
+
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #777;
+        border: 1px dashed #ccc;
+        border-radius: 6px;
+    }
+
+    .empty-icon {
+        font-size: 35px;
+        margin-bottom: 10px;
+    }
+
+
+    /* ========================================================= */
+    /* SECURITY */
+    /* ========================================================= */
+
+    .security-note {
+        padding: 12px 15px;
+        margin-top: 10px;
+        margin-bottom: 30px;
+
+        background: #fff3cd;
+        border: 1px solid #ffeeba;
+        border-radius: 5px;
+
+        color: #856404;
+        font-size: 13px;
+    }
+
+
+    /* ========================================================= */
+    /* MOBILE */
+    /* ========================================================= */
+
+    @media (max-width: 900px) {
+
+        .details-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+    }
+
+
+    @media (max-width: 600px) {
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .profile-summary {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .section {
+            padding: 15px;
+        }
+
+        .section-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .profile-picture,
+        .profile-picture-placeholder {
+            width: 80px;
+            height: 80px;
+        }
+
+        .profile-picture-placeholder {
+            font-size: 32px;
+        }
+
+    }
+
+</style>
+
+</body>
+</html>

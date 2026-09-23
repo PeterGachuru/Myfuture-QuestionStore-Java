@@ -4,7 +4,7 @@
 <head>
     <title th:text="${level.name} + ' ' + ${subject.name} + ' ' + ${topic.name} + ' Notes | Myfuture CBC Revision App'"></title>
 
-    
+
     <!-- SEO -->
     <meta name="description"
           th:content="'Read ' + ${level.name} + ' ' + ${subject.name} + ' ' + ${topic.name} + ' notes. Simple, clear revision notes, quizzes and past papers for KCSE & CBC students.'">
@@ -204,7 +204,8 @@
 
         .button-wrapper {
             text-align: center;
-            margin: 22px 0 28px;
+            margin: 14px 0 16px;
+            padding: 0;
             width: 100%;
         }
 
@@ -221,104 +222,187 @@
            PRIMARY WEB APP BUTTON
            ========================================================= */
 
+        /* =========================================================
+           SMALL WEB QUIZ OPTION
+           Deliberately compact to preserve maximum space for notes
+           ========================================================= */
+
+        .web-option {
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+        }
+
         .web-study-btn {
             display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
 
+            width: auto;
+            min-height: 0;
+            margin: 0;
+            padding: 2px 4px;
+
+            background: transparent;
+            color: #777;
+
+            border: 0;
+            border-radius: 3px;
+
+            text-decoration: underline;
+
+            font-size: 11px;
+            line-height: 1.2;
+            font-weight: 500;
+
+            box-shadow: none;
+            transition: color 0.15s ease;
+        }
+
+        .web-study-btn:hover {
+            transform: none;
+            color: #800000;
+            box-shadow: none;
+        }
+
+        .web-icon {
+            font-size: 11px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .web-cta-note {
+            margin: 1px 0 0;
+            padding: 0;
+            color: #999;
+            font-size: 10px;
+            line-height: 1.1;
+        }
+
+        /* =========================================================
+           PLAY STORE BUTTON
+           PRIMARY APP DOWNLOAD CTA
+           ========================================================= */
+
+        .playstore-section {
+            margin-top: 26px;
+            padding: 22px 15px 5px;
+            border-top: 1px solid #eee;
+        }
+
+        .playstore-label {
+            font-size: 13px;
+            color: #555;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .playstore-btn {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
 
             width: min(420px, 100%);
-            min-height: 54px;
+            min-height: 58px;
+            padding: 14px 24px;
 
-            padding: 13px 22px;
-
-            background: linear-gradient(
-                135deg,
-                #800000,
-                #a90000,
-                #ff6600
-            );
-
+            background: linear-gradient(135deg, #01875f, #34a853);
             color: white;
 
-            border: 2px solid #ffb703;
+            border: 2px solid #ffffff;
             border-radius: 12px;
 
             text-decoration: none;
 
             font-size: 18px;
-            font-weight: 800;
+            font-weight: 900;
+            letter-spacing: 0.1px;
 
             box-shadow:
-                0 7px 20px rgba(128, 0, 0, 0.25);
+                0 8px 22px rgba(52, 168, 83, 0.30),
+                0 0 0 3px rgba(52, 168, 83, 0.10);
 
-            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+
+            animation: playstorePulse 2.2s ease-in-out infinite;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .web-study-btn:hover {
-            transform: translateY(-2px);
-
-            box-shadow:
-                0 10px 25px rgba(128, 0, 0, 0.35);
-        }
-
-        .web-icon {
-            font-size: 22px;
-            flex-shrink: 0;
-        }
-
-        .web-cta-note {
-            margin-top: 8px;
-            color: #777;
-            font-size: 13px;
-        }
-
-        /* =========================================================
-           SECONDARY PLAY STORE BUTTON
-           Deliberately smaller and separated
-           ========================================================= */
-
-        .playstore-section {
-            margin-top: 25px;
-            padding-top: 18px;
-
-            border-top: 1px solid #eee;
-        }
-
-        .playstore-label {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 8px;
-        }
-
-        .playstore-btn {
-            display: inline-flex;
-
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-
-            padding: 9px 16px;
-
-            background: white;
-            color: #555;
-
-            border: 1px solid #ccc;
-            border-radius: 7px;
-
-            text-decoration: none;
-
-            font-size: 13px;
-            font-weight: 600;
-
-            transition: all 0.2s ease;
+        .playstore-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(
+                100deg,
+                transparent,
+                rgba(255,255,255,0.45),
+                transparent
+            );
+            transform: skewX(-20deg);
+            animation: playstoreShine 3.2s ease-in-out infinite;
         }
 
         .playstore-btn:hover {
-            background: #f5f5f5;
-            color: #800000;
-            border-color: #aaa;
+            color: white;
+            transform: translateY(-3px) scale(1.015);
+            box-shadow:
+                0 12px 28px rgba(52, 168, 83, 0.40),
+                0 0 0 4px rgba(52, 168, 83, 0.14);
+        }
+
+        .playstore-icon {
+            font-size: 25px;
+            line-height: 1;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .playstore-text {
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes playstorePulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow:
+                    0 8px 22px rgba(52, 168, 83, 0.30),
+                    0 0 0 3px rgba(52, 168, 83, 0.10);
+            }
+            50% {
+                transform: scale(1.025);
+                box-shadow:
+                    0 10px 27px rgba(52, 168, 83, 0.40),
+                    0 0 0 5px rgba(52, 168, 83, 0.13);
+            }
+        }
+
+        @keyframes playstoreShine {
+            0%, 45% {
+                left: -120%;
+            }
+            65%, 100% {
+                left: 150%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .playstore-btn,
+            .playstore-btn::before {
+                animation: none;
+            }
+        }
+
+        .web-option {
+            margin-top: 12px;
+            text-align: center;
         }
 
         /* =========================================================
@@ -624,20 +708,17 @@
                 font-size: 12px;
             }
 
-            /* Primary button */
+            /* Small web option */
             .web-study-btn {
-                width: 100%;
-                max-width: 420px;
-
-                min-height: 52px;
-
-                padding: 12px 15px;
-
-                font-size: 16px;
+                width: auto;
+                max-width: 100%;
+                min-height: 32px;
+                padding: 6px 10px;
+                font-size: 11px;
             }
 
             .web-icon {
-                font-size: 20px;
+                font-size: 14px;
             }
 
             .download-banner {
@@ -651,12 +732,26 @@
 
             /* Play Store */
             .playstore-section {
-                margin-top: 20px;
+                margin-top: 22px;
+                padding: 18px 5px 3px;
+            }
+
+            .playstore-label {
+                font-size: 13px;
+                margin-bottom: 10px;
             }
 
             .playstore-btn {
-                font-size: 12px;
-                padding: 8px 14px;
+                width: 100%;
+                min-height: 58px;
+                padding: 13px 15px;
+                font-size: 16px;
+                line-height: 1.25;
+                gap: 9px;
+            }
+
+            .playstore-icon {
+                font-size: 23px;
             }
 
             /* Notes */
@@ -708,8 +803,8 @@
             }
 
             .web-study-btn {
-                font-size: 15px;
-                padding: 11px 10px;
+                font-size: 11px;
+                padding: 6px 9px;
             }
 
             .download-banner {
@@ -718,6 +813,21 @@
 
             .web-cta-note {
                 font-size: 11px;
+            }
+
+            .playstore-section {
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .playstore-btn {
+                min-height: 55px;
+                padding: 12px 10px;
+                font-size: 14px;
+            }
+
+            .playstore-icon {
+                font-size: 21px;
             }
         }
 
@@ -749,7 +859,7 @@
         }
 
     </style>
-    
+
 
 </head>
 
@@ -761,7 +871,7 @@
 
 <div class="topbar">
 
-    
+
     <a href="/" class="brand-title">
         Myfuture CBC Revision
     </a>
@@ -784,7 +894,7 @@
         </div>
 
     </div>
-    
+
 
 </div>
 
@@ -793,15 +903,15 @@
 <button class="menu-btn"
         onclick="toggleSidebar()">
 
-    
+
     ☰ Topics
-    
+
 
 </button>
 
 <div class="container">
 
-    
+
     <!-- =====================================================
          SIDEBAR
          ===================================================== -->
@@ -887,42 +997,38 @@
             <!-- PRIMARY WEB OPTION -->
 
             <div class="download-banner">
-                📚 Ready to learn?
+                📚 Get the Myfuture App and Start Learning
             </div>
 
-            <a class="web-study-btn"
-               href="https://study.myfuture.co.ke/read/myprofile">
-
-                <span class="web-icon">🌐</span>
-
-                <span>📝 Do Quizzes Online • Get Marked Instantly</span>
-
-            </a>
-
-            <div class="web-cta-note">
-                Instant results • Automatic marking • No download required
-            </div>
-
-
-            <!-- SECONDARY PLAY STORE OPTION -->
-
+            <!-- PRIMARY PLAY STORE OPTION -->
             <div class="playstore-section">
 
                 <div class="playstore-label">
-                    Prefer the Android app?
+                    📱 Recommended: Download the Android App
                 </div>
 
                 <a class="playstore-btn"
                    href="https://play.google.com/store/apps/details?id=ke.co.myfuture"
                    target="_blank"
-                   rel="noopener noreferrer">
+                   rel="noopener noreferrer"
+                   aria-label="Download Myfuture CBC Revision App from Google Play">
 
-                    📱 Get the Android App
+                    <span class="playstore-icon">▶</span>
+                    <span class="playstore-text">Get the Myfuture App on Google Play</span>
 
                 </a>
 
             </div>
 
+            <!-- SMALL WEB OPTION BELOW PLAY STORE -->
+            <div class="web-option">
+                <a class="web-study-btn"
+                   href="https://study.myfuture.co.ke/read/myprofile">
+                    <span class="web-icon">🌐</span>
+                    <span>📝 Do Quizzes Online</span>
+                </a>
+
+            </div>
         </div>
 
 
@@ -1160,7 +1266,7 @@
         </div>
 
     </div>
-    
+
 
 </div>
 

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Contest Results - Myfuture CBC Revision</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f6f7f9;color:#27323a}
+        .wrap{max-width:1000px;margin:24px auto;padding:0 16px 50px}.hero{background:linear-gradient(135deg,#800020,#a0002b);color:#fff;border-radius:20px;padding:25px}
+        .hero h1{margin:0 0 7px}.hero p{margin:0;opacity:.9}.notice{background:#eaf7ee;border:1px solid #b8dfc2;padding:12px 15px;border-radius:10px;margin:16px 0}
+        .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}.stat{background:#fff;border:1px solid #e1e5e8;border-radius:14px;padding:17px}.stat b{display:block;font-size:25px;margin-bottom:4px}.stat span{color:#68737c;font-size:13px}
+        .panel{background:#fff;border:1px solid #e1e5e8;border-radius:16px;padding:18px;margin-top:16px}.mine{border-left:5px solid #e8580a}
+        table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:12px;border-bottom:1px solid #edf0f2}th{color:#68737c;font-size:13px}
+        .rank{font-weight:800}.me{background:#fff6ef}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.btn{display:inline-block;padding:11px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+        .primary{background:#e8580a;color:#fff}.light{background:#fff;color:#800020;border:1px solid #ddd}.empty{text-align:center;color:#68737c;padding:25px}
+        @media(max-width:720px){.stats{grid-template-columns:1fr 1fr}table{font-size:14px}th:nth-child(3),td:nth-child(3){display:none}}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="hero">
+        <h1>🏆 <span th:text="${subject != null ? subject.name : 'Contest'}">Mathematics</span> Contest</h1>
+        <p th:text="'Created by ' + ${contest.creatorName} + ' · ' + ${questionCount} + ' questions'">Created by Student · 10 questions</p>
+    </div>
+
+    <div th:if="${studentAutoLoggedIn}" class="notice">
+        <strong>You're in!</strong> We automatically signed you into your student account from the Myfuture app.
+    </div>
+
+    <div class="stats">
+        <div class="stat"><b th:text="${myAttempt != null ? myAttempt.score : 0}">8</b><span>Your score</span></div>
+        <div class="stat"><b th:text="${myRank > 0 ? myRank : '-'}">2</b><span>Your rank</span></div>
+        <div class="stat"><b th:text="${attempts.size()}">5</b><span>Students attempted</span></div>
+        <div class="stat"><b th:text="${averageScore}">7.4</b><span>Average score</span></div>
+    </div>
+
+    <div class="panel mine">
+        <h2>Your result</h2>
+        <p th:if="${myAttempt != null}">
+            You scored <strong th:text="${myAttempt.score}">8</strong>
+            out of <strong th:text="${myAttempt.overall}">10</strong>.
+            <span th:if="${myRank > 0}"> You are currently <strong th:text="'#' + ${myRank}">#2</strong>.</span>
+        </p>
+        <p th:if="${myAttempt == null}">You have not completed this contest yet.</p>
+        <div class="actions" th:if="${myAttempt == null}">
+            <a class="btn primary" th:href="@{/read/contests/{id}/attempt(id=${contest.id})}">Attempt contest →</a>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Leaderboard</h2>
+        <div th:if="${attempts.isEmpty()}" class="empty">No student has completed this contest yet.</div>
+        <table th:unless="${attempts.isEmpty()}">
+            <thead><tr><th>Rank</th><th>Student</th><th>Score</th><th>Completed</th></tr></thead>
+            <tbody>
+            <tr th:each="attempt, stat : ${attempts}"
+                th:class="${attempt.studentId == student.id ? 'me' : ''}">
+                <td class="rank" th:text="${stat.count}">1</td>
+                <td th:text="${attempt.studentName}">Student</td>
+                <td th:text="${attempt.score + ' / ' + attempt.overall}">9 / 10</td>
+                <td th:text="${attempt.attemptedAt != null ? #dates.format(attempt.attemptedAt,'dd MMM yyyy HH:mm') : '-'}">09 Sep 2026</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions">
+        <a class="btn light" href="/read/contests">← All contests</a>
+        <a class="btn light" href="/read/myprofile">Back to my profile</a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+package ke.co.myfuture.Myfuture.QuestionStore.AI.AICurriQuestion;
+
+import ke.co.myfuture.Myfuture.Commonauth.Utils.AuditTrails;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import jakarta.persistence.*;
+
+@Data
+@Entity
+@NoArgsConstructor
+public class AIQuery {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Lob
+    @Column(nullable = false)
+    private String queryQuestion;
+    @Column(nullable = false)
+    private String queryPurpose;
+
+//    @ManyToOne()
+//    @JoinColumn(nullable = false)
+    private Long subtopicId;
+
+    Boolean migrated;
+
+    @Lob
+    private String aiResponse;
+
+    private String aIModel;
+
+    @Embedded()
+    AuditTrails auditTrails = new AuditTrails();
+
+    @Transient
+    AuditTrails.Retriever audits;
+}

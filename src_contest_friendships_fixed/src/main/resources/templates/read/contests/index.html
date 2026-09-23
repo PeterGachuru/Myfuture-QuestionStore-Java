@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Contests - Myfuture CBC Revision</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        *{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:#f6f7f9;color:#27323a}
+        .wrap{max-width:1050px;margin:24px auto;padding:0 16px 50px}
+        .hero{background:linear-gradient(135deg,#800020,#a0002b);color:#fff;border-radius:20px;padding:25px}
+        .hero h1{margin:0 0 8px}.hero p{margin:0;opacity:.92}
+        .top-actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+        a.btn{display:inline-block;text-decoration:none;border-radius:10px;padding:11px 16px;font-weight:700}
+        .primary{background:#e8580a;color:#fff}.light{background:#fff;color:#800020;border:1px solid #ddd}
+        .notice{background:#eaf7ee;border:1px solid #b8dfc2;padding:12px 15px;border-radius:10px;margin:16px 0}
+        .section{margin-top:25px}.section h2{margin-bottom:6px}.hint{color:#68737c}
+        .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px}
+        .card{background:#fff;border:1px solid #e2e5e8;border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+        .pending .card{border-left:5px solid #e8580a}.completed .card{border-left:5px solid #18864b}
+        .title{font-size:18px;font-weight:800;margin-bottom:7px}.meta{color:#68737c;font-size:14px;line-height:1.7}
+        .score{font-size:24px;font-weight:800;margin:10px 0}.empty{background:#fff;border:1px dashed #ccd2d7;border-radius:15px;padding:25px;text-align:center;color:#68737c}
+        .actions{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="hero">
+        <h1>🏆 Contests</h1>
+        <p>Challenge classmates, test your knowledge and see how you rank.</p>
+    </div>
+
+    <div th:if="${studentAutoLoggedIn}" class="notice">
+        <strong>You're in!</strong> We automatically signed you into your student account from the Myfuture app.
+    </div>
+
+    <div th:if="${param.error}" class="notice" style="background:#fff4e5;border-color:#ffd39a"
+         th:text="${param.error[0]}">Something went wrong.</div>
+
+    <div class="top-actions">
+        <a class="btn primary" href="/read/contests/create">➕ Create a contest</a>
+        <a class="btn light" href="/read/myprofile">← Back to my profile</a>
+    </div>
+
+    <div class="section pending">
+        <h2>🔥 Contests to do</h2>
+        <p class="hint">These are waiting for you. Complete them and see your position against other students.</p>
+        <div th:if="${pendingContests.isEmpty()}" class="empty">You have no pending contests. Check back when a classmate invites you.</div>
+        <div class="cards" th:unless="${pendingContests.isEmpty()}">
+            <div class="card" th:each="contest : ${pendingContests}">
+                <div class="title" th:text="${contest.subjectName}">Mathematics</div>
+                <div class="meta">
+                    <span th:text="${contest.classLevelName}">Grade 6</span> ·
+                    <span th:text="${contest.questionCount}">10</span> questions<br>
+                    Created by <strong th:text="${contest.creatorName}">Student</strong><br>
+                    <span th:text="${contest.participantCount}">5</span> students invited
+                </div>
+                <div class="actions">
+                    <a class="btn primary" th:href="@{/read/contests/{id}/attempt(id=${contest.contestId})}">Attempt now →</a>
+                    <a class="btn light" th:href="@{/read/contests/{id}/details(id=${contest.contestId})}">Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section completed">
+        <h2>✅ Contests completed</h2>
+        <p class="hint">Review your score, ranking and the other students who have attempted.</p>
+        <div th:if="${completedContests.isEmpty()}" class="empty">You have not completed a contest yet.</div>
+        <div class="cards" th:unless="${completedContests.isEmpty()}">
+            <div class="card" th:each="contest : ${completedContests}">
+                <div class="title" th:text="${contest.subjectName}">Mathematics</div>
+                <div class="score">
+                    <span th:text="${contest.score != null ? contest.score : 0}">8</span>
+                    <span th:if="${contest.overall != null}" th:text="' / ' + ${contest.overall}"> / 10</span>
+                </div>
+                <div class="meta">
+                    Created by <strong th:text="${contest.creatorName}">Student</strong><br>
+                    <span th:text="${contest.participantCount}">5</span> students invited
+                </div>
+                <div class="actions">
+                    <a class="btn primary" th:href="@{/read/contests/{id}/details(id=${contest.contestId})}">View results & ranking →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

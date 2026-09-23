@@ -72,6 +72,13 @@
             transform: translateY(-2px);
         }
 
+        /* Selected plan */
+        .plan.selected {
+            border: 2px solid #800000;
+            background: #fff3e0;
+            box-shadow: 0 2px 8px rgba(128, 0, 0, 0.15);
+        }
+
         .plan-price {
             color: #800000;
             font-weight: bold;
@@ -166,7 +173,8 @@
 
             <p>
                 📱 Mobile app:
-                <a href="https://play.google.com/store/apps/details?id=ke.co.myfuture" target="_blank">
+                <a href="https://play.google.com/store/apps/details?id=ke.co.myfuture"
+                   target="_blank">
                     Myfuture CBC Revision app
                 </a>
             </p>
@@ -178,15 +186,17 @@
 
         <div class="plans-grid">
 
-            <div th:each="plan : ${plans}"
+            <div th:each="plan, stat : ${plans}"
                  class="plan"
-                 th:onclick="'selectPlan(' + ${plan.durationDays} + ',' + ${plan.price} + ')'">
+                 th:classappend="${(plans.size() > 1 and stat.index == 1) or (plans.size() == 1 and stat.index == 0)} ? ' selected' : ''"
+                 th:onclick="'selectPlan(' + ${plan.durationDays} + ',' + ${plan.price} + ', this)'">
 
                 <span th:text="${plan.name}"></span>
 
                 <span class="plan-price">
                     Ksh <span th:text="${plan.price}"></span>
                 </span>
+
             </div>
 
         </div>
@@ -202,9 +212,12 @@
 
             <div class="checkout-box">
 
-                <input type="text" id="phone" placeholder="07XXXXXXXX">
+                <input type="text"
+                       id="phone"
+                       placeholder="07XXXXXXXX">
 
-                <button class="pay-btn" onclick="payMpesa()">
+                <button class="pay-btn"
+                        onclick="payMpesa()">
                     Pay with M-Pesa
                 </button>
 
@@ -212,8 +225,11 @@
 
             </div>
 
-            <div id="statusBox" class="status-box">
+            <div id="statusBox"
+                 class="status-box">
+
                 <h4 id="statusText"></h4>
+
             </div>
 
         </div>
@@ -223,19 +239,74 @@
 </div>
 
 <script th:inline="javascript">
+
     let selectedDays = 0;
     let selectedPrice = 0;
 
     const installId = [[${installId}]];
     const userEmail = [[${userEmail}]];
 
-    function selectPlan(days, price) {
+
+    /*
+     * Select a subscription plan
+     */
+    function selectPlan(days, price, element) {
+
         selectedDays = days;
         selectedPrice = price;
 
+        /*
+         * Remove selected state from all plans
+         */
+        document.querySelectorAll(".plan").forEach(function(plan) {
+            plan.classList.remove("selected");
+        });
+
+        /*
+         * Mark clicked plan as selected
+         */
+        if (element) {
+            element.classList.add("selected");
+        }
+
+        /*
+         * Update checkout panel
+         */
         document.getElementById("selectedPlan").innerText =
             days + " Days - Ksh " + price;
     }
+
+
+    /*
+     * Automatically select:
+     *
+     * - Second plan if more than one plan exists
+     * - First plan if only one plan exists
+     */
+    document.addEventListener("DOMContentLoaded", function() {
+
+        const plans = document.querySelectorAll(".plan");
+
+        if (plans.length === 0) {
+            return;
+        }
+
+        let selectedPlan;
+
+        if (plans.length > 1) {
+            selectedPlan = plans[1];
+        } else {
+            selectedPlan = plans[0];
+        }
+
+        /*
+         * Trigger the same selection logic used
+         * when the user manually clicks a plan.
+         */
+        selectedPlan.click();
+
+    });
+
 
     function payMpesa() {
 
@@ -249,97 +320,182 @@
         let fullPhone = "254" + phone.substring(1);
 
         let now = new Date();
+
         let end = new Date();
-        end.setDate(now.getDate() + selectedDays);
+
+        end.setDate(
+            now.getDate() + selectedDays
+        );
 
         let payload = {
+
             phoneNumber: fullPhone,
+
             payAmount: selectedPrice,
+
             numberOfDays: selectedDays,
-            subscriptionType: "DAYS_" + selectedDays,
+
+            subscriptionType:
+                "DAYS_" + selectedDays,
+
             status: "PENDING",
-            platformSource: "study.myfuture.co.ke",
+
+            platformSource:
+                "study.myfuture.co.ke",
+
             installId: installId,
+
             emailAddress: userEmail,
-            startDate: now.toISOString(),
-            endDate: end.toISOString()
+
+            startDate:
+                now.toISOString(),
+
+            endDate:
+                end.toISOString()
         };
 
-        document.getElementById("msg").innerText = "Sending STK Push...";
 
-        fetch("/myfuture/subscriptions/mpesastk", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(payload)
-        })
+        document.getElementById("msg").innerText =
+            "Sending STK Push...";
+
+
+        fetch(
+            "/myfuture/subscriptions/mpesastk",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify(payload)
+            }
+        )
+
         .then(res => res.json())
+
         .then(data => {
+
             document.getElementById("msg").innerText =
                 "Check your phone for STK push...";
 
             startPolling(data.id);
+
         })
+
         .catch(() => {
-            alert("Failed to start payment");
+
+            alert(
+                "Failed to start payment"
+            );
+
         });
+
     }
 
 
     function startPolling(id) {
 
-        document.getElementById("statusBox").style.display = "block";
-        document.getElementById("statusText").innerText =
+        document.getElementById(
+            "statusBox"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "statusText"
+        ).innerText =
             "Waiting for payment...";
+
 
         let interval;
 
-        // First status check after 10 seconds
+
+        /*
+         * First status check after 10 seconds
+         */
         setTimeout(() => {
 
             checkPaymentStatus();
 
-            // Then check every 1 second
-            interval = setInterval(() => {
-                checkPaymentStatus();
-            }, 1000);
+
+            /*
+             * Then check every second
+             */
+            interval =
+                setInterval(
+                    () => {
+                        checkPaymentStatus();
+                    },
+                    1000
+                );
 
         }, 10000);
 
 
         function checkPaymentStatus() {
 
-            fetch("/myfuture/subscriptions/mpesastk/status/" + id)
-                .then(res => res.json())
-                .then(data => {
+            fetch(
+                "/myfuture/subscriptions/mpesastk/status/"
+                + id
+            )
 
-                    if (data.status === "SUCCESS") {
+            .then(res => res.json())
 
-                        clearInterval(interval);
+            .then(data => {
 
-                        document.getElementById("statusText").innerText =
-                            "✅ Payment Successful";
+                if (data.status === "SUCCESS") {
 
-                        // Redirect 1 second after displaying success
-                        setTimeout(() => {
-                            window.location.href = "/read/myprofile";
-                        }, 1000);
-                    }
+                    clearInterval(interval);
 
-                    if (data.status === "FAILED") {
 
-                        clearInterval(interval);
+                    document.getElementById(
+                        "statusText"
+                    ).innerText =
+                        "✅ Payment Successful";
 
-                        document.getElementById("statusText").innerText =
-                            "❌ Payment Failed";
-                    }
 
-                })
-                .catch(() => {
-                    // Ignore temporary polling errors
-                });
+                    /*
+                     * Redirect 1 second after
+                     * displaying success
+                     */
+                    setTimeout(() => {
+
+                        window.location.href =
+                            "/read/myprofile";
+
+                    }, 1000);
+
+                }
+
+
+                if (data.status === "FAILED") {
+
+                    clearInterval(interval);
+
+
+                    document.getElementById(
+                        "statusText"
+                    ).innerText =
+                        "❌ Payment Failed";
+
+                }
+
+            })
+
+            .catch(() => {
+
+                /*
+                 * Ignore temporary
+                 * polling errors
+                 */
+
+            });
+
         }
-    }
 
+    }
 
 </script>
 

@@ -17,6 +17,8 @@ import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInvi
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInviteeRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion.ContestQuestion;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion.ContestQuestionRepository;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestFriendship.ContestFriendship;
+import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestFriendship.ContestFriendshipRepository;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizDone;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizDoneRepository;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
@@ -53,6 +55,8 @@ public class ContestService {
     ContestQuestionRepository contestQuestionRepository;
     @Autowired
     ContestInviteeRepository contestInviteeRepository;
+    @Autowired
+    ContestFriendshipRepository contestFriendshipRepository;
     @Autowired
     SubjectRepository subjectRepository;
     @Autowired
@@ -199,6 +203,17 @@ public class ContestService {
         contestQuestionRepository.saveAll(contestQuestions);
         contestInviteeRepository.saveAll(contestInvitees);
 
+        // Recalculate the learning relationships created/strengthened by this
+        // contest. Only students who were part of this newly-created contest
+        // are affected; historical contests determine each pair's rating.
+        recalculateContestFriendships(
+                contestInvitees.stream()
+                        .map(i -> i.getStudentaccount().getId())
+                        .filter(java.util.Objects::nonNull)
+                        .distinct()
+                        .collect(Collectors.toList())
+        );
+
         emailInvitees(
                 savedContest,
                 contestInvitees.stream()
@@ -209,6 +224,75 @@ public class ContestService {
         );
 
         return repository.findById(savedContest.id);
+    }
+
+    /**
+     * Recalculates relationship ratings for pairs of students who participated
+     * in the newly-created contest.
+     *
+     * A relationship is stored once using the lower student ID as "student"
+     * and the higher student ID as "friend". The rating is the number of
+     * contests in which both students were invited/participants.
+     *
+     * Only pairs containing students from the newly-created contest are
+     * touched. Existing relationships for unrelated students are unchanged.
+     */
+    private void recalculateContestFriendships(List<Long> participantIds) {
+        if (participantIds == null || participantIds.size() < 2) {
+            return;
+        }
+
+        List<Object[]> ratings = contestFriendshipRepository.calculateRatings(participantIds);
+
+        Map<Long, IbukaStudentAccount> participants = ibukaStudentAccountRepository
+                .findAllById(participantIds)
+                .stream()
+                .collect(Collectors.toMap(IbukaStudentAccount::getId, s -> s));
+
+        Map<String, ContestFriendship> existingRelationships =
+                contestFriendshipRepository.findRelationshipsForStudents(participantIds)
+                        .stream()
+                        .collect(Collectors.toMap(
+                                r -> relationshipKey(r.getStudent().getId(), r.getFriend().getId()),
+                                r -> r
+                        ));
+
+        List<ContestFriendship> relationshipsToSave = new ArrayList<>();
+
+        for (Object[] row : ratings) {
+            Long studentId = ((Number) row[0]).longValue();
+            Long friendId = ((Number) row[1]).longValue();
+            Integer rating = ((Number) row[2]).intValue();
+
+            IbukaStudentAccount student = participants.get(studentId);
+            IbukaStudentAccount friend = participants.get(friendId);
+
+            if (student == null || friend == null) {
+                continue;
+            }
+
+            String relationshipKey = relationshipKey(studentId, friendId);
+            ContestFriendship relationship = existingRelationships.getOrDefault(
+                    relationshipKey,
+                    new ContestFriendship()
+            );
+
+            relationship.setStudent(student);
+            relationship.setFriend(friend);
+            relationship.setRating(rating);
+
+            relationshipsToSave.add(relationship);
+        }
+
+        if (!relationshipsToSave.isEmpty()) {
+            contestFriendshipRepository.saveAll(relationshipsToSave);
+        }
+    }
+
+    private String relationshipKey(Long studentId, Long friendId) {
+        long first = Math.min(studentId, friendId);
+        long second = Math.max(studentId, friendId);
+        return first + ":" + second;
     }
 
     public boolean studentBelongsToAuthenticatedUser(Long studentId) {

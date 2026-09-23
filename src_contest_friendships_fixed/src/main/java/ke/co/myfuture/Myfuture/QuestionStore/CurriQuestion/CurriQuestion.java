@@ -1,0 +1,105 @@
+package ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion;
+
+import ke.co.myfuture.Myfuture.Commonauth.Auth.Security.jwt.UserRequestContext;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriNormalChoice.CurriNormalChoice;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
+import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import jakarta.persistence.*;
+import java.util.Date;
+import java.util.List;
+
+@Entity
+@Data
+public class CurriQuestion {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    public Long id;
+
+    @Column(nullable = false)
+    String string;
+
+    @Lob
+    String explanation;
+
+    @Column(nullable = false)
+    String bookModel;
+
+    Long job;
+    Long curriJob;
+    @ManyToOne
+    @JoinColumn(name = "subtopic")
+    CurriTopic subtopic;
+
+    @CreationTimestamp
+    Date createdAt;
+
+    Date approverRequestDate;
+
+    @UpdateTimestamp
+    Date updatedAt;
+
+    @Column(nullable = false)
+    Integer imageLevel = 1;
+
+
+    @Column(unique = true)
+    Long cgroup;
+    Integer editionNumber = 1;
+    @Column(nullable = false)
+    Long updateId ;
+    Boolean hasImage;
+    Boolean choicesWithImages;
+    String imageCode;
+
+    Integer imageHeight;
+    Integer imageWidth;
+
+    @OneToMany(mappedBy =  "question", fetch = FetchType.EAGER)
+//    @Transient
+    List<CurriNormalChoice> choices;
+
+    @Column(nullable = false)
+    Boolean sharable = false;
+    @Column(nullable = false)
+    Boolean reviewed = false;
+    Boolean approvedByAI = false;
+    Boolean deleted = false;
+    Date approvalDate;
+    Date deletionDate;
+    String approvedBy;
+    String deletedBy;
+
+
+    @PrePersist
+    void init() {
+        deleted = false;
+    }
+
+    public void delete() {
+        deleted = true;
+        sharable = false;
+        deletionDate = new Date();
+        reviewed = true;
+        deletedBy =  UserRequestContext.getCurrentUserName();
+    }
+    public void approve() {
+        sharable = true;
+        approvalDate = new Date();
+        deleted = false;
+        reviewed = true;
+        approvedBy = UserRequestContext.getCurrentUserName();
+    }
+
+    public void aIApprove(String model) {
+        sharable = true;
+        approvalDate = new Date();
+        deleted = false;
+        reviewed = true;
+        approvedByAI = true;
+        approvedBy = model;
+    }
+}

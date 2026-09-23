@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+
+<div th:fragment="timeGraph">
+
+    <div style="width: 100%; max-width: 800px; margin: 20px auto;">
+        <h3 th:text="${graph.title}"></h3>
+        <canvas th:id="${graph.id}"></canvas>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const ctx = document.getElementById([[${graph.id}]]).getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [[${graph.xValues}]],
+                datasets: [{
+                    label: [[${graph.yLabel}]],
+                    data: [[${graph.yValues}]],
+                    fill: false,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        min: [[${graph.minY}]],
+                        max: [[${graph.maxY}]]
+                    }
+                }
+            }
+        });
+        /*]]>*/
+    </script>
+
+</div>
+
+</body>
+</html>
