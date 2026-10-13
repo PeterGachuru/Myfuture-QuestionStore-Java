@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/layout :: styles"></head>
+<body>
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+    <h2>Scheduled Emails</h2>
+    <p>Newest emails first. Email bodies are loaded only when you open an individual email.</p>
+
+    <form method="get" th:action="@{/admin/emails}" class="filters">
+        <label for="category">Category</label>
+        <select id="category" name="category">
+            <option value="" th:selected="${selectedCategory == ''}">All categories</option>
+            <option th:each="category : ${categories}"
+                    th:value="${category}"
+                    th:text="${category}"
+                    th:selected="${selectedCategory == category}"></option>
+        </select>
+
+        <label for="email">Recipient email</label>
+        <input type="search" id="email" name="email" maxlength="320"
+               placeholder="Search recipient email" th:value="${selectedEmail}" />
+
+        <label for="sent">Delivery status</label>
+        <select id="sent" name="sent">
+            <option value="" th:selected="${selectedSent == ''}">All statuses</option>
+            <option value="true" th:selected="${selectedSent == 'true'}">Sent</option>
+            <option value="false" th:selected="${selectedSent == 'false'}">Not sent</option>
+        </select>
+        <button type="submit">Filter</button>
+        <a th:href="@{/admin/emails}">Clear</a>
+    </form>
+
+    <p th:text="|${emails.totalElements} email records|">0 email records</p>
+
+    <div class="table-wrap">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>ID</th><th>Created</th><th>Recipient</th><th>Subject</th>
+                <th>Category</th><th>Status</th><th>Scheduled</th><th>Sent at</th><th>Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${emails.empty}"><td colspan="9">No emails match these filters.</td></tr>
+            <tr th:each="email : ${emails.content}">
+                <td th:text="${email.id}"></td>
+                <td th:text="${email.createdAt != null ? #dates.format(email.createdAt, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td>
+                <td class="recipient" th:text="${email.recipient}"></td>
+                <td th:text="${email.subject}"></td>
+                <td th:text="${email.senderService}"></td>
+                <td><span th:text="${email.sent ? 'Sent' : 'Not sent'}"
+                          th:classappend="${email.sent ? ' status-sent' : ' status-pending'}"></span>
+                    <small th:if="${email.lastAttemptStatus != null}" th:text="${' (' + email.lastAttemptStatus + ')'}"></small>
+                </td>
+                <td th:text="${email.scheduledTime != null ? #dates.format(email.scheduledTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td>
+                <td th:text="${email.timeSent != null ? #dates.format(email.timeSent, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td>
+                <td><a th:href="@{/admin/emails/{id}(id=${email.id}, page=${currentPage}, category=${selectedCategory}, sent=${selectedSent}, email=${selectedEmail})}">View</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination" th:if="${emails.totalPages > 0}">
+        <a th:if="${emails.hasPrevious()}"
+           th:href="@{/admin/emails(page=${currentPage - 1}, category=${selectedCategory}, sent=${selectedSent}, email=${selectedEmail})}">← Previous</a>
+        <span th:text="|Page ${currentPage + 1} of ${emails.totalPages}|">Page 1</span>
+        <a th:if="${emails.hasNext()}"
+           th:href="@{/admin/emails(page=${currentPage + 1}, category=${selectedCategory}, sent=${selectedSent}, email=${selectedEmail})}">Next →</a>
+    </div>
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+<style>
+    .filters { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:18px 0; }
+    .filters select, .filters button, .filters input { padding:8px; }
+    .table-wrap { overflow-x:auto; }
+    .admin-table { min-width:1050px; }
+    .recipient { overflow-wrap:anywhere; }
+    .status-sent { color:#167342; font-weight:bold; }
+    .status-pending { color:#8a5a00; font-weight:bold; }
+    .pagination { display:flex; align-items:center; justify-content:center; gap:24px; padding:20px; }
+    .pagination a { padding:8px 12px; border:1px solid #ccc; text-decoration:none; }
+</style>
+</body>
+</html>

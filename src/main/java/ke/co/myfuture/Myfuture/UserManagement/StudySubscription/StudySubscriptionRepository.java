@@ -17,6 +17,10 @@ public interface StudySubscriptionRepository extends JpaRepository<StudySubscrip
 
     List<StudySubscription> findTop10ByEmailAddressOrderByCreatedAtDesc(String emailAddress);
 
+    List<StudySubscription> findByEmailAddressAndEndDateAfterOrderByEndDateDesc(String emailAddress, Date now);
+
+    List<StudySubscription> findByEmailAddressAndCreatedAtAfterOrderByCreatedAtDesc(String emailAddress, Date since);
+
     @Query("SELECT s FROM StudySubscription s ORDER BY s.createdAt DESC")
     List<StudySubscription> findLatestSubscriptions(Pageable pageable);
 

@@ -1,4 +1,16 @@
-production: true
+production: false
+
+student:
+  lifecycle:
+    email:
+      enabled: true
+      scan-delay-ms: 60000
+
+email:
+  delivery:
+    # Keep false in UAT to create queue records without sending real emails.
+    enabled: false
+    scan-delay-ms: 60000
 
 custommail:
   sendurl: http://localhost:8090

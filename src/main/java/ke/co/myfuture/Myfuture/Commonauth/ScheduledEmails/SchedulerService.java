@@ -25,20 +25,34 @@ public class SchedulerService {
         }
         return EMAIL_PATTERN.matcher(email).matches();
     }
-    public Boolean persistScheduledEmail(String recipient, String subject, String body, String fromName, LocalDateTime scheduledTime, SenderService senderService) {
+    public Boolean persistScheduledEmail(String recipient, String subject, String body, String fromName,
+                                         LocalDateTime scheduledTime, SenderService senderService) {
+        return persistScheduledEmail(recipient, subject, body, fromName, scheduledTime,
+                senderService == null ? null : senderService.name());
+    }
+
+    /**
+     * Stores an email using a free-form category string. New lifecycle stages can
+     * introduce new categories without changing a Java enum or the database schema.
+     */
+    public Boolean persistScheduledEmail(String recipient, String subject, String body, String fromName,
+                                         LocalDateTime scheduledTime, String senderService) {
         if (!isValidEmail(recipient)) {
             System.out.println("Invalid email address: " + recipient);
             return false;
         }
+        if (senderService == null || senderService.isBlank() || senderService.length() > 100) {
+            System.out.println("Invalid email category: " + senderService);
+            return false;
+        }
         ScheduledEmails scheduledEmail = new ScheduledEmails();
-        scheduledEmail.setRecipient(recipient);
+        scheduledEmail.setRecipient(recipient.trim());
         scheduledEmail.setSubject(subject);
         scheduledEmail.setFromName(fromName);
         scheduledEmail.setBody(body);
-        scheduledEmail.setSenderService(senderService);
+        scheduledEmail.setSenderService(senderService.trim());
         scheduledEmail.setScheduledTime(Date.from(scheduledTime.plusSeconds(1).atZone(ZoneId.systemDefault()).toInstant()));
-        // Schedule for the next second after the week's end
-        scheduledEmail.setExpiresAfterSeconds((long) (60*60*24*3)); // Email expires after 3 days (in seconds)
+        scheduledEmail.setExpiresAfterSeconds(60L * 60 * 24 * 3);
         scheduledEmail.setSent(false);
         scheduledEmail.setLastAttemptStatus(LastStatus.PENDING);
 

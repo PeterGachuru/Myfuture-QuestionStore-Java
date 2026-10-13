@@ -21,7 +21,7 @@ public class ScheduledEmails {
     private String subject;
 
     @Lob
-    @Column(nullable = false)
+    @Column(name = "body", nullable = false, columnDefinition = "MEDIUMTEXT")
     private String body;
     private String fromName;
 
@@ -34,11 +34,8 @@ public class ScheduledEmails {
     @Enumerated(EnumType.STRING)
     private LastStatus lastAttemptStatus;
 
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private SenderService SenderService;
-
+    @Column(name = "sender_service", nullable = false, length = 100)
+    private String senderService;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
     private boolean sent;

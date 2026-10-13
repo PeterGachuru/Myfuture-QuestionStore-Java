@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/layout :: styles"></head>
+<body>
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+    <h2>Email Details #<span th:text="${email.id}"></span></h2>
+    <p><a th:href="@{/admin/emails}">← Back to scheduled emails</a></p>
+
+    <table class="admin-table details-table">
+        <tbody>
+        <tr><th>Recipient</th><td th:text="${email.recipient}"></td></tr>
+        <tr><th>Subject</th><td th:text="${email.subject}"></td></tr>
+        <tr><th>Category</th><td th:text="${email.senderService}"></td></tr>
+        <tr><th>Sent</th><td th:text="${email.sent ? 'Yes' : 'No'}"></td></tr>
+        <tr><th>Last attempt status</th><td th:text="${email.lastAttemptStatus != null ? email.lastAttemptStatus : '-'}"></td></tr>
+        <tr><th>Scheduled time</th><td th:text="${email.scheduledTime != null ? #dates.format(email.scheduledTime, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td></tr>
+        <tr><th>Attempted at</th><td th:text="${email.attemptedSendAt != null ? #dates.format(email.attemptedSendAt, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td></tr>
+        <tr><th>Sent at</th><td th:text="${email.timeSent != null ? #dates.format(email.timeSent, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td></tr>
+        <tr><th>From name</th><td th:text="${email.fromName != null ? email.fromName : '-'}"></td></tr>
+        <tr><th>Expires after (seconds)</th><td th:text="${email.expiresAfterSeconds}"></td></tr>
+        <tr><th>Created</th><td th:text="${email.createdAt != null ? #dates.format(email.createdAt, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td></tr>
+        <tr><th>Updated</th><td th:text="${email.updatedAt != null ? #dates.format(email.updatedAt, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td></tr>
+        </tbody>
+    </table>
+
+    <h3>Email preview</h3>
+    <p class="preview-note">This preview is isolated from the admin page. Remote images may load; scripts and form submissions are blocked.</p>
+    <iframe class="email-preview"
+            title="Rendered email preview"
+            sandbox=""
+            referrerpolicy="no-referrer"
+            loading="lazy"
+            th:src="@{/admin/emails/{id}/preview(id=${email.id})}"></iframe>
+
+    <details class="email-source">
+        <summary>View raw email source</summary>
+        <pre class="email-body" th:text="${email.body}"></pre>
+    </details>
+</div>
+<div th:replace="admin/layout :: scripts"></div>
+<style>
+    .details-table { max-width:1100px; }
+    .details-table th { width:220px; background:#f1f3f5 !important; }
+    .email-preview {
+        display:block; width:100%; max-width:1100px; height:70vh; min-height:480px;
+        border:1px solid #cbd5e1; border-radius:6px; background:#fff;
+    }
+    .preview-note { color:#5b6470; font-size:.9rem; }
+    .email-source { max-width:1100px; margin-top:16px; }
+    .email-source summary { cursor:pointer; font-weight:600; padding:10px 0; }
+    .email-body {
+        white-space:pre-wrap; overflow-wrap:anywhere; background:#f8f9fa;
+        border:1px solid #ddd; padding:16px; max-height:70vh; overflow:auto;
+    }
+</style>
+</body>
+</html>

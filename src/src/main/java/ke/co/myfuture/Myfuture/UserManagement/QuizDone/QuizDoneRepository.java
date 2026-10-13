@@ -1,0 +1,75 @@
+package ke.co.myfuture.Myfuture.UserManagement.QuizDone;
+
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
+import ke.co.myfuture.Myfuture.UserManagement.Referral.Referral;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+public interface QuizDoneRepository extends JpaRepository<QuizDone, Long> {
+    @Query("SELECT q FROM QuizDone q WHERE q.student = :student AND q.endDate BETWEEN :startOfWeek AND :endOfWeek")
+    List<QuizDone> findQuizzesByStudentAndWeek(IbukaStudentAccount student, Date startOfWeek, Date endOfWeek);
+
+    @Query("SELECT DISTINCT q.student FROM QuizDone q")
+    List<IbukaStudentAccount> findDistinctStudentIds();
+
+    List<QuizDone> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    List<QuizDone> findByStudentOrderByCreatedAtDesc(IbukaStudentAccount student);
+
+    boolean existsByStudentAndDeletedFalse(IbukaStudentAccount student);
+
+    Optional<QuizDone> findFirstByStudentAndDeletedFalseOrderByCreatedAtAsc(IbukaStudentAccount student);
+
+    Optional<QuizDone> findFirstByStudentAndDeletedFalseOrderByCreatedAtDesc(IbukaStudentAccount student);
+
+    @Query("""
+    SELECT DATE(e.createdAt), COUNT(e)
+    FROM QuizDone e
+    WHERE e.createdAt >= :startDate
+    GROUP BY DATE(e.createdAt)
+    ORDER BY DATE(e.createdAt)
+""")
+    List<Object[]> countPerDay(@Param("startDate") Date startDate);
+
+    @Query(value = """
+    SELECT DATE(created_at) as day,
+           COUNT(DISTINCT 
+               CASE 
+                   WHEN student_id IS NOT NULL THEN CONCAT('S-', student_id)
+                   ELSE CONCAT('I-', install_id)
+               END
+           ) as active_users
+    FROM quiz_done
+    WHERE created_at >= :startDate
+    AND deleted = false
+    GROUP BY DATE(created_at)
+    ORDER BY DATE(created_at)
+""", nativeQuery = true)
+    List<Object[]> countActiveStudentsPerDay(@Param("startDate") Date startDate);
+
+
+    Optional<QuizDone> findByIdAndStudent(
+            Long id,
+            IbukaStudentAccount student
+    );
+
+    List<QuizDone> findByContest_IdOrderByScoreDescEndDateAsc(Long contestId);
+
+    Optional<QuizDone> findFirstByContest_IdAndStudent_IdOrderByCreatedAtDesc(
+            Long contestId,
+            Long studentId
+    );
+
+    Optional<QuizDone> findByIdAndStudent_Id(
+            Long quizId,
+            Long studentId
+    );
+
+}
