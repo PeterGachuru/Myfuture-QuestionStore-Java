@@ -5,8 +5,13 @@ Each lifecycle stage now writes its own free-form `sender_service` category:
 - `LifecycleWelcome`
 - `LifecycleFirstQuizCompleted`
 - `LifecycleFirstQuizReminder`
+- `LifecycleFirstQuizReminder3Days`
+- `LifecycleFirstQuizReminder7Days`
+- `LifecycleFirstQuizReminder14Days`
+- `LifecycleInactive1Day`
 - `LifecycleInactive3Days`
 - `LifecycleInactive7Days`
+- `LifecycleInactive14Days`
 - `LifecycleInactiveMonthly`
 - `LifecycleSubscriptionNudge`
 - `LifecycleSubscriptionExpiry`

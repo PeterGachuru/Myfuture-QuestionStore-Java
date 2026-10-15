@@ -35,6 +35,8 @@ public class QuizDoneService {
     SubjectRepository subjectRepository;
     @Autowired
     CurriLevelRepository curriLevelRepository;
+    @Autowired
+    ke.co.myfuture.Myfuture.UserManagement.ReportsAndMarketing.StudentLifecycle.StudentLifecycleEmailService studentLifecycleEmailService;
 
     public List<QuizDoneDTO> findAll() {
         // Load and cache all subjects
@@ -106,6 +108,7 @@ public class QuizDoneService {
         }
 
         quizQuestionRepository.saveAll(quizQuestionList);
+        studentLifecycleEmailService.onQuizCompleted(createdQuiz);
         return quizDoneRepository.findById(createdQuiz.id);
     }
 }

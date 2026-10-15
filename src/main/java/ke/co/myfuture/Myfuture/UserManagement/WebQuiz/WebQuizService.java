@@ -30,6 +30,9 @@ public class WebQuizService {
     private QuizDoneRepository quizDoneRepository;
 
     @Autowired
+    private ke.co.myfuture.Myfuture.UserManagement.ReportsAndMarketing.StudentLifecycle.StudentLifecycleEmailService studentLifecycleEmailService;
+
+    @Autowired
     private QuizQuestionRepository quizQuestionRepository;
 
     @Autowired
@@ -446,6 +449,7 @@ public class WebQuizService {
 
         // Prevent repeated result-page refreshes from awarding points repeatedly.
         if (quiz.endDate != null) {
+            studentLifecycleEmailService.onQuizCompleted(quiz);
             return quiz;
         }
 
@@ -488,6 +492,7 @@ public class WebQuizService {
             );
         }
 
+        studentLifecycleEmailService.onQuizCompleted(savedQuiz);
         return savedQuiz;
     }
 

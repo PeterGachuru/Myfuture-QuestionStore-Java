@@ -6,7 +6,8 @@
 - Added repository methods for campaign deduplication, per-recipient volume checks, non-deleted quiz lookups, and subscription lookups.
 - Added a global cap of at most 2 newly queued emails per recipient in a rolling 7-day period. The cap is recipient-level, so it applies across campaigns and across multiple student accounts sharing one parent email address.
 - Added long-term reactivation for accounts with no recorded activity for 30 or more days. It can include students who never completed a quiz and queues at most one same-subject monthly reactivation per shared inbox, with a 30-day duplicate window.
-- Short-term inactivity messaging is reserved for 3–29 days of inactivity; accounts at 30+ days use the monthly reactivation path instead.
+- Short-term inactivity messages are staged at 1, 3, 7, and 14 days of inactivity for students with a completed quiz; accounts at 30+ days use the monthly reactivation path.
+- Students without a completed quiz receive first-quiz prompts at account ages 1, 3, 7, and 14 days; the monthly reactivation path begins at 30 days.
 - Subscription prompts use the parent username/email mapping and point to the profile for M-Pesa subscription; emails also link to the Android app.
 
 ## Trigger behaviour

@@ -27,6 +27,10 @@ public interface QuizDoneRepository extends JpaRepository<QuizDone, Long> {
 
     Optional<QuizDone> findFirstByStudentAndDeletedFalseOrderByCreatedAtDesc(IbukaStudentAccount student);
 
+    Optional<QuizDone> findFirstByStudentAndDeletedFalseAndEndDateIsNotNullOrderByEndDateAsc(IbukaStudentAccount student);
+
+    Optional<QuizDone> findFirstByStudentAndDeletedFalseAndEndDateIsNotNullOrderByEndDateDesc(IbukaStudentAccount student);
+
     @Query("""
     SELECT DATE(e.createdAt), COUNT(e)
     FROM QuizDone e

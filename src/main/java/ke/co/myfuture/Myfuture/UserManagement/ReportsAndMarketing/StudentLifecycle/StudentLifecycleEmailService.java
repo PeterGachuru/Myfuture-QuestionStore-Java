@@ -117,9 +117,9 @@ public class StudentLifecycleEmailService {
         Date sevenDaysAgo = daysAgo(now, 7);
 
         Optional<QuizDone> firstQuiz = quizDoneRepository
-                .findFirstByStudentAndDeletedFalseOrderByCreatedAtAsc(student);
+                .findFirstByStudentAndDeletedFalseAndEndDateIsNotNullOrderByEndDateAsc(student);
         Optional<QuizDone> lastQuiz = quizDoneRepository
-                .findFirstByStudentAndDeletedFalseOrderByCreatedAtDesc(student);
+                .findFirstByStudentAndDeletedFalseAndEndDateIsNotNullOrderByEndDateDesc(student);
         boolean hasQuiz = firstQuiz.isPresent();
 
         // 1. Welcome: queue once for recently registered students.
@@ -130,31 +130,42 @@ public class StudentLifecycleEmailService {
                     new Date(0), now);
         }
 
-        // 2. First-quiz celebration: send soon after the first completed quiz.
-        if (firstQuiz.isPresent() && firstQuiz.get().getCreatedAt() != null
-                && !firstQuiz.get().getCreatedAt().before(dayAgo)) {
-            log.debug("Lifecycle trigger FIRST_QUIZ studentId={}: first quiz at {}", student.getId(), firstQuiz.get().getCreatedAt());
+
+        // 2. Completion-scan fallback for a transient failure in the direct web/Android hook.
+        if (firstQuiz.isPresent() && firstQuiz.get().getEndDate() != null
+                && !firstQuiz.get().getEndDate().before(dayAgo)) {
             queueOnce(recipient, "Well done on your first MyFuture quiz, " + safeSubjectName(studentName),
                     firstQuizEmail(student, studentName), "LifecycleFirstQuizCompleted", "FIRST_QUIZ:" + student.getId(),
                     new Date(0), now);
         }
-
-        // 3. Registered, but has not attempted a quiz yet.
-        if (!hasQuiz && createdAt != null
-                && createdAt.before(daysAgo(now, 1))
-                && !createdAt.before(daysAgo(now, 14))) {
-            log.debug("Lifecycle trigger NO_QUIZ studentId={}: account age is between 1 and 14 days", student.getId());
-            queueOnce(recipient, "Your first MyFuture quiz is waiting, " + safeSubjectName(studentName),
-                    firstQuizNudgeEmail(student, studentName), "LifecycleFirstQuizReminder", "NO_QUIZ:" + student.getId(),
-                    new Date(0), now);
+        // 3. Encourage students who have not completed their first quiz, based on account age.
+        if (!hasQuiz && createdAt != null) {
+            long accountAgeDays = (now.getTime() - createdAt.getTime()) / (24L * 60 * 60 * 1000);
+            if (accountAgeDays >= 14 && accountAgeDays < 30) {
+                queueOnce(recipient, "Your first MyFuture quiz is still waiting, " + safeSubjectName(studentName),
+                        firstQuizNudgeEmail(student, studentName, 14), "LifecycleFirstQuizReminder14Days", "NO_QUIZ_14:" + student.getId(),
+                        new Date(0), now);
+            } else if (accountAgeDays >= 7 && accountAgeDays < 14) {
+                queueOnce(recipient, "Let's try your first MyFuture quiz, " + safeSubjectName(studentName),
+                        firstQuizNudgeEmail(student, studentName, 7), "LifecycleFirstQuizReminder7Days", "NO_QUIZ_7:" + student.getId(),
+                        new Date(0), now);
+            } else if (accountAgeDays >= 3 && accountAgeDays < 7) {
+                queueOnce(recipient, "A small first step on MyFuture, " + safeSubjectName(studentName),
+                        firstQuizNudgeEmail(student, studentName, 3), "LifecycleFirstQuizReminder3Days", "NO_QUIZ_3:" + student.getId(),
+                        new Date(0), now);
+            } else if (accountAgeDays >= 1 && accountAgeDays < 3) {
+                log.debug("Lifecycle trigger NO_QUIZ_1 studentId={}: accountAgeDays={}", student.getId(), accountAgeDays);
+                queueOnce(recipient, "Your first MyFuture quiz is waiting, " + safeSubjectName(studentName),
+                        firstQuizNudgeEmail(student, studentName, 1), "LifecycleFirstQuizReminder", "NO_QUIZ_1:" + student.getId(),
+                        new Date(0), now);
+            }
         }
 
-        Date lastStudy = mostRecent(student.getRecentActivity(),
-                lastQuiz.map(QuizDone::getCreatedAt).orElse(null), createdAt);
-        log.debug("Lifecycle eligibility studentId={}: createdAt={}, recentActivity={}, firstQuizAt={}, lastQuizAt={}, hasQuiz={}, lastStudy={}",
+        Date lastQuizCompletedAt = lastQuiz.map(QuizDone::getEndDate).orElse(null);
+        Date lastStudy = mostRecent(student.getRecentActivity(), lastQuizCompletedAt, createdAt);
+        log.debug("Lifecycle eligibility studentId={}: createdAt={}, recentActivity={}, firstQuizCompletedAt={}, lastQuizCompletedAt={}, hasQuiz={}, lastStudy={}",
                 student.getId(), createdAt, student.getRecentActivity(),
-                firstQuiz.map(QuizDone::getCreatedAt).orElse(null),
-                lastQuiz.map(QuizDone::getCreatedAt).orElse(null), hasQuiz, lastStudy);
+                firstQuiz.map(QuizDone::getEndDate).orElse(null), lastQuizCompletedAt, hasQuiz, lastStudy);
 
         if (lastStudy != null) {
             long inactiveDays = (now.getTime() - lastStudy.getTime()) / (24L * 60 * 60 * 1000);
@@ -165,15 +176,25 @@ public class StudentLifecycleEmailService {
                 queueOnce(recipient, "A fresh revision plan from MyFuture",
                         longInactiveEmail(student, studentName, inactiveDays, hasQuiz),
                         "LifecycleInactiveMonthly", "INACTIVE_MONTHLY:" + student.getId(), daysAgo(now, 30), now);
+            } else if (hasQuiz && inactiveDays >= 14) {
+                log.debug("Lifecycle trigger INACTIVE_14 studentId={}: inactiveDays={}", student.getId(), inactiveDays);
+                queueOnce(recipient, "We miss you, " + safeSubjectName(studentName),
+                        inactiveEmail(student, studentName, 14), "LifecycleInactive14Days", "INACTIVE_14:" + student.getId(),
+                        daysAgo(now, 30), now);
             } else if (hasQuiz && inactiveDays >= 7) {
                 log.debug("Lifecycle trigger INACTIVE_7 studentId={}: inactiveDays={}", student.getId(), inactiveDays);
                 queueOnce(recipient, "Let's get back to revision, " + safeSubjectName(studentName),
-                        inactiveEmail(student, studentName, true), "LifecycleInactive7Days", "INACTIVE_7:" + student.getId(),
+                        inactiveEmail(student, studentName, 7), "LifecycleInactive7Days", "INACTIVE_7:" + student.getId(),
                         daysAgo(now, 30), now);
             } else if (hasQuiz && inactiveDays >= 3) {
                 log.debug("Lifecycle trigger INACTIVE_3 studentId={}: inactiveDays={}", student.getId(), inactiveDays);
                 queueOnce(recipient, "A quick revision challenge for " + safeSubjectName(studentName),
-                        inactiveEmail(student, studentName, false), "LifecycleInactive3Days", "INACTIVE_3:" + student.getId(),
+                        inactiveEmail(student, studentName, 3), "LifecycleInactive3Days", "INACTIVE_3:" + student.getId(),
+                        daysAgo(now, 30), now);
+            } else if (hasQuiz && inactiveDays >= 1) {
+                log.debug("Lifecycle trigger INACTIVE_1 studentId={}: inactiveDays={}", student.getId(), inactiveDays);
+                queueOnce(recipient, "We miss you on MyFuture, " + safeSubjectName(studentName),
+                        inactiveEmail(student, studentName, 1), "LifecycleInactive1Day", "INACTIVE_1:" + student.getId(),
                         daysAgo(now, 30), now);
             }
         }
@@ -228,6 +249,38 @@ public class StudentLifecycleEmailService {
             queueOnce(recipient, "Your weekly MyFuture revision plan: " + safeSubjectName(studentName),
                     weeklyPlanEmail(student, studentName), "LifecycleWeeklyRevisionPlan", "WEEKLY_PLAN:" + student.getId(),
                     daysAgo(now, 6), now);
+        }
+    }
+
+    /** Queue the first-quiz celebration from the completion flow, for web and Android. */
+    public void onQuizCompleted(QuizDone completedQuiz) {
+        if (!lifecycleEmailEnabled || completedQuiz == null || completedQuiz.getEndDate() == null
+                || !Boolean.FALSE.equals(completedQuiz.getDeleted()) || completedQuiz.getStudent() == null) {
+            return;
+        }
+
+        IbukaStudentAccount student = completedQuiz.getStudent();
+        Optional<QuizDone> firstCompletedQuiz = quizDoneRepository
+                .findFirstByStudentAndDeletedFalseAndEndDateIsNotNullOrderByEndDateAsc(student);
+        if (firstCompletedQuiz.isEmpty() || !completedQuiz.getId().equals(firstCompletedQuiz.get().getId())) {
+            return;
+        }
+
+        if (student.getParent() == null) return;
+        Optional<User> parentOpt = userRepository.findById(student.getParent());
+        if (parentOpt.isEmpty() || !SchedulerService.isValidEmail(parentOpt.get().getEmail())) return;
+
+        String name = firstNonBlank(student.getFirstName(), student.getName(), "there");
+        String recipient = parentOpt.get().getEmail();
+        Date now = new Date();
+        log.info("Lifecycle trigger FIRST_QUIZ_COMPLETED studentId={}", student.getId());
+        try {
+            queueOnce(recipient, "Well done on your first MyFuture quiz, " + safeSubjectName(name),
+                    firstQuizEmail(student, name), "LifecycleFirstQuizCompleted", "FIRST_QUIZ:" + student.getId(),
+                    new Date(0), now);
+        } catch (Exception ex) {
+            // Do not fail quiz completion if email queueing is temporarily unavailable.
+            log.error("Lifecycle first-quiz email queue failed for studentId={}", student.getId(), ex);
         }
     }
 
@@ -291,21 +344,47 @@ public class StudentLifecycleEmailService {
                 + button("Continue revising", PROFILE_URL));
     }
 
-    private String firstQuizNudgeEmail(IbukaStudentAccount student, String name) {
-        return page("Let's try your first quiz",
+    private String firstQuizNudgeEmail(IbukaStudentAccount student, String name, int stageDays) {
+        String heading;
+        String message;
+        if (stageDays >= 14) {
+            heading = "Your first quiz is still waiting";
+            message = "We would love to see you try your first MyFuture quiz. Choose a subject and start with just a few questions; you can continue at your own pace.";
+        } else if (stageDays >= 7) {
+            heading = "Let's take the first step together";
+            message = "Your first MyFuture quiz is a simple way to discover what you already know and what to practise next. A short attempt is enough to get started.";
+        } else if (stageDays >= 3) {
+            heading = "Ready for a quick first quiz?";
+            message = "Your account is ready. Pick a subject and try a few questions—there is no need to prepare for a long study session first.";
+        } else {
+            heading = "Your first MyFuture quiz is waiting";
+            message = "Take a few minutes to try a quiz and see which topics you already understand. You can start small and build from there.";
+        }
+        return page(heading,
                 "<p>Hello " + esc(name) + ",</p>"
-                + "<p>Your MyFuture account is ready. Take a few minutes to attempt a quiz and see which topics you already understand.</p>"
-                + "<p>You do not need a long study session to begin—start with a short activity and build from there.</p>"
-                + button("Start revising", PROFILE_URL));
+                + "<p>" + esc(message) + "</p>"
+                + button("Start your first quiz", PROFILE_URL));
     }
 
-    private String inactiveEmail(IbukaStudentAccount student, String name, boolean sevenDays) {
-        String message = sevenDays
-                ? "It has been a little while since your last recorded quiz. You can pick up again with a short revision session—there is no need to catch up all at once."
-                : "A quick five-minute revision session can help keep what you learned fresh. Try a topic you have studied before.";
-        return page(sevenDays ? "Ready to return to revision?" : "Your quick revision challenge",
-                "<p>Hello " + esc(name) + ",</p><p>" + message + "</p>"
-                + "<p>Choose a subject for your class and complete a short quiz today.</p>"
+    private String inactiveEmail(IbukaStudentAccount student, String name, int stageDays) {
+        String heading;
+        String message;
+        if (stageDays >= 14) {
+            heading = "We miss you, " + name;
+            message = "It has been about two weeks since your last study session. We would love to see you back; you can restart with one short quiz and continue at your own pace.";
+        } else if (stageDays >= 7) {
+            heading = "We miss having you around";
+            message = "It has been a little while since your last study session. There is no need to catch up all at once—one short revision session is a good way to begin again.";
+        } else if (stageDays >= 3) {
+            heading = "A quick revision challenge";
+            message = "A short revision session can help keep what you learned fresh. Try a topic you have studied before.";
+        } else {
+            heading = "We miss you on MyFuture";
+            message = "We have not seen you revising since your last study session, and we would love to help you keep going. Try one small quiz today; a few minutes is enough to get started.";
+        }
+        return page(heading,
+                "<p>Hello " + esc(name) + ",</p><p>" + esc(message) + "</p>"
+                + "<p>Choose a subject for your class and continue with a short quiz.</p>"
                 + button("Resume learning", PROFILE_URL));
     }
 
