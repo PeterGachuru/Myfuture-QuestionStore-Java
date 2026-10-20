@@ -20,17 +20,20 @@ public class GooglePlaySubscriptionService {
     private final StudySubscriptionRepository studySubscriptionRepository;
     private final SubscriptionExpiryTrackService subscriptionExpiryTrackService;
     private final UserRepository userRepository;
+    private final GooglePlayRtdnService googlePlayRtdnService;
 
     public GooglePlaySubscriptionService(
             GooglePlaySubscriptionRepository repository,
             StudySubscriptionRepository studySubscriptionRepository,
             SubscriptionExpiryTrackService subscriptionExpiryTrackService,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            GooglePlayRtdnService googlePlayRtdnService) {
 
         this.repository = repository;
         this.studySubscriptionRepository = studySubscriptionRepository;
         this.subscriptionExpiryTrackService = subscriptionExpiryTrackService;
         this.userRepository = userRepository;
+        this.googlePlayRtdnService = googlePlayRtdnService;
     }
 
     public GooglePlaySubscription saveSubscription(
@@ -47,6 +50,27 @@ public class GooglePlaySubscriptionService {
             throw new IllegalArgumentException(
                     "installId is required for Google Play subscription");
         }
+
+        // Client price, order ID, duration and timestamps are hints only. Verify the
+        // token with Google before granting access or recording a paid transaction.
+        GooglePlayRtdnService.VerifiedPurchase verified;
+        try {
+            verified = googlePlayRtdnService.verifyInitialPurchase(subscription.getPurchaseToken());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Google Play could not verify this active purchase", e);
+        }
+        if (subscription.getProductId() != null && !subscription.getProductId().equals(verified.productId())) {
+            throw new IllegalArgumentException("Purchase product does not match Google Play verification");
+        }
+        subscription.setProductId(verified.productId());
+        subscription.setOrderId(verified.orderId());
+        subscription.setPurchaseTime(verified.startTime().toEpochMilli());
+        subscription.setNumberOfDays(verified.numberOfDays());
+        // SubscriptionsV2 does not return a verified price. Do not use a client
+        // amount/currency as financial evidence.
+        subscription.setAmount(0.0);
+        subscription.setCurrency(null);
+        subscription.setOriginalJson(null);
 
         // ---------------------------------------------------------
         // 2. Prevent duplicate Google Play purchase
@@ -99,8 +123,7 @@ public class GooglePlaySubscriptionService {
         StudySubscription studySubscription =
                 new StudySubscription();
 
-        studySubscription.setPayAmount(
-                BigDecimal.valueOf(subscription.getAmount()));
+        studySubscription.setPayAmount(BigDecimal.ZERO);
 
         studySubscription.setNumberOfDays(
                 subscription.getNumberOfDays());
@@ -148,8 +171,8 @@ public class GooglePlaySubscriptionService {
          * receiveSubscription() will calculate/update the
          * actual subscription period.
          */
-        studySubscription.setStartDate(new Date());
-        studySubscription.setEndDate(new Date());
+        studySubscription.setStartDate(Date.from(verified.startTime()));
+        studySubscription.setEndDate(Date.from(verified.expiryTime()));
 
         studySubscription.setCalculated(false);
 
@@ -169,8 +192,8 @@ public class GooglePlaySubscriptionService {
         // 7. Apply subscription to user's expiry track
         // ---------------------------------------------------------
 
-        subscriptionExpiryTrackService.receiveSubscription(
-                savedStudySubscription);
+        subscriptionExpiryTrackService.receiveVerifiedGooglePlaySubscription(
+                savedStudySubscription, Date.from(verified.expiryTime()));
 
         System.out.println(
                 "Google Play subscription successfully applied "

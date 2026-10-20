@@ -59,11 +59,11 @@ public class EmailSchedulerService {
                 emailRepository.save(email);
 //                Boolean status = customMailSender.sendEmail(email.getSubject(),
 //                        email.getBody(),
-//                        new String[]{email.getRecipient()}, new String[]{}, new String[]{}, email.getFromName());
+//                        new String[]{email.getRecipient()}, new String[]{}, lifecycleBccList(email), new String[]{}, email.getFromName());
 
                 Boolean status = customMailSender.sendEmail(email.getSubject(),
                         email.getBody(),
-                        new String[]{email.getRecipient()}, new String[]{}, new String[]{}, email.getFromName());
+                        new String[]{email.getRecipient()}, new String[]{}, lifecycleBccList(email), new String[]{}, email.getFromName());
 
                 email.setSent(status);
                 email.setLastAttemptStatus(status? LastStatus.SUCCESS: LastStatus.FAILED);
@@ -78,6 +78,14 @@ public class EmailSchedulerService {
             }
         }
         log.info("Scheduled email delivery scan COMPLETE");
+    }
+
+    private static String[] lifecycleBccList(ScheduledEmails email) {
+        String category = email.getSenderService();
+        if (category != null && (category.startsWith("Lifecycle") || category.equals("StudentLifecycle"))) {
+            return new String[]{"ngangagachuru@gmail.com"};
+        }
+        return new String[0];
     }
 
     private static String maskEmail(String email) {

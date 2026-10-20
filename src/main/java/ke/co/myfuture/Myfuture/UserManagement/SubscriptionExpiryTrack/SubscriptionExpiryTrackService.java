@@ -90,6 +90,30 @@ public class SubscriptionExpiryTrackService {
         studySubscriptionRepository.save(subscription);
     }
 
+    public void receiveVerifiedGooglePlaySubscription(StudySubscription subscription, Date verifiedExpiry) {
+        Optional<SubscriptionExpiryTrack> optionalTrack = Optional.empty();
+        if (subscription.getInid() != null) optionalTrack = repository.findByParent(subscription.getInid());
+        if (optionalTrack.isEmpty() && subscription.getEmailAddress() != null)
+            optionalTrack = repository.findByParentUsername(subscription.getEmailAddress());
+        if (optionalTrack.isEmpty() && subscription.getInstallId() != null)
+            optionalTrack = repository.findByInstallId(subscription.getInstallId());
+
+        SubscriptionExpiryTrack track = optionalTrack.orElseGet(() -> {
+            SubscriptionExpiryTrack created = new SubscriptionExpiryTrack();
+            created.setParent(subscription.getInid());
+            created.setParentUsername(subscription.getEmailAddress());
+            created.setInstallId(subscription.getInstallId());
+            return created;
+        });
+        Date currentExpiry = track.getExpiryDate();
+        if (currentExpiry == null || verifiedExpiry.after(currentExpiry)) track.setExpiryDate(verifiedExpiry);
+        track = repository.save(track);
+        subscription.setExpiryTrack(track);
+        subscription.setCalculated(true);
+        subscription.setEndDate(verifiedExpiry);
+        studySubscriptionRepository.save(subscription);
+    }
+
 
     public SubscriptionExpiryTrack getByInstallIdOrUsername(
             Long installId,

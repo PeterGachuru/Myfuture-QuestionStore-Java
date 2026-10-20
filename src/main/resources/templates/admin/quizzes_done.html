@@ -23,6 +23,7 @@
             <th>Contest</th>
             <th>App version</th>
             <th>Category</th>
+            <th>Class Level</th>
             <th>Subject</th>
             <th>Questions</th>
             <th>Score</th>
@@ -59,7 +60,9 @@
             <td th:text="${q.appVersion}"></td>
             <td th:text="${q.category}"></td>
 
-            <td th:text="${q.subjectId}"></td>
+            <td th:text="${q.student != null and q.student.classlevel != null ? classLevelNames[q.student.classlevel] : '-'}"></td>
+
+            <td th:text="${subjectNames[q.subjectId] != null ? subjectNames[q.subjectId] : 'ID ' + q.subjectId}"></td>
 
             <td th:text="${q.questionsCount}"></td>
 

@@ -15,8 +15,8 @@
             <th>ID</th>
             <th>Creator</th>
             <th>Invites Count</th>
-            <th>Class Level ID</th>
-            <th>Subject ID</th>
+            <th>Class Level</th>
+            <th>Subject</th>
             <th>Created At</th>
             <th>Updated At</th>
         </tr>
@@ -34,8 +34,8 @@
                 </a>
             </td>
             <td th:text="${c.invitesCount}"></td>
-            <td th:text="${c.classlevelId}"></td>
-            <td th:text="${c.subjectId}"></td>
+            <td th:text="${classLevelNames[c.classlevelId] != null ? classLevelNames[c.classlevelId] : 'ID ' + c.classlevelId}"></td>
+            <td th:text="${subjectNames[c.subjectId] != null ? subjectNames[c.subjectId] : 'ID ' + c.subjectId}"></td>
             <td th:text="${#dates.format(c.createdAt,'yyyy-MM-dd HH:mm')}"></td>
             <td th:text="${#dates.format(c.updatedAt,'yyyy-MM-dd HH:mm')}"></td>
         </tr>

@@ -110,10 +110,14 @@ public class CustomMailSender {
     }
 
     public Boolean sendEmail(String subject, String body, String[] toList, String[] ccList, String[] attachedFilePaths, String fromName) {
+        return sendEmail(subject, body, toList, ccList, new String[0], attachedFilePaths, fromName);
+    }
+
+    public Boolean sendEmail(String subject, String body, String[] toList, String[] ccList, String[] bccList, String[] attachedFilePaths, String fromName) {
 //        System.out.println("Sending mail to "+toList[0]+", subject: "+subject);
 
         if (true) {
-            return sendEmailOverRest(subject, body, toList,ccList, attachedFilePaths, fromName);
+            return sendEmailOverRest(subject, body, toList, ccList, bccList, attachedFilePaths, fromName);
         }
         HashMap<String, String> properties = getProperties();
         String from = properties.get("spring.mail.username");
@@ -161,6 +165,12 @@ public class CustomMailSender {
             }
 
 
+            if (bccList != null) {
+                for (String bcc : bccList) {
+                    message.addRecipient(Message.RecipientType.BCC, new InternetAddress(bcc));
+                }
+            }
+
             Multipart multipart = new MimeMultipart();
             MimeBodyPart plainTextPart = new MimeBodyPart();
             plainTextPart.setText(Jsoup.parse(body).text(), "utf-8");
@@ -201,6 +211,10 @@ public class CustomMailSender {
     }
 
     public Boolean sendEmailOverRest(String subject, String body, String[] toList, String[] ccList, String[] attachedFilePaths, String fromName) {
+        return sendEmailOverRest(subject, body, toList, ccList, new String[0], attachedFilePaths, fromName);
+    }
+
+    public Boolean sendEmailOverRest(String subject, String body, String[] toList, String[] ccList, String[] bccList, String[] attachedFilePaths, String fromName) {
 //        System.out.println("Sending mail via REST to " + toList[0] + ", subject: " + subject);
 
         // Load your SMTP configuration
@@ -212,6 +226,7 @@ public class CustomMailSender {
         requestPayload.body = body;
         requestPayload.toList = toList;
         requestPayload.ccList = ccList;
+        requestPayload.bccList = bccList;
         requestPayload.attachedFilePaths = attachedFilePaths;
         requestPayload.fromName = fromName;
         requestPayload.mailConfig = properties;
@@ -235,7 +250,7 @@ public class CustomMailSender {
 
             EmailResponse emailResponse = response.getBody();
             if (emailResponse != null) {
-                System.out.println("Response message: " + emailResponse.getMessage());
+                System.out.println("EmailResponse: " + emailResponse.getMessage());
                 return emailResponse.isSuccess();
             } else {
                 return false;

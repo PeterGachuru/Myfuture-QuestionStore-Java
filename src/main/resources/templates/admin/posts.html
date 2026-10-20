@@ -21,6 +21,9 @@
             <th>ID</th>
             <th>Student</th>
             <th>Question ID</th>
+            <th>Class Level</th>
+            <th>Subject</th>
+            <th>Topic</th>
             <th>Install ID</th>
             <th>Attempts</th>
             <th>Created At</th>
@@ -41,6 +44,12 @@
             </td>
 
             <td th:text="${p.questionid}"></td>
+
+            <td th:text="${curriculumByQuestionId[p.questionid] != null ? curriculumByQuestionId[p.questionid]['classLevel'] : '-'}"></td>
+
+            <td th:text="${curriculumByQuestionId[p.questionid] != null ? curriculumByQuestionId[p.questionid]['subject'] : '-'}"></td>
+
+            <td th:text="${curriculumByQuestionId[p.questionid] != null ? curriculumByQuestionId[p.questionid]['topic'] : '-'}"></td>
 
             <td th:text="${p.installId}"></td>
 

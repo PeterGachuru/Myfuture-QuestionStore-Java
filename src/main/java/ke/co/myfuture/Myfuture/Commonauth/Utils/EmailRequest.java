@@ -7,6 +7,7 @@ public class EmailRequest {
     public String body;
     public String[] toList;
     public String[] ccList;
+    public String[] bccList;
     public String[] attachedFilePaths;
     public String fromName;
     public Map<String, String> mailConfig; // Contains mail host, port, username, password, etc.
