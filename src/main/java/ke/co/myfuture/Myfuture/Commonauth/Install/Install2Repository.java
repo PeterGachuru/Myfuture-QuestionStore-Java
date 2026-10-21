@@ -21,6 +21,10 @@ public interface Install2Repository extends JpaRepository<Install, Long> {
 
     List<Install> findTop500ByPlatformOrderByCreatedAtDesc(String platform);
 
+    List<Install> findTop500ByAccountIdIsNotNullOrderByCreatedAtDesc();
+
+    List<Install> findTop500ByAccountIdIsNotNullAndPlatformOrderByCreatedAtDesc(String platform);
+
         @Query(value = """
         SELECT DATE(created_at), COUNT(*)
         FROM install

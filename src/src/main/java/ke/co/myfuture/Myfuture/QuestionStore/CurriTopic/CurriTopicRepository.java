@@ -123,4 +123,5 @@ SELECT * FROM curri_topic  WHERE parent IS NOT NULL AND id IN
     Optional<CurriTopic> findBySlug(@Param("slug") String slug);
 
     List<CurriTopic> findByDeletedFalseOrderByCreatedAtDesc(PageRequest of);
+
 }

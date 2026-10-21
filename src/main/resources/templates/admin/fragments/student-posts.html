@@ -14,12 +14,14 @@
         <tr>
             <th>S/N</th>
             <th>Question ID</th>
+            <th>Topic</th>
             <th>Created</th>
         </tr>
 
         <tr th:each="p, stat : ${posts}">
             <td th:text="${stat.index + 1}"></td>
             <td th:text="${p.questionid}"></td>
+            <td th:text="${postTopicNames[p.questionid] != null ? postTopicNames[p.questionid] : 'Unknown topic'}"></td>
             <td th:text="${#dates.format(p.createdAt,'yyyy-MM-dd HH:mm')}"></td>
         </tr>
 

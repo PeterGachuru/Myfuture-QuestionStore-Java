@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/layout :: styles"></head>
+<body>
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+<div id="content" class="content">
+    <h2>Student Learning Streaks</h2>
+    <p>Latest synchronized streak snapshot for each student. Active today: <strong th:text="${activeTodayCount}">0</strong></p>
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>S/N</th><th>Student ID</th><th>Student</th><th>Class level</th>
+            <th>Current streak</th><th>Longest streak</th><th>Last activity</th>
+            <th>Active today</th><th>Last synced</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="streak, stat : ${streaks}">
+            <td th:text="${stat.index + 1}"></td>
+            <td><a th:href="@{/admin/students/{id}(id=${streak.studentId})}" th:text="${streak.studentId}"></a></td>
+            <td th:text="${streak.studentName}"></td>
+            <td th:text="${streak.classLevel}"></td>
+            <td th:text="${streak.currentStreak}"></td>
+            <td th:text="${streak.longestStreak}"></td>
+            <td th:text="${streak.lastActivityDate}"></td>
+            <td th:text="${streak.activeToday ? 'Yes' : 'No'}"></td>
+            <td th:text="${streak.updatedAt}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(streaks)}"><td colspan="9">No student streaks have been synchronized yet.</td></tr>
+        </tbody>
+    </table>
+</div>
+<div th:replace="admin/layout :: scripts"></div>
+</body>
+</html>

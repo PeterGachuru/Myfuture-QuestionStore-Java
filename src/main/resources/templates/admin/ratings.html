@@ -19,6 +19,7 @@
         <thead>
         <tr>
             <th>Student</th>
+            <th>Phone number</th>
             <th>Rating</th>
             <th>Version</th>
             <th>Message</th>
@@ -35,6 +36,8 @@
             <td>
                 <a th:href="@{/admin/students/{id}(id=${r.ibukaStudentAccount?.id})}" th:text="${r.ibukaStudentAccount?.name}"></a>
             </td>
+
+            <td th:text="${phoneNumbers[r.id] != null ? phoneNumbers[r.id] : '-'}"></td>
 
             <td>
 

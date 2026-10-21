@@ -14,6 +14,7 @@ import java.util.List;
 
 public interface CurriQuestionRepository extends JpaRepository<CurriQuestion, Long> {
 
+
     int countBySubtopicAndDeleted(CurriTopic subtopic, Boolean deleted);
 
     int countBySubtopicAndReviewedAndDeleted(CurriTopic subtopic, Boolean reviewed, Boolean deleted);

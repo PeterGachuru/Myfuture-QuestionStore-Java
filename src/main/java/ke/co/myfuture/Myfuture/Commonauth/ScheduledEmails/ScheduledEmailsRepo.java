@@ -41,11 +41,6 @@ public interface ScheduledEmailsRepo extends JpaRepository<ScheduledEmails, Long
 
     Set<String> findRecipientByLastAttemptStatus(LastStatus lastAttemptStatus);
 
-    @Query("SELECT COUNT(s) FROM ScheduledEmails s " +
-            "WHERE s.attemptedSendAt IS NOT NULL " +
-            "AND s.attemptedSendAt >= :fromTime")
-    long countAttemptsInLast50Minutes(@Param("fromTime") Date fromTime);
-
     @Query(
             value = "SELECT s.id AS id, " +
                     "s.recipient AS recipient, " +

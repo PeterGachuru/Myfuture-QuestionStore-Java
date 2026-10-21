@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface CurriculumRepository extends JpaRepository<Curriculum, Long> {
 
+
     List<Curriculum> findByIdNot(Long id);
 
     @Query(value = """ 

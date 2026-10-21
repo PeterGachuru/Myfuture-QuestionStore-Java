@@ -19,6 +19,12 @@
             All
         </a>
 
+        <a th:href="@{/admin/installs(withAccount=true)}"
+           class="btn"
+           th:style="${withAccount ? 'background:#2ecc71' : ''}">
+            With Account
+        </a>
+
         <a th:href="@{/admin/installs(platform='myfuture_android')}"
            class="btn"
            th:style="${selectedPlatform == 'myfuture_android' ? 'background:#2ecc71' : ''}">

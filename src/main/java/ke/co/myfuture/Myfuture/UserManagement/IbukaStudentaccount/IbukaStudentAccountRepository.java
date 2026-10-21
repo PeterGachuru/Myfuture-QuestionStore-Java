@@ -47,7 +47,7 @@ public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStuden
 
     List<IbukaStudentAccount> findTop200ByOrderByCreatedAtDesc();
 
-    List<IbukaStudentAccount> findBySenderIsNull();
+    List<IbukaStudentAccount> findBySenderIsNullAndIdGreaterThanOrderByIdAsc(Long afterId, Pageable pageable);
 
 
     @Transactional

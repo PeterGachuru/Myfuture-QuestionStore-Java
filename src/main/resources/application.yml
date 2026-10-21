@@ -11,6 +11,7 @@ email:
     # Keep false in UAT to create queue records without sending real emails.
     enabled: false
     scan-delay-ms: 60000
+    max-per-hour: 180
 
 custommail:
   sendurl: http://localhost:8090

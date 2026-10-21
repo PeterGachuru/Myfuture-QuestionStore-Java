@@ -1,6 +1,7 @@
 package ke.co.myfuture.Myfuture.Commonauth.MailComponent;
 
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.exception.MailServiceException;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.EmailSendRateLimiter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,11 +19,15 @@ public class MailService2 {
     @Autowired
     JavaMailSender javaMailSender;
 
+    @Autowired
+    private EmailSendRateLimiter emailSendRateLimiter;
+
     @Value("${spring.mail.sender}")
     private String fromEmail;
 
     @Async
     public void sendEmail(String to, String message, String subject) throws MailServiceException {
+        emailSendRateLimiter.reserveRecipients(1);
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setFrom(fromEmail);

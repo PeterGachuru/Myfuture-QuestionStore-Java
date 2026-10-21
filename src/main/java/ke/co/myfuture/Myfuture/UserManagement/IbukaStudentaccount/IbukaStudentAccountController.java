@@ -38,6 +38,12 @@ public class IbukaStudentAccountController {
         if (student.id != null) return null;
 
         IbukaStudentAccount savedStudentAccount = repository.save(student);
+        try {
+            savedStudentAccount = ibukaStudentAccountService.createSenderIdIfMissing(savedStudentAccount);
+        } catch (Exception e) {
+            System.err.println("Failed to create sender ID for new student ID=" + savedStudentAccount.getId()
+                    + " | Reason: " + e.getMessage());
+        }
         UniversalResponse response = new UniversalResponse();
         response.setStatus("Success");
         response.setMessage("Saved successfully");

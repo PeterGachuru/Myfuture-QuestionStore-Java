@@ -14,6 +14,17 @@ import java.util.List;
 
 public interface CurriQuestionRepository extends JpaRepository<CurriQuestion, Long> {
 
+    @Query("SELECT q.id AS questionId, q.subtopic.name AS topicName FROM CurriQuestion q WHERE q.id IN :questionIds")
+    List<QuestionTopicView> findTopicNamesByQuestionIds(@Param("questionIds") List<Long> questionIds);
+
+    interface QuestionTopicView {
+        Long getQuestionId();
+        String getTopicName();
+    }
+
+    @Query("SELECT q FROM CurriQuestion q WHERE q.subtopic.id = :topicId ORDER BY q.createdAt DESC, q.id DESC")
+    Page<CurriQuestion> findAdminQuestionsByTopic(@Param("topicId") Long topicId, Pageable pageable);
+
     int countBySubtopicAndDeleted(CurriTopic subtopic, Boolean deleted);
 
     int countBySubtopicAndReviewedAndDeleted(CurriTopic subtopic, Boolean reviewed, Boolean deleted);

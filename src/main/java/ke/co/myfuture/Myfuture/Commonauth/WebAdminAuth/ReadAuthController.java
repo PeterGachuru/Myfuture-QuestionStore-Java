@@ -20,6 +20,7 @@ import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevel;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriLevel.CurriLevelRepository;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountService;
 import ke.co.myfuture.Myfuture.UserManagement.SubscriptionPlan.SubscriptionPlan;
 import ke.co.myfuture.Myfuture.UserManagement.SubscriptionPlan.SubscriptionPlanRepository;
 import ke.co.myfuture.Myfuture.Utils.Response.UniversalResponse;
@@ -42,6 +43,7 @@ public class ReadAuthController {
     private final RememberMeService rememberMeService;
     private final PasswordResetService passwordResetService;
     private final IbukaStudentAccountRepository ibukaStudentAccountRepository;
+    private final IbukaStudentAccountService ibukaStudentAccountService;
     private final CurriLevelRepository curriLevelRepository;
     private final SubscriptionPlanRepository subscriptionPlanRepository;
 
@@ -294,7 +296,13 @@ public class ReadAuthController {
         student.setParentUsername(user.getEmail());
         student.setTotalScore(0L);
 
-        ibukaStudentAccountRepository.save(student);
+        student = ibukaStudentAccountRepository.save(student);
+        try {
+            student = ibukaStudentAccountService.createSenderIdIfMissing(student);
+        } catch (Exception e) {
+            System.err.println("Failed to create sender ID for new student ID=" + student.getId()
+                    + " | Reason: " + e.getMessage());
+        }
 
         // Automatically select the newly created student
         request.getSession().setAttribute("student", student);

@@ -3,6 +3,7 @@ package ke.co.myfuture.Myfuture.Commonauth.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SchedulerService;
 import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SenderService;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.EmailSendRateLimiter;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +33,9 @@ public class CustomMailSender {
 
     @Autowired
     SchedulerService schedulerService;
+
+    @Autowired
+    private EmailSendRateLimiter emailSendRateLimiter;
 
     @Value("${custommail.sendurl}")
     private String sendEmailUrl;
@@ -116,8 +120,10 @@ public class CustomMailSender {
     public Boolean sendEmail(String subject, String body, String[] toList, String[] ccList, String[] bccList, String[] attachedFilePaths, String fromName) {
 //        System.out.println("Sending mail to "+toList[0]+", subject: "+subject);
 
+        emailSendRateLimiter.reserveRecipients(countRecipients(toList, ccList, bccList));
+
         if (true) {
-            return sendEmailOverRest(subject, body, toList, ccList, bccList, attachedFilePaths, fromName);
+            return sendEmailOverRestInternal(subject, body, toList, ccList, bccList, attachedFilePaths, fromName);
         }
         HashMap<String, String> properties = getProperties();
         String from = properties.get("spring.mail.username");
@@ -215,6 +221,12 @@ public class CustomMailSender {
     }
 
     public Boolean sendEmailOverRest(String subject, String body, String[] toList, String[] ccList, String[] bccList, String[] attachedFilePaths, String fromName) {
+        emailSendRateLimiter.reserveRecipients(countRecipients(toList, ccList, bccList));
+        return sendEmailOverRestInternal(subject, body, toList, ccList, bccList, attachedFilePaths, fromName);
+    }
+
+    private Boolean sendEmailOverRestInternal(String subject, String body, String[] toList, String[] ccList,
+                                              String[] bccList, String[] attachedFilePaths, String fromName) {
 //        System.out.println("Sending mail via REST to " + toList[0] + ", subject: " + subject);
 
         // Load your SMTP configuration
@@ -259,6 +271,17 @@ public class CustomMailSender {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private static int countRecipients(String[]... recipientLists) {
+        int count = 0;
+        for (String[] recipients : recipientLists) {
+            if (recipients == null) continue;
+            for (String recipient : recipients) {
+                if (recipient != null && !recipient.isBlank()) count++;
+            }
+        }
+        return count;
     }
 
     private void toJson(@Nullable EmailRequest requestPayload) {

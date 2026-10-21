@@ -2,6 +2,10 @@ package ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities;
 
 
 import org.springframework.mail.javamail.MimeMessageHelper;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.EmailSendRateLimiter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import jakarta.mail.Authenticator;
 import jakarta.mail.PasswordAuthentication;
@@ -13,7 +17,11 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Properties;
 
+@Component
+@Lazy
 public class SendCredentialsToEmail {
+    @Autowired
+    private EmailSendRateLimiter emailSendRateLimiter;
     static Configurations c = new Configurations();
     static String host = c.getProperties().getProperty("spring.mail.host");
     static String port = c.getProperties().getProperty("mm.email.port");
@@ -40,6 +48,7 @@ public class SendCredentialsToEmail {
     static String banner_path = c.getProperties().getProperty("equity_banner_path");
 
     public void sendMail(String recipient,String uname,String pass) throws jakarta.mail.MessagingException, IOException {
+        emailSendRateLimiter.reserveRecipients(1);
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
@@ -162,6 +171,7 @@ public class SendCredentialsToEmail {
     }
 
     public void sendPassWordReset(String recipient,String token) throws jakarta.mail.MessagingException, IOException {
+        emailSendRateLimiter.reserveRecipients(1);
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");

@@ -3,8 +3,11 @@ package ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount;
 import ke.co.myfuture.Myfuture.UserManagement.Sender.Sender;
 import ke.co.myfuture.Myfuture.UserManagement.Sender.SenderService;
 import ke.co.myfuture.Myfuture.UserManagement.Sender.SenderType;
+import org.springframework.context.event.EventListener;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,41 +25,44 @@ public class IbukaStudentAccountService {
         return ibukaStudentAccountOptional.isPresent();
     }
 
-    @Bean
+    public IbukaStudentAccount createSenderIdIfMissing(IbukaStudentAccount account) {
+        if (account == null || account.getId() == null || account.getSender() != null) {
+            return account;
+        }
+
+        Sender sender = senderService.createSender(account.getName(), SenderType.STUDENT, account.getId());
+        account.setSender(sender);
+        return ibukaStudentAccountRepository.save(account);
+    }
+
+    @Async
+    @EventListener(ApplicationStartedEvent.class)
     public void generateSenderIds() {
-        System.out.println("----generateSenderIds---");
-
-        List<IbukaStudentAccount> studentAccounts =
-                ibukaStudentAccountRepository.findBySenderIsNull();
-
+        System.out.println("----backfilling missing student sender IDs---");
         int count = 0;
         int failed = 0;
+        long afterId = 0;
 
-        for (IbukaStudentAccount account : studentAccounts) {
-            try {
-                Sender sender = senderService.createSender(
-                        account.getName(),
-                        SenderType.STUDENT,
-                        account.getId()
-                );
+        while (true) {
+            List<IbukaStudentAccount> batch = ibukaStudentAccountRepository
+                    .findBySenderIsNullAndIdGreaterThanOrderByIdAsc(afterId,
+                            PageRequest.of(0, 200));
+            if (batch.isEmpty()) break;
 
-                account.setSender(sender);
-                ibukaStudentAccountRepository.save(account);
-
-                System.out.println(++count + ". Created senderId for "
-                        + account.getName() + " at " + new Date());
-            } catch (Exception e) {
-                failed++;
-                System.err.println(
-                        "❌ Failed for student ID=" + account.getId()
-                                + ", name=" + account.getName()
-                                + " | Reason: " + e.getMessage()
-                );
-                // continue with next student
+            for (IbukaStudentAccount account : batch) {
+                afterId = account.getId();
+                try {
+                    createSenderIdIfMissing(account);
+                    count++;
+                } catch (Exception e) {
+                    failed++;
+                    System.err.println("Failed to create sender ID for student ID=" + account.getId()
+                            + ", name=" + account.getName() + " | Reason: " + e.getMessage());
+                }
             }
         }
 
-        System.out.println("✅ Completed. Success: " + count + ", Failed: " + failed);
+        System.out.println("Student sender ID backfill complete. Success: " + count + ", Failed: " + failed);
     }
 
     public String generateUniqueCode(String firstName, String lastName) {

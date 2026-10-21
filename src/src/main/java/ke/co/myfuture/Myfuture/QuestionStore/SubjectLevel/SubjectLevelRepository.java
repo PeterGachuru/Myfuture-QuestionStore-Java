@@ -63,6 +63,7 @@ public interface SubjectLevelRepository extends JpaRepository<SubjectLevel, Long
             Long curriLevelId
     );
 
+
     Optional<SubjectLevel> findBySubjectIdAndCurriLevelIdAndDeletedFlagFalse(
             Long subjectId,
             Long curriLevelId

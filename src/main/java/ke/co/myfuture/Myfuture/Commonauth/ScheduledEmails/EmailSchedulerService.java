@@ -42,12 +42,6 @@ public class EmailSchedulerService {
             return;
         }
 
-        long attemptsInLastWindow = emailRepository.countAttemptsInLast50Minutes(new Date());
-        if (attemptsInLastWindow > 150) {
-            log.warn("Scheduled email delivery paused: {} attempts recorded in the last 50 minutes (limit 150)", attemptsInLastWindow);
-            return;
-        }
-
         LocalDateTime now = LocalDateTime.now();
         List<ScheduledEmails> pendingEmails = emailRepository.findPendingEmails(new Date());
         log.info("Scheduled email delivery scan found {} pending emails at {}", pendingEmails.size(), now);
@@ -70,6 +64,12 @@ public class EmailSchedulerService {
                 email.setTimeSent(new Date());
                 emailRepository.save(email);
                 log.info("Scheduled email id={} send result={}", email.getId(), status);
+            } catch (EmailRateLimitExceededException e) {
+                email.setAttemptedSendAt(null);
+                email.setLastAttemptStatus(LastStatus.PENDING);
+                emailRepository.save(email);
+                log.warn("Hourly email limit reached; leaving scheduled email id={} pending", email.getId());
+                break;
             } catch (Exception e) {
                 // Handle email sending failure (e.g., logging)
                 email.setLastAttemptStatus(LastStatus.FAILED);

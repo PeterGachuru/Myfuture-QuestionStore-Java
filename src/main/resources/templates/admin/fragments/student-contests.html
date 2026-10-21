@@ -14,6 +14,7 @@
         <tr>
             <th>S/N</th>
             <th>Contest</th>
+            <th>Subject</th>
             <th>Score</th>
             <th>Attempted</th>
             <th>Date</th>
@@ -22,6 +23,7 @@
         <tr th:each="c, stat : ${contests}">
             <td th:text="${stat.index + 1}"></td>
             <td th:text="${c.contest}"></td>
+            <td th:text="${contestSubjectNames[c.contest]}"></td>
             <td th:text="${c.score}"></td>
             <td th:text="${c.attempted}"></td>
             <td th:text="${#dates.format(c.createdAt,'yyyy-MM-dd')}"></td>

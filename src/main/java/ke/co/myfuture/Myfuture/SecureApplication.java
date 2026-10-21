@@ -19,6 +19,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -62,6 +63,8 @@ public class SecureApplication {
 
     @Autowired
     private final RoleConfigRepository roleConfigRepository;
+    @Autowired
+    private ObjectProvider<SendCredentialsToEmail> sendCredentialsToEmailProvider;
 //    @Autowired
 //    private SchoolService schoolService;
 
@@ -125,7 +128,7 @@ public class SecureApplication {
                         log.log(Level.INFO, String.format("User assigned role [ %s ]", user.get()));
                     }
                     try {
-                        SendCredentialsToEmail sm = new SendCredentialsToEmail();
+                        SendCredentialsToEmail sm = sendCredentialsToEmailProvider.getObject();
                         log.log(Level.INFO, String.format("User Email [ %s ]", user.get().getEmail()));
                         if (inProd)
                             sm.sendMail(user.get().getEmail(), user.get().getFirstName() + " " + user.get().getLastName(), "12345678");

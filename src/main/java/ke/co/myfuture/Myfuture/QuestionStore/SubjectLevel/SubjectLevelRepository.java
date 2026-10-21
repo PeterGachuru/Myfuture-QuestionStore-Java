@@ -1,6 +1,8 @@
 package ke.co.myfuture.Myfuture.QuestionStore.SubjectLevel;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -62,6 +64,9 @@ public interface SubjectLevelRepository extends JpaRepository<SubjectLevel, Long
     List<SubjectLevel> findByCurriLevelIdAndDeletedFlagFalseOrderBySubjectNameAsc(
             Long curriLevelId
     );
+
+    Page<SubjectLevel> findByCurriLevelIdAndDeletedFlagFalseOrderByCreatedAtDescIdDesc(
+            Long curriLevelId, Pageable pageable);
 
     Optional<SubjectLevel> findBySubjectIdAndCurriLevelIdAndDeletedFlagFalse(
             Long subjectId,

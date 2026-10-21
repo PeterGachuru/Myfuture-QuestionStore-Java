@@ -25,9 +25,15 @@ public class AdminInstallController {
     @GetMapping
     public String list(
             @RequestParam(required = false) String platform,
+            @RequestParam(defaultValue = "false") boolean withAccount,
             Model model) {
 
-        if (platform != null && !platform.isEmpty()) {
+        if (withAccount && platform != null && !platform.isEmpty()) {
+            model.addAttribute("installs",
+                    installRepository.findTop500ByAccountIdIsNotNullAndPlatformOrderByCreatedAtDesc(platform));
+        } else if (withAccount) {
+            model.addAttribute("installs", installRepository.findTop500ByAccountIdIsNotNullOrderByCreatedAtDesc());
+        } else if (platform != null && !platform.isEmpty()) {
             model.addAttribute("installs",
                     installRepository.findTop500ByPlatformOrderByCreatedAtDesc(platform));
         } else {
@@ -36,6 +42,7 @@ public class AdminInstallController {
         }
 
         model.addAttribute("selectedPlatform", platform);
+        model.addAttribute("withAccount", withAccount);
 
         return "admin/installs";
     }

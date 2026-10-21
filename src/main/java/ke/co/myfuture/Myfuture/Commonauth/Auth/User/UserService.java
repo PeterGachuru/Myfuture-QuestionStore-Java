@@ -116,8 +116,6 @@ public class UserService {
     }
 
     private CustomMailSender getCustomMailSender() {
-        if (customMailSender == null)
-            customMailSender = new CustomMailSender();
         return customMailSender;
     }
 
