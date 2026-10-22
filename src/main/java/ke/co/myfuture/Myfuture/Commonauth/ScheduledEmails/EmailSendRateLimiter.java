@@ -22,7 +22,7 @@ public class EmailSendRateLimiter {
     }
 
     /** Reserves one slot per recipient, serialized across app instances using the database lock row. */
-    @Transactional
+    @Transactional(transactionManager = "commonauthTransactionManager")
     public void reserveRecipients(int recipientCount) {
         if (recipientCount <= 0) return;
 
