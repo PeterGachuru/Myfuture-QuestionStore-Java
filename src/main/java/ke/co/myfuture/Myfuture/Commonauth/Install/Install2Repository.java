@@ -25,6 +25,11 @@ public interface Install2Repository extends JpaRepository<Install, Long> {
 
     List<Install> findTop500ByAccountIdIsNotNullAndPlatformOrderByCreatedAtDesc(String platform);
 
+    @Query("SELECT DISTINCT i.version FROM Install i WHERE i.platform = :platform ORDER BY i.version DESC")
+    List<Integer> findAndroidVersionsByPlatform(@Param("platform") String platform, Pageable pageable);
+
+    List<Install> findTop200ByPlatformAndVersionOrderByCreatedAtDesc(String platform, Integer version);
+
         @Query(value = """
         SELECT DATE(created_at), COUNT(*)
         FROM install

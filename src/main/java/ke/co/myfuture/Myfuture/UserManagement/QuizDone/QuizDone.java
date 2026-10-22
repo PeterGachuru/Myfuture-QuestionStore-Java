@@ -57,6 +57,11 @@ public class QuizDone {
     @Column(nullable = false)
     public Boolean deleted;
 
+    /** Nullable for records sent by app versions before subscription tracking. */
+    public Boolean subscriptionActiveAtStart;
+    /** BACKEND, GOOGLE_PLAY, BOTH, NONE, or null for older clients. */
+    public String subscriptionSourceAtStart;
+
     @CreationTimestamp
     @Column(nullable = false)
     public Date createdAt;

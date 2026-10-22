@@ -2,8 +2,8 @@ package ke.co.myfuture.Myfuture.UserManagement.StudentStreak;
 
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -21,7 +21,7 @@ public class StudentStreakService {
         this.studentRepository = studentRepository;
     }
 
-    @Transactional
+    @Transactional(transactionManager = "studentManagementTransactionManager")
     public StudentStreak sync(StudentStreakSyncRequest request) {
         if (request.getStudentId() == null || request.getStudentId() <= 0) {
             throw new IllegalArgumentException("A valid studentId is required");

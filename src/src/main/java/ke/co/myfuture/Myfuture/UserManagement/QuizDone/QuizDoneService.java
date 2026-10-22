@@ -84,6 +84,8 @@ public class QuizDoneService {
         quizDone.overall = createQuizDone.overall;
         quizDone.subjectId = createQuizDone.subjectId;
         quizDone.deleted = createQuizDone.deleted;
+        quizDone.subscriptionActiveAtStart = createQuizDone.subscriptionActiveAtStart;
+        quizDone.subscriptionSourceAtStart = createQuizDone.subscriptionSourceAtStart;
 
         if (createQuizDone.contestId != null) {
             Optional<Contest> contest = contestRepository.findById(createQuizDone.contestId );

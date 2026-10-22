@@ -29,6 +29,8 @@
             <th>Score</th>
             <th>Overall</th>
             <th>Status</th>
+            <th>Subscribed at start</th>
+            <th>Subscription source</th>
             <th>Start</th>
             <th>End</th>
             <th>Created</th>
@@ -74,6 +76,9 @@
                 <span th:if="${q.deleted}" class="status-deleted">DELETED</span>
                 <span th:unless="${q.deleted}" class="status-active">ACTIVE</span>
             </td>
+
+            <td th:text="${q.subscriptionActiveAtStart == null ? 'Unknown (older app)' : (q.subscriptionActiveAtStart ? 'Yes' : 'No')}"></td>
+            <td th:text="${q.subscriptionSourceAtStart != null ? q.subscriptionSourceAtStart : 'Unknown'}"></td>
 
             <td th:text="${#dates.format(q.startDate,'yyyy-MM-dd HH:mm')}"></td>
 

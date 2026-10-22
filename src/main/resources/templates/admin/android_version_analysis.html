@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/layout :: styles"></head>
+<body>
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+
+<div id="content" class="content">
+    <h2>Android Version Analysis</h2>
+    <p>For each of the latest <strong th:text="${maxVersions}">20</strong> Android app versions, this page analyzes up to 200 latest installs.</p>
+    <p>Quiz counts exclude records marked deleted. “Users with students” counts distinct account IDs with at least one linked student. “Quizzes by their students” includes all retained quiz records by linked students; “quizzes without a student” is limited to the sampled installs.</p>
+
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>Android version</th>
+            <th>Earliest install in sample</th>
+            <th>Installs found (max 200)</th>
+            <th>Users of installs</th>
+            <th>Users with a student</th>
+            <th>Quizzes by their students</th>
+            <th>Quizzes without a student</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="row : ${analysis}">
+            <td th:text="${row.version}"></td>
+            <td th:text="${row.earliestInstall}"></td>
+            <td th:text="${row.installCount}"></td>
+            <td th:text="${row.userCount}"></td>
+            <td th:text="${row.usersWithStudents}"></td>
+            <td th:text="${row.studentQuizzes}"></td>
+            <td th:text="${row.quizzesWithoutStudent}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(analysis)}">
+            <td colspan="7">No Android installs were found.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:replace="admin/layout :: scripts"></div>
+</body>
+</html>

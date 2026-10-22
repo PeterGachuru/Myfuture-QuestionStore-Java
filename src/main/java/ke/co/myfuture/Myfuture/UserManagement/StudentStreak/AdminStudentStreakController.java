@@ -22,7 +22,7 @@ public class AdminStudentStreakController {
     }
 
     @GetMapping
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, transactionManager = "studentManagementTransactionManager")
     public String list(Model model) {
         LocalDate today = LocalDate.now(APP_ZONE);
         List<Map<String, Object>> streaks = repository.findTop500ByOrderByUpdatedAtDesc()

@@ -43,6 +43,9 @@ public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStuden
             @Param("classlevel") Long classlevel,
             @Param("studentId") Long studentId);
     List<IbukaStudentAccount> findByParent(Long parentId);
+
+    @Query("SELECT COUNT(DISTINCT s.parent) FROM IbukaStudentAccount s WHERE s.parent IN :parentIds")
+    long countDistinctParentsByParentIn(@Param("parentIds") List<Long> parentIds);
     Optional<IbukaStudentAccount> findByShareCode(String shareCode);
 
     List<IbukaStudentAccount> findTop200ByOrderByCreatedAtDesc();

@@ -23,6 +23,12 @@ public interface QuizDoneRepository extends JpaRepository<QuizDone, Long> {
 
     List<QuizDone> findByStudentOrderByCreatedAtDesc(IbukaStudentAccount student);
 
+    @Query("SELECT COUNT(q) FROM QuizDone q WHERE q.student.parent IN :parentIds AND q.deleted = false")
+    long countActiveByStudentParentIn(@Param("parentIds") List<Long> parentIds);
+
+    @Query("SELECT COUNT(q) FROM QuizDone q WHERE q.installId IN :installIds AND q.student IS NULL AND q.deleted = false")
+    long countActiveWithoutStudentByInstallIdIn(@Param("installIds") List<Long> installIds);
+
     Optional<QuizDone> findFirstByStudentAndDeletedFalseOrderByCreatedAtAsc(IbukaStudentAccount student);
 
     Optional<QuizDone> findFirstByStudentAndDeletedFalseOrderByCreatedAtDesc(IbukaStudentAccount student);

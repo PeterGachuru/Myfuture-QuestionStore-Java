@@ -30,6 +30,9 @@ public class CreateQuizDone {
     public  Integer overall;
     public Boolean deleted;
 
+    public Boolean subscriptionActiveAtStart;
+    public String subscriptionSourceAtStart;
+
     public List<CreateQuizQuestion> questions;
 
     @Data

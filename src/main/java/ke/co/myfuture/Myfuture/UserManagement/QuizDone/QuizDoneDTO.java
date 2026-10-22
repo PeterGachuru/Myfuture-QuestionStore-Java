@@ -25,6 +25,8 @@ public class QuizDoneDTO {
     public Integer score;
     public Integer overall;
     public Boolean deleted;
+    public Boolean subscriptionActiveAtStart;
+    public String subscriptionSourceAtStart;
     public Date createdAt;
     public Date updatedAt;
     public CurriLevel curriLevel;
@@ -45,6 +47,8 @@ public class QuizDoneDTO {
         this.score = quizDone.score;
         this.overall = quizDone.overall;
         this.deleted = quizDone.deleted;
+        this.subscriptionActiveAtStart = quizDone.subscriptionActiveAtStart;
+        this.subscriptionSourceAtStart = quizDone.subscriptionSourceAtStart;
         this.createdAt = quizDone.createdAt;
         this.updatedAt = quizDone.updatedAt;
         this.curriLevel = curriLevel;
