@@ -1,7 +1,6 @@
 package ke.co.myfuture.Myfuture.QuestionStore.CurriLevel;
 
-import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
-import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.ReadTopicNavigationService;
 import ke.co.myfuture.Myfuture.QuestionStore.Curriculum.Curriculum;
 import ke.co.myfuture.Myfuture.QuestionStore.Curriculum.CurriculumRepository;
 import ke.co.myfuture.Myfuture.QuestionStore.Subject.Subject;
@@ -24,7 +23,7 @@ public class CurriLevelReadController {
     private final CurriLevelRepository curriLevelRepository;
     private final CurriculumRepository curriculumRepository;
     private final SubjectRepository subjectRepository;
-    private final CurriTopicRepository curriTopicRepository;
+    private final ReadTopicNavigationService topicNavigationService;
 
     // OLD URL: /read/classlevel/{id}
     @GetMapping("/{id}")
@@ -60,18 +59,7 @@ public class CurriLevelReadController {
         // Load subjects
         List<Subject> subjects = subjectRepository.subjectsByClassLevel(level.getId());
 
-        // For each subject, fetch the first subtopic ID
-        subjects.forEach(subject -> {
-            List<CurriTopic> topics = curriTopicRepository.findBySubjectAndClass(subject.getId(), level.getId());
-            if (!topics.isEmpty()) {
-                CurriTopic firstParent = topics.get(0);
-                List<CurriTopic> children = curriTopicRepository.findByParent(firstParent.getId());
-                CurriTopic firstSubtopic = children.isEmpty() ? firstParent : children.get(0);
-
-                // Add transient field to Subject for template
-                subject.setFirstSubtopicSlug(firstSubtopic.getSlug());
-            }
-        });
+        topicNavigationService.populateFirstSubtopicSlugs(subjects, level.getId());
 
         level.setSubjects(subjects);
 

@@ -5,6 +5,7 @@ import ke.co.myfuture.Myfuture.HttpAuth.CookieService;
 import ke.co.myfuture.Myfuture.QuestionStore.AI.AICurriQuestion.ChatGPTQuestionsService;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopic;
 import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.CurriTopicRepository;
+import ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.ReadTopicNavigationService;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisit;
 import ke.co.myfuture.Myfuture.UserManagement.PageVisit.PageVisitRepository;
@@ -33,6 +34,7 @@ import static ke.co.myfuture.Myfuture.QuestionStore.CurriNotes.CurriNotesReadCon
 @RequiredArgsConstructor
 public class QuestionWebController {
     private final CurriTopicRepository topicRepository;
+    private final ReadTopicNavigationService topicNavigationService;
     private final CurriQuestionRepository questionRepository;
     private final PageVisitRepository pageVisitRepository;
     private final CookieService cookieService;
@@ -69,7 +71,7 @@ public class QuestionWebController {
         // Sidebar topics
         List<CurriTopic> parentTopics =
                 topicRepository.findBySubjectAndClass(topic.getSubject().getId(), topic.getCurriLevel().getId());
-        parentTopics.forEach(parent -> parent.setChildren(topicRepository.findByParent(parent.getId())));
+        topicNavigationService.populateChildren(parentTopics);
         model.addAttribute("parentTopics", parentTopics);
         model.addAttribute("level", topic.getCurriLevel());
         model.addAttribute("subject", topic.getSubject());

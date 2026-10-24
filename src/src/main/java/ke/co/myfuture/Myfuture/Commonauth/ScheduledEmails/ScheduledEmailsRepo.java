@@ -12,6 +12,12 @@ import java.util.Set;
 
 public interface ScheduledEmailsRepo extends JpaRepository<ScheduledEmails, Long> {
 
+    @Query(value = "SELECT DATE(created_at), COUNT(*) FROM scheduled_emails WHERE created_at >= :startDate GROUP BY DATE(created_at) ORDER BY DATE(created_at)", nativeQuery = true)
+    List<Object[]> countScheduledPerDay(@Param("startDate") Date startDate);
+
+    @Query(value = "SELECT DATE(time_sent), COUNT(*) FROM scheduled_emails WHERE time_sent >= :startDate AND sent = 1 GROUP BY DATE(time_sent) ORDER BY DATE(time_sent)", nativeQuery = true)
+    List<Object[]> countSentPerDay(@Param("startDate") Date startDate);
+
     boolean existsByRecipientAndSubjectAndCreatedAtAfter(String recipient, String subject, Date createdAt);
 
     long countByRecipientAndCreatedAtAfter(String recipient, Date createdAt);

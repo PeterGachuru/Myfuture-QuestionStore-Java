@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(transactionManager = "questionStoreTransactionManager")
 public class SlugForSubjects {
 
     private final SubjectLevelRepository subjectLevelRepository;

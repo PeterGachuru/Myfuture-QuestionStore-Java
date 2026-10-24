@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -38,4 +39,7 @@ public interface PageVisitRepository extends JpaRepository<PageVisit, Long> {
     ORDER BY DATE(visit_time)
 """, nativeQuery = true)
     List<Object[]> countPerDay(@Param("startDate") LocalDateTime startDate);
+
+    @Query(value = "SELECT CASE WHEN :hourly = true THEN DATE_FORMAT(visit_time, '%Y-%m-%d %H:00:00') ELSE DATE_FORMAT(visit_time, '%Y-%m-%d') END AS bucket, COUNT(*) FROM page_visit WHERE visit_time >= :startDate AND visit_time < :endDate GROUP BY bucket ORDER BY bucket", nativeQuery = true)
+    List<Object[]> dashboardVisits(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("hourly") boolean hourly);
 }

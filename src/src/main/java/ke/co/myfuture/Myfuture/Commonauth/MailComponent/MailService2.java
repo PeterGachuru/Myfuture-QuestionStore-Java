@@ -1,6 +1,7 @@
 package ke.co.myfuture.Myfuture.Commonauth.MailComponent;
 
 import ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities.exception.MailServiceException;
+import ke.co.myfuture.Myfuture.Commonauth.Fcm.FcmNotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,11 +19,19 @@ public class MailService2 {
     @Autowired
     JavaMailSender javaMailSender;
 
+    @Autowired
+    private FcmNotificationService fcmNotificationService;
+
     @Value("${spring.mail.sender}")
     private String fromEmail;
 
     @Async
     public void sendEmail(String to, String message, String subject) throws MailServiceException {
+        try {
+            fcmNotificationService.notifyEmailRecipients(java.util.Collections.singletonList(to), subject, message);
+        } catch (RuntimeException notificationError) {
+            log.warn("FCM notification could not be queued independently of email: {}", notificationError.getMessage());
+        }
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setFrom(fromEmail);

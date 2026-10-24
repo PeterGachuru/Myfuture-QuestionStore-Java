@@ -36,6 +36,7 @@ import java.util.Optional;
 public class CurriNotesReadController {
 
     private final CurriTopicRepository curriTopicRepository;
+    private final ke.co.myfuture.Myfuture.QuestionStore.CurriTopic.ReadTopicNavigationService topicNavigationService;
     private final CurriNotesRepository notesRepository;
 
     private final PageVisitRepository pageVisitRepository;
@@ -188,9 +189,7 @@ public class CurriNotesReadController {
                         topic.getCurriLevel().getId()
                 );
 
-        parentTopics.forEach(parent ->
-                parent.setChildren(curriTopicRepository.findByParent(parent.getId()))
-        );
+        topicNavigationService.populateChildren(parentTopics);
 
         model.addAttribute("topic", topic);
         model.addAttribute("parentTopic", topic.getParent());
@@ -210,18 +209,7 @@ public class CurriNotesReadController {
         // Load subjects
         List<Subject> subjects = subjectRepository.subjectsByClassLevel(topic.getCurriLevel().id);
 
-        // For each subject, fetch the first subtopic ID
-        subjects.forEach(subject -> {
-            List<CurriTopic> topics = curriTopicRepository.findBySubjectAndClass(subject.getId(), topic.getCurriLevel().id);
-            if (!topics.isEmpty()) {
-                CurriTopic firstParent = topics.get(0);
-                List<CurriTopic> children = curriTopicRepository.findByParent(firstParent.getId());
-                CurriTopic firstSubtopic = children.isEmpty() ? firstParent : children.get(0);
-
-                // Add transient field to Subject for template
-                subject.setFirstSubtopicSlug(firstSubtopic.getSlug());
-            }
-        });
+        topicNavigationService.populateFirstSubtopicSlugs(subjects, topic.getCurriLevel().id);
 
 
 

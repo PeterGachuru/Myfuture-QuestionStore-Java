@@ -1,5 +1,9 @@
 production: false
 
+myfuture:
+  firebase:
+    project-id: ${FIREBASE_PROJECT_ID:}
+
 student:
   lifecycle:
     email:

@@ -16,6 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("student")
@@ -30,6 +34,8 @@ public class IbukaStudentAccountController {
     CurriLevelRepository curriLevelRepository;
     @Autowired
     IbukaStudentAccountService ibukaStudentAccountService;
+    @Autowired
+    StudentScoreEventService studentScoreEventService;
 
     @PostMapping("add")
     public ResponseEntity<?> newStudentAccount(@RequestBody IbukaStudentAccount student) {
@@ -60,6 +66,14 @@ public class IbukaStudentAccountController {
         System.out.println("Received student: "+student);
         Optional<IbukaStudentAccount> studentAccountFromDb = repository.findById(student.id);
         if (studentAccountFromDb.isEmpty()) return null;
+        if (student.unsyncedScore != null && student.unsyncedScore > 0
+                && LocalDate.now(ZoneId.of("Africa/Nairobi")).isAfter(LocalDate.of(2026, 12, 15))) {
+            return ResponseEntity.status(HttpStatus.GONE).body(Map.of(
+                    "status", "Error",
+                    "statusCode", 410,
+                    "message", "Legacy additive score sync expired. Update the app to sync scores."
+            ));
+        }
         studentAccountFromDb.get().update(student);
         Long initialScore = studentAccountFromDb.get().totalScore;
         IbukaStudentAccount updatedStudentAccount = repository.save(studentAccountFromDb.get());
@@ -74,6 +88,69 @@ public class IbukaStudentAccountController {
         response.setEntity(updatedStudentAccount);
         response.setStatusCode(201);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /** Profile-only endpoint for current clients; legacy score deltas cannot be applied here. */
+    @PutMapping("update-v2")
+    public ResponseEntity<?> updateStudentAccountV2(@RequestBody IbukaStudentAccount student) {
+        if (student.id == null) {
+            return ResponseEntity.badRequest().body(Map.of("status", "Error", "statusCode", 400));
+        }
+        Optional<IbukaStudentAccount> existing = repository.findById(student.id);
+        if (existing.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        IbukaStudentAccount current = existing.get();
+        if (!ownsStudent(current, student)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("status", "Error", "statusCode", 403));
+        }
+        current.updateProfile(student);
+        IbukaStudentAccount saved = repository.save(current);
+        UniversalResponse response = new UniversalResponse();
+        response.setStatus("Success");
+        response.setMessage("Updated Successfully");
+        response.setEntity(saved);
+        response.setStatusCode(200);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("score-events")
+    public ResponseEntity<?> recordScoreEvent(@RequestBody StudentScoreEventRequest request) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication == null || !authentication.isAuthenticated()
+                    || "anonymousUser".equals(authentication.getPrincipal())
+                    ? null : authentication.getName();
+            StudentScoreEventService.Result result = studentScoreEventService.record(request, email);
+            UniversalResponse response = new UniversalResponse();
+            response.setStatus("Success");
+            response.setMessage(result.applied() ? "Score recorded" : "Score event already recorded");
+            response.setEntity(Map.of("applied", result.applied(), "totalScore", result.totalScore()));
+            response.setStatusCode(200);
+            return ResponseEntity.ok(response);
+        } catch (SecurityException exception) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("status", "Error", "statusCode", 403, "message", exception.getMessage()));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("status", "Error", "statusCode", 400, "message", exception.getMessage()));
+        } catch (StudentScoreEventService.StudentNotFoundException exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("status", "Error", "statusCode", 404, "message", exception.getMessage()));
+        }
+    }
+
+    private boolean ownsStudent(IbukaStudentAccount current, IbukaStudentAccount request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean accountOwns = authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getPrincipal())
+                && current.parentUsername != null
+                && current.parentUsername.equalsIgnoreCase(authentication.getName());
+        boolean installationOwns = request.installId != null && request.inid != null
+                && request.installId.equals(current.installId) && request.inid.equals(current.inid)
+                && request.parent != null && request.parent.equals(current.parent);
+        return accountOwns || installationOwns;
     }
 
     @GetMapping("get/by/id/{studentId}")

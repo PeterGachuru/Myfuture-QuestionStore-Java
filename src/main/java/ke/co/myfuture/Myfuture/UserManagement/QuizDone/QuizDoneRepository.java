@@ -62,6 +62,12 @@ public interface QuizDoneRepository extends JpaRepository<QuizDone, Long> {
 """, nativeQuery = true)
     List<Object[]> countActiveStudentsPerDay(@Param("startDate") Date startDate);
 
+    @Query(value = "SELECT CASE WHEN :hourly = true THEN DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') ELSE DATE_FORMAT(created_at, '%Y-%m-%d') END AS bucket, COUNT(*) FROM quiz_done WHERE created_at >= :startDate AND created_at < :endDate GROUP BY bucket ORDER BY bucket", nativeQuery = true)
+    List<Object[]> dashboardQuizzes(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("hourly") boolean hourly);
+
+    @Query(value = "SELECT CASE WHEN :hourly = true THEN DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') ELSE DATE_FORMAT(created_at, '%Y-%m-%d') END AS bucket, COUNT(DISTINCT CASE WHEN student_id IS NOT NULL THEN CONCAT('S-', student_id) ELSE CONCAT('I-', install_id) END) FROM quiz_done WHERE created_at >= :startDate AND created_at < :endDate AND deleted = false GROUP BY bucket ORDER BY bucket", nativeQuery = true)
+    List<Object[]> dashboardActiveStudents(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("hourly") boolean hourly);
+
 
     Optional<QuizDone> findByIdAndStudent(
             Long id,

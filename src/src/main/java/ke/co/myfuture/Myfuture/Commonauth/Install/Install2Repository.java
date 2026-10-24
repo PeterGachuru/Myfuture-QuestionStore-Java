@@ -6,11 +6,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface Install2Repository extends JpaRepository<Install, Long> {
+    @Query("SELECT DISTINCT i.fcmToken FROM Install i WHERE LOWER(i.accountEmail) IN :emails AND i.platform = 'myfuture_android' AND i.fcmToken IS NOT NULL AND i.fcmToken <> ''")
+    List<String> findAndroidFcmTokensByAccountEmails(@Param("emails") Set<String> normalizedEmails);
+
+    @Modifying
+    @Transactional(transactionManager = "commonauthTransactionManager")
+    @Query("UPDATE Install i SET i.fcmToken = NULL WHERE i.fcmToken = :token")
+    int clearFcmToken(@Param("token") String token);
+
     @Query("SELECT s FROM Install s ORDER BY s.id DESC")
     List<Install> findLatestInstall(Pageable pageable);
 

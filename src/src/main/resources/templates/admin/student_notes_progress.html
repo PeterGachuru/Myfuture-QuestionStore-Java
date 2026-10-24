@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/layout :: styles"></head>
+<body>
+<div th:replace="admin/layout :: header"></div>
+<div th:replace="admin/layout :: sidebar"></div>
+<div id="content" class="content">
+    <h2>Student Notes Completion</h2>
+    <p>Latest notes-read confirmations received from students: <strong th:text="${completionCount}">0</strong></p>
+    <table class="admin-table">
+        <thead>
+        <tr>
+            <th>S/N</th><th>Student ID</th><th>Student</th><th>Class level</th>
+            <th>Notes ID</th><th>Subtopic</th><th>Notes version</th><th>Marked read at</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="completion, stat : ${completions}">
+            <td th:text="${stat.index + 1}"></td>
+            <td><a th:href="@{/admin/students/{id}(id=${completion.studentId})}"
+                   th:text="${completion.studentId}"></a></td>
+            <td th:text="${completion.studentName}"></td>
+            <td th:text="${completion.classLevel}"></td>
+            <td th:text="${completion.notesId}"></td>
+            <td th:text="${completion.subtopic}"></td>
+            <td th:text="${completion.notesUpdatedAt}"></td>
+            <td th:text="${completion.completedAt}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(completions)}">
+            <td colspan="8">No notes have been marked as read yet.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div th:replace="admin/layout :: scripts"></div>
+</body>
+</html>

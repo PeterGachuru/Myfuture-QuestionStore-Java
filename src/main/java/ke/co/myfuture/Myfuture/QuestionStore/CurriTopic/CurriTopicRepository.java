@@ -20,6 +20,12 @@ public interface CurriTopicRepository extends JpaRepository<CurriTopic, Long> {
     @Query(value = "SELECT * FROM curri_topic  WHERE parent = :parentId AND deleted = 0 ORDER BY numbering ASC", nativeQuery = true)
     List<CurriTopic> findByParent(@Param("parentId") Long parentId);
 
+    @Query(value = "SELECT * FROM curri_topic WHERE parent IS NULL AND subject IN (:subjectIds) AND curri_level = :classLevel AND deleted = 0 ORDER BY subject ASC, numbering ASC", nativeQuery = true)
+    List<CurriTopic> findBySubjectsAndClass(@Param("subjectIds") List<Long> subjectIds, @Param("classLevel") Long classLevel);
+
+    @Query(value = "SELECT * FROM curri_topic WHERE parent IN (:parentIds) AND deleted = 0 ORDER BY numbering ASC", nativeQuery = true)
+    List<CurriTopic> findChildrenByParents(@Param("parentIds") List<Long> parentIds);
+
     @Query(value = "SELECT * FROM curri_topic  WHERE id IN(select parent from curri_topic where length(content) > 40) ORDER BY id ASC", nativeQuery = true)
     List<CurriTopic> findParentsWithContent();
 

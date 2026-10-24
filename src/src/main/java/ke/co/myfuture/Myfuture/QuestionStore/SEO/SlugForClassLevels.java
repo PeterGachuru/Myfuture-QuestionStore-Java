@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(transactionManager = "questionStoreTransactionManager")
 public class SlugForClassLevels {
     private final CurriLevelRepository levelRepository;
     private final CurriculumRepository curriculumRepository;

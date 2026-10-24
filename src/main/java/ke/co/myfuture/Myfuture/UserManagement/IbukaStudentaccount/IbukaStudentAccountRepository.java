@@ -5,14 +5,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.Lock;
 
 import jakarta.transaction.Transactional;
+import jakarta.persistence.LockModeType;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStudentAccount, Long> {
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT s FROM IbukaStudentAccount s WHERE s.id = :id")
+    Optional<IbukaStudentAccount> findByIdForScoreUpdate(@Param("id") Long id);
+
     @Query(value = """
         SELECT * 
         FROM ibuka_student_account
@@ -80,6 +86,9 @@ public interface IbukaStudentAccountRepository extends JpaRepository<IbukaStuden
         ORDER BY DATE(e.createdAt)
     """)
     List<Object[]> countPerDay(@Param("startDate") Date startDate);
+
+    @Query(value = "SELECT CASE WHEN :hourly = true THEN DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') ELSE DATE_FORMAT(created_at, '%Y-%m-%d') END AS bucket, COUNT(*) FROM ibuka_student_account WHERE created_at >= :startDate AND created_at < :endDate GROUP BY bucket ORDER BY bucket", nativeQuery = true)
+    List<Object[]> dashboardRegistrations(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("hourly") boolean hourly);
 
     List<IbukaStudentAccount> findByParentUsernameOrderByIdDesc(String parentUsername);
 

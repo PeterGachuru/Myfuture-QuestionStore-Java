@@ -18,6 +18,19 @@
 
     <h2>Admin Dashboard</h2>
 
+    <form method="get" th:action="@{/admin/dashboard}" style="display:flex; flex-wrap:wrap; gap:12px; align-items:end; margin:18px 0 24px;">
+        <label>View by<br>
+            <select name="resolution">
+                <option value="HOUR" th:selected="${resolution == 'HOUR'}">Hour</option>
+                <option value="DAY" th:selected="${resolution == 'DAY'}">Day</option>
+            </select>
+        </label>
+        <label>From<br><input type="datetime-local" name="from" th:value="${fromValue}" required></label>
+        <label>Through<br><input type="datetime-local" name="to" th:value="${toValue}" required></label>
+        <button type="submit">Update graphs</button>
+    </form>
+    <p th:text="${analysisStatus}" style="color:#666;"></p>
+
 
     <div th:each="g : ${graphs}" style="margin-bottom: 40px;">
 

@@ -83,6 +83,7 @@ dependencies {
 	// ☁️ Google APIs
 	implementation 'com.google.api-client:google-api-client:2.2.0'
 	implementation 'com.google.auth:google-auth-library-oauth2-http:1.23.0'
+	implementation 'com.google.firebase:firebase-admin:9.11.0'
 
 	// 🔧 Dev tools
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'

@@ -15,7 +15,7 @@ public class GraphService {
             String id,
             String title,
             List<LocalDate> dates,
-            List<Integer> values,
+            List<BigDecimal> values,
             String xLabel,
             String yLabel
     ) {
@@ -24,8 +24,19 @@ public class GraphService {
                 .map(LocalDate::toString)
                 .collect(Collectors.toList());
 
-        int min = values.stream().min(Integer::compareTo).orElse(0);
-        int max = values.stream().max(Integer::compareTo).orElse(100);
+        return buildTimeSeries(id, title, formattedDates, values, xLabel, yLabel);
+    }
+
+    public GraphData buildTimeSeries(
+            String id,
+            String title,
+            List<String> labels,
+            List<BigDecimal> values,
+            String xLabel,
+            String yLabel
+    ) {
+        double min = values.stream().mapToDouble(BigDecimal::doubleValue).min().orElse(0);
+        double max = values.stream().mapToDouble(BigDecimal::doubleValue).max().orElse(100);
 
         // Add padding (optional)
         min = Math.max(0, min - 5);
@@ -34,7 +45,7 @@ public class GraphService {
         GraphData graph = new GraphData();
         graph.setId(id);
         graph.setTitle(title);
-        graph.setXValues(formattedDates);
+        graph.setXValues(labels);
         graph.setYValues(values);
         graph.setMinY(min);
         graph.setMaxY(max);
@@ -52,7 +63,7 @@ public class GraphService {
             String yLabel
     ) {
         List<String> dates = new ArrayList<>();
-        List<Integer> counts = new ArrayList<>();
+        List<BigDecimal> counts = new ArrayList<>();
 
         for (Object[] row : results) {
             dates.add(row[0].toString());
@@ -65,7 +76,7 @@ public class GraphService {
                 number = ((Number) value);
             }
 
-            counts.add(number.intValue());
+            counts.add(value instanceof BigDecimal ? (BigDecimal) value : BigDecimal.valueOf(number.doubleValue()));
         }
 
         return buildGraph(id, title,

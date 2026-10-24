@@ -35,4 +35,7 @@ public interface ContestInviteeRepository extends JpaRepository<ContestInvitee, 
         ORDER BY DATE(attempted_at)
     """, nativeQuery = true)
     List<Object[]> countAttemptsPerDay(@Param("startDate") Date startDate);
+
+    @Query(value = "SELECT CASE WHEN :hourly = true THEN DATE_FORMAT(attempted_at, '%Y-%m-%d %H:00:00') ELSE DATE_FORMAT(attempted_at, '%Y-%m-%d') END AS bucket, COUNT(*) FROM contest_invitee WHERE (attempted = true OR score > 0) AND attempted_at >= :startDate AND attempted_at < :endDate GROUP BY bucket ORDER BY bucket", nativeQuery = true)
+    List<Object[]> dashboardContestAttempts(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("hourly") boolean hourly);
 }

@@ -1,6 +1,8 @@
 package ke.co.myfuture.Myfuture.UserManagement.AdminDashboard;
 
 import ke.co.myfuture.Myfuture.Commonauth.Install.Install2Repository;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.ScheduledEmailsRepo;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Chatmessage.ChatmessageRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInviteeRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestRepository;
@@ -40,6 +42,8 @@ public class AdminDashboard {
     private final PostattemptRepository postattemptRepository;
     private final StudySubscriptionRepository studySubscriptionRepository;
     private final Install2Repository installRepository;
+    private final ScheduledEmailsRepo scheduledEmailsRepository;
+    private final UserRepository userRepository;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, HttpSession session) {
@@ -70,14 +74,14 @@ public class AdminDashboard {
 
         start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
-                "accountsAddedPerDay",
-                "Accounts Added",
-                installRepository.accountsAddedPerDay(startDate),
+                "accountsCreatedPerDay",
+                "Accounts Created",
+                userRepository.countCreatedAccountsPerDay(startDate),
                 "Date",
-                "Users"
+                "Accounts"
         ));
         end = System.currentTimeMillis();
-        System.out.println("accountsAddedPerDay generated in " + (end - start) + " ms");
+        System.out.println("accountsCreatedPerDay generated in " + (end - start) + " ms");
 
         start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
@@ -170,7 +174,7 @@ public class AdminDashboard {
         start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "chatChart",
-                "Chat Messages",
+                "Chat Messages Created",
                 chatmessageRepository.countPerDay(startDate),
                 "Date",
                 "Messages"
@@ -232,6 +236,28 @@ public class AdminDashboard {
         ));
         end = System.currentTimeMillis();
         System.out.println("conversionChart generated in " + (end - start) + " ms");
+
+        start = System.currentTimeMillis();
+        graphs.add(graphService.fromCountPerDay(
+                "emailsScheduledChart",
+                "Emails Scheduled",
+                scheduledEmailsRepository.countScheduledPerDay(startDate),
+                "Date",
+                "Emails"
+        ));
+        end = System.currentTimeMillis();
+        System.out.println("emailsScheduledChart generated in " + (end - start) + " ms");
+
+        start = System.currentTimeMillis();
+        graphs.add(graphService.fromCountPerDay(
+                "emailsSentChart",
+                "Emails Sent",
+                scheduledEmailsRepository.countSentPerDay(startDate),
+                "Date",
+                "Emails"
+        ));
+        end = System.currentTimeMillis();
+        System.out.println("emailsSentChart generated in " + (end - start) + " ms");
 
         for (GraphData graphData : graphs) {
             System.out.println("id: " + graphData.getId());

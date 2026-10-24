@@ -21,6 +21,7 @@
     <div class="tabs">
 
         <button class="tab-btn active" onclick="openTab('quizzes')">Quizzes</button>
+        <button class="tab-btn" onclick="openTab('score-events')">Score history</button>
         <button class="tab-btn" onclick="openTab('referrals')">Referrals</button>
         <button class="tab-btn" onclick="openTab('ratings')">Ratings</button>
         <button class="tab-btn" onclick="openTab('posts')">Posts</button>
@@ -33,6 +34,26 @@
 
     <div id="quizzes" class="tab-content active">
         <div th:replace="admin/fragments/student-quizzes :: quizzes"></div>
+    </div>
+
+    <div id="score-events" class="tab-content">
+        <h3>Recorded score awards</h3>
+        <p>New app versions record score changes here. Older score increases may not have event details.</p>
+        <div style="overflow-x:auto">
+            <table>
+                <thead><tr><th>Received</th><th>Score</th><th>Activity</th><th>Event ID</th><th>Install</th></tr></thead>
+                <tbody>
+                <tr th:each="scoreEvent : ${scoreEvents}">
+                    <td th:text="${scoreEvent.receivedAt}"></td>
+                    <td th:text="${scoreEvent.scoreDelta}"></td>
+                    <td th:text="${scoreEvent.source}"></td>
+                    <td th:text="${scoreEvent.eventId}"></td>
+                    <td th:text="${scoreEvent.installId}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(scoreEvents)}"><td colspan="5">No recorded score events yet.</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div id="referrals" class="tab-content">

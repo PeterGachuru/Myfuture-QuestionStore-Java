@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CurriculumRepository extends JpaRepository<Curriculum, Long> {
 
@@ -31,6 +32,8 @@ public interface CurriculumRepository extends JpaRepository<Curriculum, Long> {
 
 
     boolean existsBySlug(String slug);
+
+    Optional<Curriculum> findBySlug(String slug);
 
     List<Curriculum> findBySlugIsNullOrSlug(String slug);
 }

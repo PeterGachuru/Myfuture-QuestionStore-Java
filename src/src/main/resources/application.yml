@@ -1,5 +1,9 @@
 production: true
 
+myfuture:
+  firebase:
+    project-id: ${FIREBASE_PROJECT_ID:}
+
 custommail:
   sendurl: http://localhost:8090
 logging:

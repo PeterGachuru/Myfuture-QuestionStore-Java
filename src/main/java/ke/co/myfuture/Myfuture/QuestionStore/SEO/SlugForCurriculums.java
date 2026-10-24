@@ -11,7 +11,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(transactionManager = "questionStoreTransactionManager")
 public class SlugForCurriculums {
 
     private final CurriculumRepository curriculumRepository;

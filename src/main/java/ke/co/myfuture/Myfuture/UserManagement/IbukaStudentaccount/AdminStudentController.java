@@ -44,6 +44,7 @@ public class AdminStudentController {
     private final SubjectRepository subjectRepository;
     private final ContestRepository contestRepository;
     private final CurriQuestionRepository curriQuestionRepository;
+    private final StudentScoreEventRepository studentScoreEventRepository;
 
     @GetMapping
     public String list(Model model) {
@@ -65,6 +66,7 @@ public class AdminStudentController {
         IbukaStudentAccount student = repository.findById(id).orElseThrow();
 
         model.addAttribute("student", student);
+        model.addAttribute("scoreEvents", studentScoreEventRepository.findTop200ByStudent_IdOrderByReceivedAtDesc(id));
         List<QuizDone> quizzes = quizDoneRepository.findByStudentOrderByCreatedAtDesc(student);
         List<Post> posts = postRepository.findByStudentaccount(student);
         List<ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInvitee> contests =

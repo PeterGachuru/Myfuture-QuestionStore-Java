@@ -43,10 +43,7 @@ public class CurriculumReadController {
     @GetMapping("{slug}")
     public String curriculumProfileBySlug(@PathVariable String slug, Model model) {
 
-        Curriculum curriculum = curriculumRepository.findAll()
-                .stream()
-                .filter(c -> c.getSlug() != null && c.getSlug().equals(slug))
-                .findFirst()
+        Curriculum curriculum = curriculumRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("Curriculum not found for slug: " + slug));
 
         model.addAttribute("curriculum", curriculum);

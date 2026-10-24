@@ -83,12 +83,21 @@ public class IbukaStudentAccount {
         school = student.school;
         curriculum = student.curriculum;
         classlevel = student.classlevel;
-        if (student.unsyncedScore > 0) {
-            totalScore += student.unsyncedScore;
+        if (student.unsyncedScore != null && student.unsyncedScore > 0) {
+            totalScore = (totalScore == null ? 0L : totalScore) + student.unsyncedScore;
         }
     }
 
+    public void updateProfile(IbukaStudentAccount student) {
+        name = student.name;
+        firstName = student.firstName;
+        lastName = student.lastName;
+        school = student.school;
+        curriculum = student.curriculum;
+        classlevel = student.classlevel;
+    }
+
     public void addScore(Long totalScore) {
-        this.totalScore += totalScore;
+        this.totalScore = (this.totalScore == null ? 0L : this.totalScore) + (totalScore == null ? 0L : totalScore);
     }
 }

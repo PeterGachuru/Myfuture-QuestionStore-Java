@@ -2,6 +2,7 @@ package ke.co.myfuture.Myfuture.Commonauth.Auth.Utilities;
 
 
 import org.springframework.mail.javamail.MimeMessageHelper;
+import ke.co.myfuture.Myfuture.Commonauth.Fcm.FcmNotificationService;
 import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.EmailSendRateLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -22,6 +23,8 @@ import java.util.Properties;
 public class SendCredentialsToEmail {
     @Autowired
     private EmailSendRateLimiter emailSendRateLimiter;
+    @Autowired
+    private FcmNotificationService fcmNotificationService;
     static Configurations c = new Configurations();
     static String host = c.getProperties().getProperty("spring.mail.host");
     static String port = c.getProperties().getProperty("mm.email.port");
@@ -165,6 +168,7 @@ public class SendCredentialsToEmail {
         helper.addInline("companyLogo",new File(company_logo_path));
         helper.addInline("rightSideImage", new File(banner_path));
 
+        notifyByFcm(recipient, subject);
         Transport.send(message);
 
         System.out.println("Mail Sent successfully to :\n"+recipient);
@@ -288,9 +292,19 @@ public class SendCredentialsToEmail {
                 "</html>", true);
         helper.addInline("companyLogo",new File(company_logo_path));
         helper.addInline("rightSideImage", new File(banner_path));
+        notifyByFcm(recipient, subject1);
         Transport.send(message);
 
         System.out.println("Mail Sent successfully to :\n"+recipient);
+    }
+
+    private void notifyByFcm(String recipient, String emailSubject) {
+        try {
+            // Deliberately omit body: these emails contain passwords or one-time reset tokens.
+            fcmNotificationService.notifyEmailRecipients(java.util.Collections.singletonList(recipient), emailSubject, "password reset credentials");
+        } catch (RuntimeException notificationError) {
+            System.out.println("FCM notification could not be queued independently of email: " + notificationError.getMessage());
+        }
     }
 
 }

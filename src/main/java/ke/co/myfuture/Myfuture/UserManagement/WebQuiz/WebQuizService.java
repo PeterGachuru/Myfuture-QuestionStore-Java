@@ -6,6 +6,7 @@ import ke.co.myfuture.Myfuture.QuestionStore.CurriQuestion.CurriQuestionReposito
 import ke.co.myfuture.Myfuture.QuestionStore.SubjectLevel.SubjectLevelRepository;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccount;
 import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.IbukaStudentAccountRepository;
+import ke.co.myfuture.Myfuture.UserManagement.IbukaStudentaccount.StudentScoreEventService;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizDone;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizDoneRepository;
 import ke.co.myfuture.Myfuture.UserManagement.QuizDone.QuizQuestion.QuizQuestion;
@@ -18,6 +19,7 @@ import ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion.ContestQue
 import ke.co.myfuture.Myfuture.UserManagement.Contest.Contestquestion.ContestQuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,6 +45,9 @@ public class WebQuizService {
 
     @Autowired
     private IbukaStudentAccountRepository studentRepository;
+
+    @Autowired
+    private StudentScoreEventService studentScoreEventService;
 
     @Autowired
     private ContestRepository contestRepository;
@@ -439,7 +444,7 @@ public class WebQuizService {
         );
     }
 
-//    @Transactional
+    @Transactional(transactionManager = "studentManagementTransactionManager")
     public QuizDone finishQuiz(Long quizId) {
 
         QuizDone quiz =
@@ -481,8 +486,17 @@ public class WebQuizService {
 
         QuizDone savedQuiz = quizDoneRepository.save(quiz);
         IbukaStudentAccount ibukaStudentAccount = savedQuiz.getStudent();
-        ibukaStudentAccount.addScore((long) (score * 2));
-        studentRepository.save(ibukaStudentAccount);
+        long scoreAward = (long) score * 2L;
+        if (scoreAward > 0 && savedQuiz.getId() != null) {
+            studentScoreEventService.recordTrusted(
+                    "web-quiz:" + savedQuiz.getId(),
+                    ibukaStudentAccount.getId(),
+                    scoreAward,
+                    "web_quiz",
+                    savedQuiz.getInstallId(),
+                    savedQuiz.getEndDate() == null ? null : savedQuiz.getEndDate().toInstant()
+            );
+        }
 
         if (savedQuiz.getContest() != null) {
             contestInviteeRepository.updateScore(

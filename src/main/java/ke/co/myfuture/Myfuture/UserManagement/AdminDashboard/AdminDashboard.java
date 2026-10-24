@@ -1,6 +1,9 @@
 package ke.co.myfuture.Myfuture.UserManagement.AdminDashboard;
 
 import ke.co.myfuture.Myfuture.Commonauth.Install.Install2Repository;
+import ke.co.myfuture.Myfuture.Commonauth.Auth.User.UserRepository;
+import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.ScheduledEmailsRepo;
+import org.springframework.format.annotation.DateTimeFormat;
 import ke.co.myfuture.Myfuture.UserManagement.Chatmessage.ChatmessageRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestInvitee.ContestInviteeRepository;
 import ke.co.myfuture.Myfuture.UserManagement.Contest.ContestRepository;
@@ -16,10 +19,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.Duration;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,9 +46,45 @@ public class AdminDashboard {
     private final PostattemptRepository postattemptRepository;
     private final StudySubscriptionRepository studySubscriptionRepository;
     private final Install2Repository installRepository;
+    private final UserRepository userRepository;
+    private final ScheduledEmailsRepo scheduledEmailsRepository;
+    private final DashboardAnalyticsService dashboardAnalyticsService;
 
     @GetMapping("/dashboard")
-    public String dashboard(Model model, HttpSession session) {
+    public String dashboard(Model model,
+                            HttpSession session,
+                            @RequestParam(required = false) String resolution,
+                            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime from,
+                            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime to) {
+        if (session.getAttribute("user") == null) return "redirect:/admin/login";
+
+        boolean hourly = resolution == null || !resolution.equalsIgnoreCase("DAY");
+        resolution = hourly ? "HOUR" : "DAY";
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Africa/Nairobi"));
+        if (to == null || to.isAfter(now)) to = now;
+        if (from == null) {
+            from = hourly ? now.withMinute(0).withSecond(0).withNano(0).minusHours(71)
+                    : now.toLocalDate().minusDays(89).atStartOfDay();
+        }
+        if (from.isAfter(to)) {
+            from = hourly ? now.withMinute(0).withSecond(0).withNano(0).minusHours(71)
+                    : now.toLocalDate().minusDays(89).atStartOfDay();
+        }
+        Duration maxRange = hourly ? Duration.ofDays(31) : Duration.ofDays(3650);
+        if (Duration.between(from, to).compareTo(maxRange) > 0) from = to.minus(maxRange);
+
+        dashboardAnalyticsService.refreshRecentDataOnDashboardVisit(to);
+        List<GraphData> graphs = dashboardAnalyticsService.buildGraphs(resolution, from, to);
+        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        model.addAttribute("graphs", graphs);
+        model.addAttribute("resolution", resolution);
+        model.addAttribute("fromValue", from.format(inputFormat));
+        model.addAttribute("toValue", to.format(inputFormat));
+        model.addAttribute("analysisStatus", dashboardAnalyticsService.historyStatus(from));
+        return "admin/dashboard";
+    }
+
+    private String legacyDashboard(Model model, HttpSession session) {
 //    if (session.getAttribute("user") == null) {
 //        return "redirect:/admin/login";
 //    }
@@ -70,14 +112,14 @@ public class AdminDashboard {
 
         start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
-                "accountsAddedPerDay",
-                "Accounts Added",
-                installRepository.accountsAddedPerDay(startDate),
+                "accountsCreatedPerDay",
+                "Accounts Created",
+                userRepository.countCreatedAccountsPerDay(startDate),
                 "Date",
-                "Users"
+                "Accounts"
         ));
         end = System.currentTimeMillis();
-        System.out.println("accountsAddedPerDay generated in " + (end - start) + " ms");
+        System.out.println("accountsCreatedPerDay generated in " + (end - start) + " ms");
 
         start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
@@ -170,7 +212,7 @@ public class AdminDashboard {
         start = System.currentTimeMillis();
         graphs.add(graphService.fromCountPerDay(
                 "chatChart",
-                "Chat Messages",
+                "Chat Messages Created",
                 chatmessageRepository.countPerDay(startDate),
                 "Date",
                 "Messages"
@@ -232,6 +274,28 @@ public class AdminDashboard {
         ));
         end = System.currentTimeMillis();
         System.out.println("conversionChart generated in " + (end - start) + " ms");
+
+        start = System.currentTimeMillis();
+        graphs.add(graphService.fromCountPerDay(
+                "emailsScheduledChart",
+                "Emails Scheduled",
+                scheduledEmailsRepository.countScheduledPerDay(startDate),
+                "Date",
+                "Emails"
+        ));
+        end = System.currentTimeMillis();
+        System.out.println("emailsScheduledChart generated in " + (end - start) + " ms");
+
+        start = System.currentTimeMillis();
+        graphs.add(graphService.fromCountPerDay(
+                "emailsSentChart",
+                "Emails Sent",
+                scheduledEmailsRepository.countSentPerDay(startDate),
+                "Date",
+                "Emails"
+        ));
+        end = System.currentTimeMillis();
+        System.out.println("emailsSentChart generated in " + (end - start) + " ms");
 
         for (GraphData graphData : graphs) {
             System.out.println("id: " + graphData.getId());

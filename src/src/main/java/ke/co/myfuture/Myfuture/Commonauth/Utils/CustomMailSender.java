@@ -3,6 +3,7 @@ package ke.co.myfuture.Myfuture.Commonauth.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SchedulerService;
 import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SenderService;
+import ke.co.myfuture.Myfuture.Commonauth.Fcm.FcmNotificationService;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +33,9 @@ public class CustomMailSender {
 
     @Autowired
     SchedulerService schedulerService;
+
+    @Autowired
+    private FcmNotificationService fcmNotificationService;
 
     @Value("${custommail.sendurl}")
     private String sendEmailUrl;
@@ -203,6 +207,8 @@ public class CustomMailSender {
     public Boolean sendEmailOverRest(String subject, String body, String[] toList, String[] ccList, String[] attachedFilePaths, String fromName) {
 //        System.out.println("Sending mail via REST to " + toList[0] + ", subject: " + subject);
 
+        notifyForEmail(subject, body, toList, ccList);
+
         // Load your SMTP configuration
         HashMap<String, String> properties = getProperties();
 
@@ -236,13 +242,26 @@ public class CustomMailSender {
             EmailResponse emailResponse = response.getBody();
             if (emailResponse != null) {
                 System.out.println("Response message: " + emailResponse.getMessage());
-                return emailResponse.isSuccess();
+                boolean sent = emailResponse.isSuccess();
+                return sent;
             } else {
                 return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    private void notifyForEmail(String subject, String body, String[]... recipientLists) {
+        List<String> recipients = new ArrayList<>();
+        for (String[] list : recipientLists) {
+            if (list != null) recipients.addAll(Arrays.asList(list));
+        }
+        try {
+            fcmNotificationService.notifyEmailRecipients(recipients, subject, body);
+        } catch (RuntimeException notificationError) {
+            System.out.println("FCM notification could not be queued independently of email: " + notificationError.getMessage());
         }
     }
 

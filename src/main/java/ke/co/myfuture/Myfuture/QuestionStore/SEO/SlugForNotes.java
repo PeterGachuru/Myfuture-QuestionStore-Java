@@ -25,7 +25,7 @@ public class SlugForNotes {
     @Autowired
     private CurriNotesRepository notesRepository;
 
-    @Transactional
+    @Transactional(transactionManager = "questionStoreTransactionManager")
     public void generateMissingSlugs() {
 
         topicRepository.findBySlugIsNullOrSlugIs("").forEach(topic -> {

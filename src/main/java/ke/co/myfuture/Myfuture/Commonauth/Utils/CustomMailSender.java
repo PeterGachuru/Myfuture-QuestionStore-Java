@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SchedulerService;
 import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.SenderService;
 import ke.co.myfuture.Myfuture.Commonauth.ScheduledEmails.EmailSendRateLimiter;
+import ke.co.myfuture.Myfuture.Commonauth.Fcm.FcmNotificationService;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,9 @@ public class CustomMailSender {
 
     @Autowired
     private EmailSendRateLimiter emailSendRateLimiter;
+
+    @Autowired
+    private FcmNotificationService fcmNotificationService;
 
     @Value("${custommail.sendurl}")
     private String sendEmailUrl;
@@ -121,9 +125,11 @@ public class CustomMailSender {
 //        System.out.println("Sending mail to "+toList[0]+", subject: "+subject);
 
         emailSendRateLimiter.reserveRecipients(countRecipients(toList, ccList, bccList));
+        notifyForEmail(subject, body, toList, ccList, bccList);
 
         if (true) {
-            return sendEmailOverRestInternal(subject, body, toList, ccList, bccList, attachedFilePaths, fromName);
+            Boolean sent = sendEmailOverRestInternal(subject, body, toList, ccList, bccList, attachedFilePaths, fromName);
+            return sent;
         }
         HashMap<String, String> properties = getProperties();
         String from = properties.get("spring.mail.username");
@@ -222,7 +228,21 @@ public class CustomMailSender {
 
     public Boolean sendEmailOverRest(String subject, String body, String[] toList, String[] ccList, String[] bccList, String[] attachedFilePaths, String fromName) {
         emailSendRateLimiter.reserveRecipients(countRecipients(toList, ccList, bccList));
-        return sendEmailOverRestInternal(subject, body, toList, ccList, bccList, attachedFilePaths, fromName);
+        notifyForEmail(subject, body, toList, ccList, bccList);
+        Boolean sent = sendEmailOverRestInternal(subject, body, toList, ccList, bccList, attachedFilePaths, fromName);
+        return sent;
+    }
+
+    private void notifyForEmail(String subject, String body, String[]... recipientLists) {
+        List<String> recipients = new ArrayList<>();
+        for (String[] list : recipientLists) {
+            if (list != null) recipients.addAll(Arrays.asList(list));
+        }
+        try {
+            fcmNotificationService.notifyEmailRecipients(recipients, subject, body);
+        } catch (RuntimeException exception) {
+            System.out.println("FCM notification could not be queued independently of email: " + exception.getMessage());
+        }
     }
 
     private Boolean sendEmailOverRestInternal(String subject, String body, String[] toList, String[] ccList,
